@@ -13,6 +13,7 @@ output/
 *.ipr
 *.iws
 
+/target/
 
 # OSX
 .DS_Store
