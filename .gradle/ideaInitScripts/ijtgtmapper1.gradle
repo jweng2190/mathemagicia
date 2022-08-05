@@ -1,0 +1,5 @@
+ext.pathMapper = [:]
+ext.pathMapper.put('//wsl\$/Ubuntu-20.04/usr/lib/jvm/java-8-openjdk-amd64/bin/java', '/usr/lib/jvm/java-8-openjdk-amd64/bin/java')
+ext.pathMapper.put('//wsl\$/Ubuntu-20.04/home/jweng/workspace/gs-spring-boot/initial', '/home/jweng/workspace/gs-spring-boot/initial')
+ext.pathMapper.put("<<target java executable path>>", '/usr/lib/jvm/java-8-openjdk-amd64/bin/java')
+ext.mapPath = { path -> pathMapper.get(path) ?: path }
