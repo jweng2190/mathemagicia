@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.security.RolesAllowed;
+import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.List;
 
@@ -25,7 +26,8 @@ public class UserController {
 
     @GetMapping("/username")
     @RolesAllowed({"USER"})
-    public String currentUserName(Principal principal) {
+    public String currentUserName(HttpServletRequest request) {
+        Principal principal = request.getUserPrincipal();
         return principal.getName();
     }
 }
