@@ -24,7 +24,7 @@ public class User {
     @Column(name="last_name")
     private String lastName;
 
-    private int grade;
+    private Integer grade;
 
     private String email;
 
@@ -96,11 +96,11 @@ public class User {
         this.lastName = lastName;
     }
 
-    public int getGrade() {
+    public Integer getGrade() {
         return grade;
     }
 
-    public void setGrade(int grade) {
+    public void setGrade(Integer grade) {
         this.grade = grade;
     }
 
