@@ -7,7 +7,7 @@ import javax.persistence.*;
 public class Problem {
     @Id
     @Column(name = "problem_id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int problemId;
 
     private String contest;

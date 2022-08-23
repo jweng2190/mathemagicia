@@ -8,7 +8,7 @@ import java.util.Set;
 @Table(name="user")
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="user_id")
     private int userId;
 
@@ -28,7 +28,7 @@ public class User {
 
     private String email;
 
-    private Integer score;
+    private Integer score = 0;
 
     private Integer team;
 
