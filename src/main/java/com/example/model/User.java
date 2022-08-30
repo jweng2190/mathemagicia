@@ -18,6 +18,9 @@ public class User {
 
     private boolean enabled;
 
+    @Column(name="verification_code")
+    private String verificationCode;
+
     @Column(name="first_name")
     private String firstName;
 
@@ -80,6 +83,14 @@ public class User {
         this.enabled = enabled;
     }
 
+    public String getVerificationCode() {
+        return verificationCode;
+    }
+
+    public void setVerificationCode(String verificationCode) {
+        this.verificationCode = verificationCode;
+    }
+
     public String getFirstName() {
         return firstName;
     }
@@ -126,5 +137,9 @@ public class User {
 
     public void setTeam(Integer team) {
         this.team = team;
+    }
+
+    public String getFullName() {
+        return this.firstName + " " + this.lastName;
     }
 }

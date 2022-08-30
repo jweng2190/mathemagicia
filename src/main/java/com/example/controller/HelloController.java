@@ -6,9 +6,10 @@ import org.springframework.web.servlet.ModelAndView;
 
 @RestController
 public class HelloController {
+	ModelAndView modelAndView = new ModelAndView();
+
 	@GetMapping("/")
 	public ModelAndView index() {
-		ModelAndView modelAndView = new ModelAndView();
 		modelAndView.setViewName("index.html");
 		return modelAndView;
 	}

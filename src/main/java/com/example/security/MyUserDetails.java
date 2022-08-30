@@ -58,4 +58,7 @@ public class MyUserDetails implements UserDetails {
         return user.isEnabled();
     }
 
+    public String getFullName() {
+        return user.getFirstName() + " " + user.getLastName();
+    }
 }

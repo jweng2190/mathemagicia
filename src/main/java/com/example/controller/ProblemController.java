@@ -19,4 +19,16 @@ public class ProblemController {
         List<Problem> allProblems = problemDao.findAll();
         return ResponseEntity.ok().body(allProblems);
     }
+
+    @GetMapping("/mathcounts")
+    public ResponseEntity<List<Problem>> getMathcountsProblems() {
+        List<Problem> mathcountsProblems = problemDao.findProblemByContest("mathcounts");
+        return ResponseEntity.ok().body(mathcountsProblems);
+    }
+
+    @GetMapping("/amc8")
+    public ResponseEntity<List<Problem>> getAMC8Problems() {
+        List<Problem> amc8Problems = problemDao.findProblemByContest("amc8");
+        return ResponseEntity.ok().body(amc8Problems);
+    }
 }
