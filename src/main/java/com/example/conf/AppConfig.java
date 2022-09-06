@@ -5,15 +5,16 @@ import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.sql.DataSource;
 
 @Configuration
-public class AppConfig {
-    /*@Value("${spring.datasource.driverClassName}")
-    private String driverClass;*/
-
+@EnableWebMvc
+@ComponentScan
+public class AppConfig implements WebMvcConfigurer {
     @Value("${spring.datasource.url}")
     private String url;
 
@@ -30,5 +31,11 @@ public class AppConfig {
         dataSourceBuilder.username(username);
         dataSourceBuilder.password(password);
         return dataSourceBuilder.build();
+    }
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler( "/js/**")
+                .addResourceLocations("classpath:/static/js/");
     }
 }

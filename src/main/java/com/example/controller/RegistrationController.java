@@ -4,6 +4,8 @@ import com.example.dao.UserRepository;
 import com.example.model.User;
 import com.example.security.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.data.repository.query.Param;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,7 +29,6 @@ public class RegistrationController {
     ModelAndView modelAndView = new ModelAndView();
 
     @GetMapping("/register")
-    @RolesAllowed({"USER"})
     public ModelAndView showRegistrationForm(Model model) {
         model.addAttribute("user", new User());
 
