@@ -1,21 +1,31 @@
-window.onload = function() {
-  $.getJSON('http://localhost:8080/mathcounts', function(data) {     
+const baseUrl = 'http://localhost:8080';
 
-  var object = data[0];
-  var object_length = Object.keys(object).length;
-  for(var j = 0; j < object_length; j++) {
-    $('#content').append($('<div/>', { id: 'p' + j}))
-  }
+const params = new Proxy(new URLSearchParams(window.location.search), {
+  get: (searchParams, prop) => searchParams.get(prop),
+});
+let contest = params.contest;
 
-  var divs = document.getElementById("content").children;
+//render the problem display template
+let tmpl = document.getElementById('tmpl')
+let elem = document.createElement('div');
+elem.id = 'content';
 
-  var index = 0;
-  for(var property in object) {
-    if(property != null) {
-      divs[index].innerHTML = object[property];
-    }
-    index++;
-  }
-    
-  });
-}
+elem.append(tmpl.content.cloneNode(true));
+document.body.append(elem);
+
+$.getJSON(baseUrl + '/problems?contest=' + contest, function(data) {     
+
+var object = data[0];
+
+var form = document.getElementById('answer');
+var div1 = document.createElement('div');
+div1.id = 'p0';
+var div2 = document.createElement('p1');
+div2.id = 'p1';
+
+elem.insertBefore(div1, form)
+elem.insertBefore(div2, div1);
+
+div1.innerHTML = object["problemDescription"];
+div2.innerHTML = object["image"]; 
+});

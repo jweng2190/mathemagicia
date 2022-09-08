@@ -22,6 +22,8 @@ public class Problem {
 
     private String answer;
 
+    private String solution;
+
 
     public int getProblemId() {
         return problemId;
@@ -69,5 +71,13 @@ public class Problem {
 
     public void setAnswer(String answer) {
         this.answer = answer;
+    }
+
+    public String getSolution() {
+        return solution;
+    }
+
+    public void setSolution(String solution) {
+        this.solution = solution;
     }
 }

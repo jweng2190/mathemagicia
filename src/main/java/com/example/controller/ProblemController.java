@@ -15,22 +15,16 @@ public class ProblemController {
     @Autowired
     private ProblemRepository problemDao;
 
-    @GetMapping("/problems")
+    @GetMapping("/all_problems")
     public ResponseEntity<List<Problem>> getAllProblems() {
         List<Problem> allProblems = problemDao.findAll();
         return ResponseEntity.ok().body(allProblems);
     }
 
-    @GetMapping("/mathcounts")
-    public ResponseEntity<List<Problem>> getMathcountsProblems() {
-        List<Problem> mathcountsProblems = problemDao.findProblemByContest("mathcounts");
-        return ResponseEntity.ok().body(mathcountsProblems);
-    }
-
-    @GetMapping("/amc8")
-    public ResponseEntity<List<Problem>> getAMC8Problems() {
-        List<Problem> amc8Problems = problemDao.findProblemByContest("amc8");
-        return ResponseEntity.ok().body(amc8Problems);
+    @GetMapping("/problems")
+    public ResponseEntity<List<Problem>> getProblems(@RequestParam(name="contest") String contest) {
+        List<Problem> contestProblems = problemDao.findProblemByContest(contest);
+        return ResponseEntity.ok().body(contestProblems);
     }
 
     @GetMapping("/answer")
