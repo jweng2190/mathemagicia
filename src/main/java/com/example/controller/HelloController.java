@@ -1,16 +1,21 @@
 package com.example.controller;
 
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
 
-@RestController
+@Controller
 public class HelloController {
-	ModelAndView modelAndView = new ModelAndView();
-
 	@GetMapping("/")
-	public ModelAndView index() {
-		modelAndView.setViewName("index.html");
-		return modelAndView;
+	public String index() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+		if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
+			return "index";
+		}
+
+		return "redirect:/home";
 	}
 }
