@@ -15,17 +15,22 @@ document.body.append(elem);
 
 $.getJSON(baseUrl + '/problems?contest=' + contest, function(data) {     
 
-var object = data[0];
+var object = data[1];
 
 var form = document.getElementById('answer');
 var div1 = document.createElement('div');
 div1.id = 'p0';
-var div2 = document.createElement('p1');
+var div2 = document.createElement('div');
 div2.id = 'p1';
 
-elem.insertBefore(div1, form)
-elem.insertBefore(div2, div1);
+elem.insertBefore(div1, form);
+elem.insertBefore(div2, form);
 
 div1.innerHTML = object["problemDescription"];
-div2.innerHTML = object["image"]; 
+
+var image = new Image();
+let binaryString = object["image"];
+image.src = 'data:image/jpeg;base64,' + binaryString;
+
+div2.append(image); 
 });

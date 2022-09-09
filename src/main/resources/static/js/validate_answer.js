@@ -7,7 +7,7 @@ function submitAnswer(event) {
     let contest = params.contest;
 
     $.getJSON(baseUrl + "/problems?contest=" + contest, function(data) {
-    var object = data[0];
+    var object = data[1];
     var problemId = object["problemId"];
         $.get(baseUrl + '/answer?problemId=' + problemId, function(answer) {
             if(inputAnswer == answer) {

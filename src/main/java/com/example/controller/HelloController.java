@@ -16,6 +16,6 @@ public class HelloController {
 			return "index";
 		}
 
-		return "redirect:/home";
+		return "home";
 	}
 }
