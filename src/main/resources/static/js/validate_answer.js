@@ -1,4 +1,3 @@
-
 function submitAnswer(event) {
     var inputAnswer = document.getElementById('problem_answer').value;
     const params = new Proxy(new URLSearchParams(window.location.search), {
