@@ -15,7 +15,7 @@ public class HelloController {
 		if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
 			return "index";
 		}
-
-		return "home";
+		
+		return "redirect:/home";		
 	}
 }

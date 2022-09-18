@@ -21,8 +21,8 @@ public class ProblemController {
         return ResponseEntity.ok().body(allProblems);
     }
 
-    @GetMapping("/problems")
-    public ResponseEntity<List<Problem>> getProblems(@RequestParam(name="contest") String contest) {
+    @GetMapping("problems")
+    public ResponseEntity<List<Problem>> getProblemsByContest(@RequestParam(name="contest") String contest) {
         List<Problem> contestProblems = problemDao.findProblemByContest(contest);
         return ResponseEntity.ok().body(contestProblems);
     }

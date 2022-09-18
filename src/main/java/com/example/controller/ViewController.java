@@ -7,11 +7,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import javax.annotation.security.RolesAllowed;
 
 @Controller
 public class ViewController {
+    @RolesAllowed({"USER"})
     @RequestMapping("/view")
-    public String renderProblems(@RequestParam(name="contest") String contest) {
+    public String renderProblems(@RequestParam(name="contest") String contest,
+    @RequestParam(name="problemId") Integer problemId) {
         return "problem_template";
     }
 

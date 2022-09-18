@@ -4,10 +4,11 @@ function submitAnswer(event) {
         get: (searchParams, prop) => searchParams.get(prop),
     });
     let contest = params.contest;
+    let problemId = params.problemId;
 
     $.getJSON(baseUrl + "/problems?contest=" + contest, function(data) {
-    var object = data[1];
-    var problemId = object["problemId"];
+    var object = data[currentIndex];
+    //var problemId = object["problemId"];
         $.get(baseUrl + '/answer?problemId=' + problemId, function(answer) {
             if(inputAnswer == answer) {
                 log.textContent = "Correct!\nSolution:\n" + object["solution"];    
