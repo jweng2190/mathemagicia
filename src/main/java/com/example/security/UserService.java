@@ -1,6 +1,8 @@
 package com.example.security;
 
+import com.example.dao.RoleRepository;
 import com.example.dao.UserRepository;
+import com.example.model.Role;
 import com.example.model.User;
 import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,11 +15,16 @@ import org.springframework.stereotype.Service;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
 public class UserService {
     @Autowired
     private UserRepository repo;
+
+    @Autowired
+    private RoleRepository roleDao;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -40,6 +47,10 @@ public class UserService {
         String randomCode = RandomString.make(64);
         user.setVerificationCode(randomCode);
         user.setEnabled(false);
+        Set<Role> userRoles = new HashSet<>();
+        Role role = roleDao.getRoleByName("ROLE_USER");
+        userRoles.add(role);
+        user.setRoles(userRoles);
 
         repo.save(user);
 
