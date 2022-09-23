@@ -1,4 +1,4 @@
-const baseUrl = 'http://localhost:8080';
+const baseUrl = 'http://mathemagicia.com';
 if(localStorage.getItem('currentIndex') == null) {
   var currentIndex = 0;
 } else {
