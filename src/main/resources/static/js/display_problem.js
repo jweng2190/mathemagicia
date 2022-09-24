@@ -1,4 +1,6 @@
-const baseUrl = 'http://mathemagicia.com';
+var getUrl = window.location;
+const baseUrl = getUrl.protocol + "//" + getUrl.host + "/" + getUrl.pathname.split('/')[1];
+
 if(localStorage.getItem('currentIndex') == null) {
   var currentIndex = 0;
 } else {
@@ -46,6 +48,14 @@ $.getJSON(baseUrl + '/problems?contest=' + contest, function(data) {
       object = data[currentIndex];
       localStorage.setItem('currentIndex', currentIndex);
       problemId = object['problemId'];
+
+      if(contest='mathcounts') {
+        localStorage.setItem('mathcountsId', problemId);
+      }
+      if(contest='amc8') {
+        localStorage.setItem('amc8Id', problemId);
+      }
+
       window.location.replace(baseUrl + '/view?contest=' + contest + "&problemId=" + problemId);
     } else {
       currentIndex = 0;
@@ -54,5 +64,6 @@ $.getJSON(baseUrl + '/problems?contest=' + contest, function(data) {
       problemId = object['problemId'];
       window.location.replace(baseUrl + '/view?contest=' + contest + "&problemId=" + problemId);
     }
+    localStorage.setItem('problemId', problemId);
   });
 });

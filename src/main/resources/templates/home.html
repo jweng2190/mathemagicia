@@ -18,8 +18,24 @@
     <div class="container text-center">
         <h1>Mathemagicia Home</h1>
         <h3><a href="/logout">Logout</a></h3>
-        <h3><a href="/view?contest=mathcounts&problemId=1">Mathcounts Game</a></h3>
+        <h3><a id="mathcounts">Mathcounts Game</a></h3>
         <h3><a href="/view?contest=amc8&problemId=4">AMC 8 Game</a></h3>
     </div>
 </body>
+
+<script>
+    document.body.onload = function() {
+      if(localStorage.getItem('mathcountsId') != null) {
+        const value = localStorage.getItem('mathcountsId');
+        const url = `/view?contest=mathcounts&problemId=${value}`;
+        const a = document.querySelector('#mathcounts');   
+        a.href = url;
+      } else {
+        localStorage.setItem('mathcountsId', 1);
+        const url = `/view?contest=mathcounts&problemId=1`;
+        const a = document.querySelector('#mathcounts');   
+        a.href = url;
+      }
+     }
+</script>
 </html>
