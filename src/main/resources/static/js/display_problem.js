@@ -1,10 +1,13 @@
-var getUrl = window.location;
-const baseUrl = getUrl.protocol + "//" + getUrl.host + "/" + getUrl.pathname.split('/')[1];
-
-if(localStorage.getItem('currentIndex') == null) {
-  var currentIndex = 0;
+if(localStorage.getItem('mcIndex') == null) {
+  var mcIndex = 0;
 } else {
-  currentIndex = localStorage.getItem('currentIndex');
+  mcIndex = parseInt(localStorage.getItem('mcIndex'));
+}
+
+if(localStorage.getItem('amc8Index') == null) {
+  var amc8Index = 0;
+} else {
+  amc8Index = parseInt(localStorage.getItem('amc8Index'));
 }
 
 const params = new Proxy(new URLSearchParams(window.location.search), {
@@ -21,8 +24,16 @@ elem.id = 'content';
 elem.append(tmpl.content.cloneNode(true));
 document.body.append(elem);
 
-$.getJSON(baseUrl + '/problems?contest=' + contest, function(data) {     
-  var object = data[currentIndex];
+$.getJSON('/problems?contest=' + contest, function(data) {    
+  if(contest == 'mathcounts') {
+    var object = data[mcIndex];
+    var currentIndex = mcIndex;
+  }
+
+  if(contest == 'amc8') {
+    var object = data[amc8Index];
+    var currentIndex = amc8Index;
+  }
 
   var form = document.getElementById('answer');
   var div1 = document.createElement('div');
@@ -45,25 +56,42 @@ $.getJSON(baseUrl + '/problems?contest=' + contest, function(data) {
   document.getElementById('next').addEventListener("click", function() {
     if(currentIndex + 1 < data.length) {
       currentIndex++;
+      
       object = data[currentIndex];
-      localStorage.setItem('currentIndex', currentIndex);
+      if(contest=='mathcounts') {
+        mcIndex = currentIndex;
+        localStorage.setItem('mcIndex', currentIndex);
+      }
+      if(contest=='amc8') {
+        amc8Index = currentIndex;
+        localStorage.setItem('amc8Index', currentIndex);
+      }
+
       problemId = object['problemId'];
 
-      if(contest='mathcounts') {
+      if(contest=='mathcounts') {
         localStorage.setItem('mathcountsId', problemId);
       }
-      if(contest='amc8') {
+      if(contest=='amc8') {
         localStorage.setItem('amc8Id', problemId);
       }
 
-      window.location.replace(baseUrl + '/view?contest=' + contest + "&problemId=" + problemId);
+      window.location.replace('/view?contest=' + contest + "&problemId=" + problemId);
     } else {
       currentIndex = 0;
       object = data[currentIndex];
-      localStorage.setItem('currentIndex', currentIndex);
+
+      if(contest=='mathcounts') {
+        mcIndex = currentIndex;
+        localStorage.setItem('mcIndex', currentIndex);
+      }
+      if(contest=='amc8') {
+        amc8Index = currentIndex;
+        localStorage.setItem('amc8Index', currentIndex);
+      }
+
       problemId = object['problemId'];
-      window.location.replace(baseUrl + '/view?contest=' + contest + "&problemId=" + problemId);
+      window.location.replace('/view?contest=' + contest + "&problemId=" + problemId);
     }
-    localStorage.setItem('problemId', problemId);
   });
 });

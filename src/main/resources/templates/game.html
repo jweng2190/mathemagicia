@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang = "en">
+<head>
+<title>Title</title>
+<style>
+    * {
+      box-sizing: border-box;
+    }
+    
+    /* Create three unequal columns that floats next to each other */
+    .column {
+      float: left;
+      padding: 10px;
+    }
+    
+    .left, .right {
+      width: 25%;
+    }
+    
+    .middle {
+      width: 50%;
+    }
+    
+    /* Clear floats after the columns */
+    .row:after {
+      content: "";
+      display: table;
+      clear: both;
+    }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js"
+    integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ="
+    crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <div class="row">
+        <div class="column left" style="background-color:#aaa;">
+          <h2>Column 1</h2>
+          <form id="form1">
+            <label for="answer">Answer:</label>
+            <input type="text" id="answer1" name="answer1">
+            <button type="submit" id="button1" form="form1" value="submit">Submit</button>
+          </form>
+          <br><br>
+          <p id="log1"></p>
+        </div>
+        <div class="column middle" style="background-color:#bbb;">
+          <h2>Column 2</h2>
+          <button id="btn">Start</button>
+          <p>Time remaining: <span id="time">05:00<span> minutes!</p>
+        </div>
+        <div class="column right" style="background-color:#ccc;">
+          <h2>Column 3</h2>
+          <form id="form2">
+            <label for="answer">Answer:</label>
+            <input type="text" id="answer2" name="answer2">
+            <button type="submit" id="button2" form="form2" value="submit">Submit</button>
+          </form>
+          <br><br>
+          <p id="log2"></p>
+        </div>
+      </div>
+</body>
+
+<script>
+    let btn = document.getElementById("btn")
+    btn.addEventListener('click', event => {
+        var fiveMinutes = 60 * 1,
+        display = document.querySelector('#time');
+        startTimer(fiveMinutes, display);
+    });
+
+    function startTimer(duration, display) {
+        var start = Date.now(),
+        diff,
+        minutes,
+        seconds;
+        function timer() {
+        // get the number of seconds that have elapsed since 
+        // startTimer() was called
+        diff = duration - (((Date.now() - start) / 1000) | 0);
+
+        // does the same job as parseInt truncates the float
+        minutes = (diff / 60) | 0;
+        seconds = (diff % 60) | 0;
+
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+
+        display.textContent = minutes + ":" + seconds; 
+
+        if (diff <= 0) {
+            // add one second so that the count down starts at the full duration
+            // example 05:00 not 04:59
+            start = Date.now() + 1000;
+        }};
+        // we don't want to wait a full second before the timer starts
+        timer();
+        setInterval(timer, 1000);
+    }
+</script>
+
+<script src="/js/game.js"></script>

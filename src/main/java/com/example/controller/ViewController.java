@@ -18,6 +18,12 @@ public class ViewController {
         return "problem_template";
     }
 
+    @RolesAllowed({"USER"})
+    @RequestMapping("/game")
+    public String game() {
+        return "game";
+    }
+
     @GetMapping("/login")
     public String showLoginPage() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
