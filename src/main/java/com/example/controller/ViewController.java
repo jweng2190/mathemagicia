@@ -24,6 +24,12 @@ public class ViewController {
         return "game";
     }
 
+    @RolesAllowed({"USER"})
+    @RequestMapping("/game")
+    public String game(@RequestParam(name="gameId") String gameId) {
+        return "game_template";
+    }
+
     @GetMapping("/login")
     public String showLoginPage() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
