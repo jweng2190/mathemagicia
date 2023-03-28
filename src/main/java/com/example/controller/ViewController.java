@@ -12,22 +12,22 @@ import javax.annotation.security.RolesAllowed;
 @Controller
 public class ViewController {
     @RolesAllowed({"USER"})
-    @RequestMapping("/view")
+    @GetMapping("/view")
     public String renderProblems(@RequestParam(name="contest") String contest,
     @RequestParam(name="problemId") Integer problemId) {
         return "problem_template";
     }
 
     @RolesAllowed({"USER"})
-    @RequestMapping("/game")
+    @GetMapping("/game")
     public String game() {
-        return "game";
+        return "game_template";
     }
 
     @RolesAllowed({"USER"})
-    @RequestMapping("/game")
-    public String game(@RequestParam(name="gameId") String gameId) {
-        return "game_template";
+    @GetMapping("/game_home")
+    public String gameHome() {
+        return "game";
     }
 
     @GetMapping("/login")

@@ -16,11 +16,4 @@ public class HomeController {
         modelAndView.setViewName("home.html");
         return modelAndView;
     }
-
-    @RolesAllowed({"USER"})
-    @GetMapping("/game")
-    public ModelAndView game() {
-        modelAndView.setViewName("game.html");
-        return modelAndView;
-    }
 }

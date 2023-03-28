@@ -1,12 +1,16 @@
 package com.example.controller;
 
+import java.security.Principal;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.dao.UserRepository;
 import com.example.dto.ConnectRequest;
 import com.example.model.Game;
 import com.example.model.GamePlay;
@@ -26,6 +30,15 @@ import lombok.extern.slf4j.Slf4j;
 public class GameController {
     private final GameService gameService;
     private final SimpMessagingTemplate simpMessagingTemplate;
+    private UserRepository userDao;
+
+    @GetMapping("/create")
+    public ResponseEntity<String> createGame(Principal principal) {
+        String username = principal.getName();
+        User currentUser = userDao.getUserByUsername(username);
+        Game game = gameService.createGame(currentUser);
+        return ResponseEntity.ok(game.getGameId());
+    }
 
     @PostMapping("/start")
     public ResponseEntity<Game> start(@RequestBody User player) {

@@ -40,7 +40,20 @@ async function getUsername() {
   
 
 function create_game() {
-    getUsername().then(username => {
+    fetch("/game/create")
+        .then((response) => response.text()
+            .then((text) => {
+                const params = {
+                    gameId: text
+                };
+
+                const queryParams = new URLSearchParams(params).toString();
+                window.location.href = "/game";
+            }));
+
+    
+
+    /*getUsername().then(username => {
         $.ajax({
             url: url + "/game/start",
             type: 'POST',
@@ -53,12 +66,13 @@ function create_game() {
                 gameId = data.gameId;
                 connectToSocket(gameId);
                 alert("Your created a game. Game id is: " + data.gameId);
+                window.location.replace(url + "/game?gameId=" + gameId);
             },
             error: function (error) {
                 console.log(error);
             }
         })
-    });   
+    });*/   
 }
 
 function connectToRandom() {

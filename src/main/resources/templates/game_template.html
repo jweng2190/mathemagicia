@@ -1,105 +1,256 @@
 <!DOCTYPE html>
-<html lang = "en">
+<html>
 <head>
-<title>Live Math 1v1</title>
-<style>
-    * {
-      box-sizing: border-box;
-    }
-    
-    /* Create three unequal columns that floats next to each other */
-    .column {
-      float: left;
-      padding: 10px;
-    }
-    
-    .left, .right {
-      width: 25%;
-    }
-    
-    .middle {
-      width: 50%;
-    }
-    
-    /* Clear floats after the columns */
-    .row:after {
-      content: "";
-      display: table;
-      clear: both;
-    }
-    </style>
-    <script src="https://code.jquery.com/jquery-3.6.1.min.js"
-    integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ="
-    crossorigin="anonymous"></script>
+	<title>1v1 Live</title>
+	<!-- CSS styles for the game page -->
+	<style>
+		html,
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+.container {
+    height: 100%;
+    width: 80%;
+    margin: auto;
+    text-align: center;
+}
+
+.row-1 {
+    display: flex;
+    flex-direction: row;
+    height: 20%;
+    justify-content: space-between;
+	  background-color: #f2f2f2;
+	  padding: 10px;
+}
+
+.row-2 {
+    display: flex;
+    flex-direction: row;
+    height: 50%;
+    justify-content: space-between;
+	  align-items: center;
+	  padding: 10px;
+}
+
+.row-3 {
+    display: flex;
+    flex-direction: row;
+    height: 30%;
+    justify-content: space-between;
+	  align-items: center;
+	  padding: 10px;
+}
+
+.column {
+    flex: 1;
+    border: 1px solid black;
+    justify-content: center;
+	  align-items: center;
+}
+
+.centered-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.centered-column {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.row-1 .column:nth-child(1) {
+    background-color: #ff9800;
+    color: white;
+    width: 20%;
+}
+
+/* Timer */
+.row-1 .column:nth-child(2) {
+    background-color: #f44336;
+    color: white;
+    width: 60%;
+}
+
+/* Player 2 Score */
+.row-1 .column:nth-child(3) {
+    background-color: #4caf50;
+    color: white;
+    width: 20%;
+}
+
+/* Player 1 Stats */
+.row-2 .column:nth-child(1) {
+    background-color: #e0e0e0;
+    width: 30%;
+}
+
+/* Problem */
+.row-2 .column:nth-child(2) {
+    background-color: #f5f5f5;
+    width: 40%;
+}
+
+/* Player 2 Stats */
+.row-2 .column:nth-child(3) {
+    background-color: #e0e0e0;
+    width: 30%;
+}
+
+.answer-field {
+    width: 70%;
+    padding: 10px;
+    border-radius: 5px 0 0 5px;
+    border: none;
+    background-color: #f5f5f5;
+    margin-right: -5px;
+}
+
+.answer-field:focus {
+    outline: none;
+}
+
+.answer-field-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    background-color: #f5f5f5;
+    width: 33.33%;
+}
+
+/* Submit Buttons */
+.submit-button {
+    padding: 10px 20px;
+    background-color: #2196f3;
+    color: white;
+    border: none;
+    border-radius: 0 5px 5px 0;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.submit-button:hover {
+    background-color: #0c7cd5;
+}
+
+.invite-button {
+    padding: 10px 20px;
+    background-color: #e0e0e0;
+    color: black;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.invite-button:hover {
+    background-color: #bdbdbd;
+}
+
+		.score {
+			font-size: 24px;
+			font-weight: bold;
+			text-align: center;
+			background-color: #f5f5f5;
+			padding: 10px;
+			border-radius: 5px;
+		}
+		.timer {
+			font-size: 24px;
+			font-weight: bold;
+			text-align: center;
+			background-color: #f5f5f5;
+			padding: 10px;
+			border-radius: 5px;
+		}
+		.player-stats {
+			font-size: 16px;
+			text-align: center;
+			background-color: #f5f5f5;
+			padding: 10px;
+			border-radius: 5px;
+		}
+		.problem {
+			font-size: 24px;
+			font-weight: bold;
+			text-align: center;
+			background-color: #e0e0e0;
+			padding: 20px;
+			border-radius: 5px;
+			position: relative;
+		}
+		.start-button {
+			position: relative;
+			bottom: 10px;
+			left: 50%;
+			transform: translateX(-50%);
+			padding: 10px 20px;
+			background-color: #4CAF50;
+			color: white;
+			border: none;
+			border-radius: 5px;
+			font-size: 16px;
+			cursor: pointer;
+		}
+	</style>
 </head>
-
 <body>
-    <div class="row">
-        <div class="column left" style="background-color:#aaa;">
-          <h2>Column 1</h2>
-          <form id="form1">
-            <label for="answer">Answer:</label>
-            <input type="text" id="answer1" name="answer1">
-            <button type="submit" id="button1" form="form1" value="submit">Submit</button>
-          </form>
-          <br><br>
-          <p id="log1"></p>
-        </div>
-        <div class="column middle" style="background-color:#bbb;">
-          <h2>Column 2</h2>
-          <button id="btn">Start</button>
-          <p>Time remaining: <span id="time">05:00<span> minutes!</p>
-        </div>
-        <div class="column right" style="background-color:#ccc;">
-          <h2>Column 3</h2>
-          <form id="form2">
-            <label for="answer">Answer:</label>
-            <input type="text" id="answer2" name="answer2">
-            <button type="submit" id="button2" form="form2" value="submit">Submit</button>
-          </form>
-          <br><br>
-          <p id="log2"></p>
-        </div>
-      </div>
+	<div class="game-container">
+		<div class="row-1">
+			<div class="column centered-row">
+				<span>Player 1 Score: 0</span>
+			</div>
+			<div class="column centered-row">
+				<span>Timer: 00:00</span>
+			</div>
+			<div class="column centered-row">
+				<span>Player 2 Score: 0</span>
+			</div>
+		</div>
+		<div class="row-2">
+			<div class="column centered-column">
+				<h3>Player 1</h3>
+				<p>Level: 1</p>
+				<p>Stats: 0 wins, 0 losses</p>
+				<p>Badges: None</p>
+			</div>
+			<div class="column centered-column">
+				<div class="problem-container">
+					<p>What is 2 + 2?</p>
+					<button class="start-button">Start</button>
+				</div>
+			</div>
+			<div class="column centered-column">
+				<h3>Player 2</h3>
+				<p>Level: 1</p>
+				<p>Stats: 0 wins, 0 losses</p>
+				<p>Badges: None</p>
+			</div>
+		</div>
+		<div class="row-3">
+			<div class="column answer-field-container">
+				<input type="text" class="answer-field" placeholder="Enter answer...">
+				<button class="submit-button">Submit</button>
+			</div>
+			<div class="column centered-row">
+				<button class="invite-button">Invite Your Friends</button>
+			</div>
+			<div class="column answer-field-container">
+				<input type="text" class="answer-field" placeholder="Enter answer...">
+				<button class="submit-button">Submit</button>
+			</div>
+		</div>
+	</div>
 </body>
-
-<script>
-    let btn = document.getElementById("btn")
-    btn.addEventListener('click', event => {
-        var fiveMinutes = 60 * 1,
-        display = document.querySelector('#time');
-        startTimer(fiveMinutes, display);
-    });
-
-    //doesn't work yet
-    function startTimer(duration, display) {
-        var start = Date.now(),
-        diff,
-        minutes,
-        seconds;
-        function timer() {
-        // get the number of seconds that have elapsed since 
-        // startTimer() was called
-        diff = duration - (((Date.now() - start) / 1000) | 0);
-
-        // does the same job as parseInt truncates the float
-        minutes = (diff / 60) | 0;
-        seconds = (diff % 60) | 0;
-
-        minutes = minutes < 10 ? "0" + minutes : minutes;
-        seconds = seconds < 10 ? "0" + seconds : seconds;
-
-        display.textContent = minutes + ":" + seconds; 
-
-        if (diff <= 0) {
-            // add one second so that the count down starts at the full duration
-            // example 05:00 not 04:59
-            start = Date.now() + 1000;
-        }};
-        // we don't want to wait a full second before the timer starts
-        timer();
-        setInterval(timer, 1000);
-    }
-</script>
-
+</html>
+    
 <script src="/js/game.js"></script>
