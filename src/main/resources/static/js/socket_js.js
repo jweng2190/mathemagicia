@@ -47,7 +47,8 @@ function create_game() {
                     gameId: text
                 };
 
-                const queryParams = new URLSearchParams(params).toString();
+                //const queryParams = new URLSearchParams(params).toString();
+                alert(params.gameId);
                 window.location.href = "/game";
             }));
 
@@ -89,7 +90,7 @@ function connectToRandom() {
                 gameId = data.gameId;
                 connectToSocket(gameId);
                 alert("Congrats, you're playing with: " + data.player1.username);
-                window.location.replace(url + "/game?gameId=" + gameId);
+                window.location.replace("/game");
             },
             error: function (error) {
                 console.log(error);

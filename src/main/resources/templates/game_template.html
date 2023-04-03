@@ -13,7 +13,6 @@ body {
 
 .container {
     height: 100%;
-    width: 80%;
     margin: auto;
     text-align: center;
 }
@@ -21,7 +20,7 @@ body {
 .row-1 {
     display: flex;
     flex-direction: row;
-    height: 20%;
+    height: 25%;
     justify-content: space-between;
 	  background-color: #f2f2f2;
 	  padding: 10px;
@@ -39,13 +38,13 @@ body {
 .row-3 {
     display: flex;
     flex-direction: row;
-    height: 30%;
+    height: 25%;
     justify-content: space-between;
 	  align-items: center;
 	  padding: 10px;
 }
 
-.column {
+/*.column {
     flex: 1;
     border: 1px solid black;
     justify-content: center;
@@ -65,12 +64,14 @@ body {
     justify-content: center;
     align-items: center;
     height: 100%;
-}
+}*/
 
 .row-1 .column:nth-child(1) {
     background-color: #ff9800;
     color: white;
     width: 20%;
+	justify-content: center;
+    align-items: center;
 }
 
 /* Timer */
@@ -206,30 +207,30 @@ body {
 <body>
 	<div class="game-container">
 		<div class="row-1">
-			<div class="column centered-row">
+			<div class="column-1">
 				<span>Player 1 Score: 0</span>
 			</div>
-			<div class="column centered-row">
+			<div class="column-2">
 				<span>Timer: 00:00</span>
 			</div>
-			<div class="column centered-row">
+			<div class="column-3">
 				<span>Player 2 Score: 0</span>
 			</div>
 		</div>
 		<div class="row-2">
-			<div class="column centered-column">
+			<div class="column-1">
 				<h3>Player 1</h3>
 				<p>Level: 1</p>
 				<p>Stats: 0 wins, 0 losses</p>
 				<p>Badges: None</p>
 			</div>
-			<div class="column centered-column">
-				<div class="problem-container">
+			<div class="column-2">
+				<div class="problem">
 					<p>What is 2 + 2?</p>
 					<button class="start-button">Start</button>
 				</div>
 			</div>
-			<div class="column centered-column">
+			<div class="column-3">
 				<h3>Player 2</h3>
 				<p>Level: 1</p>
 				<p>Stats: 0 wins, 0 losses</p>
@@ -242,7 +243,8 @@ body {
 				<button class="submit-button">Submit</button>
 			</div>
 			<div class="column centered-row">
-				<button class="invite-button">Invite Your Friends</button>
+				<button class="invite-button" id="invite">Invite Your Friends</button>
+				<table id="myTable"></table>
 			</div>
 			<div class="column answer-field-container">
 				<input type="text" class="answer-field" placeholder="Enter answer...">
@@ -253,4 +255,5 @@ body {
 </body>
 </html>
     
-<script src="/js/game.js"></script>
+<!--script src="/js/game.js"></script-->
+<script src="/js/invite_friend.js"></script>

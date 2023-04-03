@@ -3,8 +3,12 @@ package com.example.controller;
 import com.example.dao.UserRepository;
 import com.example.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletRequest;
@@ -28,5 +32,15 @@ public class UserController {
     public String currentUserName(HttpServletRequest request) {
         Principal principal = request.getUserPrincipal();
         return principal.getName();
+    }
+
+    @PostMapping(path = "/search", consumes = MediaType.TEXT_PLAIN_VALUE)
+    public ResponseEntity<List<String>> searchUser(@RequestBody String fullName) {
+        List<String> emailList = userDao.getEmailsByFullName(fullName);
+        if(!emailList.isEmpty()) {
+            return ResponseEntity.ok().body(emailList);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 }
