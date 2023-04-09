@@ -43,13 +43,10 @@ function create_game() {
     fetch("/game/create")
         .then((response) => response.text()
             .then((text) => {
-                const params = {
-                    gameId: text
-                };
+                gameId= text;
 
-                //const queryParams = new URLSearchParams(params).toString();
-                alert(params.gameId);
-                window.location.href = "/game";
+                alert(gameId);
+                window.location.href = "/game/" + gameId;
             }));
 
     

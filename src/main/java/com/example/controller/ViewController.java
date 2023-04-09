@@ -5,9 +5,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import javax.annotation.security.RolesAllowed;
+import javax.websocket.server.PathParam;
 
 @Controller
 public class ViewController {
@@ -19,8 +21,8 @@ public class ViewController {
     }
 
     @RolesAllowed({"USER"})
-    @GetMapping("/game")
-    public String game() {
+    @GetMapping("/game/{gameId}")
+    public String game(@PathVariable String gameId) {
         return "game_template";
     }
 
