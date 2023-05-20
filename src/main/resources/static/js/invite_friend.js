@@ -1,40 +1,96 @@
-// Create a search bar element
-var searchBox = document.createElement("input");
-searchBox.type = "text";
-searchBox.placeholder = "Enter a full name";
-searchBox.style.display = "none";
+var searchBox = document.getElementById("search_box");
+var button = document.getElementById("search");
+var inviteButton = document.getElementById("invite");
+var searchIcon = document.getElementById("search_icon");
+var form = document.getElementById("friend_list");
+var inputs = form.getElementsByTagName("input");
+var labels = form.getElementsByTagName("label");
+var brList = form.getElementsByTagName("br");
 
-var button = document.getElementById("invite");
-var table = document.getElementById("myTable");
-
-document.body.appendChild(searchBox);
-
-button.addEventListener('click', displaySearch);
+button.addEventListener("click", displaySearch);
 
 var emailData = [];
 searchBox.addEventListener("keyup", function (event) {
     if (event.key === "Enter") {
-        //delete rows
-        while(table.rows.length > 0) {
-            table.deleteRow(0);
-        }
-
         var inputValue = searchBox.value;
         searchBox.value = '';
-        searchUsers("/search", inputValue).then((data) => {
+        clearForm();
+
+        postRequest("/search", inputValue).then((data) => {
             console.log(data);
             emailData = data;
 
             for (var i = 0; i < emailData.length; i++) {
-                var row = table.insertRow(i);
-                var cell1 = row.insertCell(0);
-                var cell2 = row.insertCell(1);
-                cell1.innerHTML = inputValue;
-                cell2.innerHTML = emailData[i];
+                var input = document.createElement("input");
+                input.type = "radio";
+                input.id = i;
+                input.name = "friend";
+                var label = document.createElement("label");
+                label.for = i;
+                label.textContent = inputValue + "\t" +  emailData[i];
+                form.appendChild(input);
+                form.insertBefore(input, inviteButton);
+                form.appendChild(label);
+                form.insertBefore(label, inviteButton);
+                var br = document.createElement("br");
+                br.id = i;
+                form.insertBefore(br, inviteButton);
             }
         });
     }
 });
+
+searchIcon.addEventListener("click", function () {
+    var N = inputs.length;
+    var inputValue = searchBox.value;
+    searchBox.value = '';
+    for(var i = 0; i < N - 1; i++) {
+        inputs[0].remove();
+        labels[0].remove();
+        brList[0].remove();
+    }
+
+    postRequest("/search", inputValue).then((data) => {
+        console.log(data);
+        emailData = data;
+
+        for (var i = 0; i < emailData.length; i++) {
+            var input = document.createElement("input");
+            input.type = "radio";
+            input.id = i;
+            input.name = "friend";
+            var label = document.createElement("label");
+            label.for = i;
+            label.textContent = inputValue + "\t" +  emailData[i];
+            form.appendChild(input);
+            form.insertBefore(input, inviteButton);
+            form.appendChild(label);
+            form.insertBefore(label, inviteButton);
+            var br = document.createElement("br");
+            br.id = i;
+            form.insertBefore(br, inviteButton);
+        }
+    });
+});
+
+form.addEventListener("submit", function (event) {
+    event.preventDefault();
+
+    var radios = document.getElementsByName("friend");
+
+    for (var i = 0, length = radios.length; i < length; i++) {
+        if (radios[i].checked) {
+            var nameAndEmail = labels[i].innerHTML;
+            var email = nameAndEmail.split("\t")[1];
+            postRequest("/email", email).then((response) => {
+                msg = response[0]
+                console.log(msg);
+                alert(msg);
+            });
+            break;
+        }
+    }
+})
 
 
 function displaySearch() {
@@ -43,9 +99,33 @@ function displaySearch() {
     } else {
         searchBox.style.display = "none";
     }
+
+    if (inviteButton.style.display === "none") {
+        inviteButton.style.display = "block";
+    } else {
+        inviteButton.style.display = "none";
+    }
+
+    if (searchIcon.style.display === "none") {
+        searchIcon.style.display = "block";
+    } else {
+        searchIcon.style.display = "none";
+    }
+
+    clearForm();
 }
 
-async function searchUsers(url = "", data = {}) {
+function clearForm() {
+    var N = inputs.length;
+
+    for(var i = 0; i < N - 1; i++) {
+        inputs[0].remove();
+        labels[0].remove();
+        brList[0].remove();
+    }
+}
+
+async function postRequest(url = "", data = {}) {
     const response = await fetch(url, {
         method: "POST", // *GET, POST, PUT, DELETE, etc.
         mode: "cors", // no-cors, *cors, same-origin

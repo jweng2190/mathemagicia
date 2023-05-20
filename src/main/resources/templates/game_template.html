@@ -1,50 +1,51 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 	<title>1v1 Live</title>
 	<!-- CSS styles for the game page -->
 	<style>
 		html,
-body {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-}
+		body {
+			margin: 0;
+			padding: 0;
+			height: 100%;
+		}
 
-.container {
-    height: 100%;
-    margin: auto;
-    text-align: center;
-}
+		.container {
+			height: 100%;
+			margin: auto;
+			text-align: center;
+		}
 
-.row-1 {
-    display: flex;
-    flex-direction: row;
-    height: 25%;
-    justify-content: space-between;
-	  background-color: #f2f2f2;
-	  padding: 10px;
-}
+		.row-1 {
+			display: flex;
+			flex-direction: row;
+			height: 25%;
+			justify-content: space-between;
+			background-color: #f2f2f2;
+			padding: 10px;
+		}
 
-.row-2 {
-    display: flex;
-    flex-direction: row;
-    height: 50%;
-    justify-content: space-between;
-	  align-items: center;
-	  padding: 10px;
-}
+		.row-2 {
+			display: flex;
+			flex-direction: row;
+			height: 50%;
+			justify-content: space-between;
+			align-items: center;
+			padding: 10px;
+		}
 
-.row-3 {
-    display: flex;
-    flex-direction: row;
-    height: 25%;
-    justify-content: space-between;
-	  align-items: center;
-	  padding: 10px;
-}
+		.row-3 {
+			display: flex;
+			flex-direction: row;
+			height: 25%;
+			justify-content: space-between;
+			align-items: center;
+			padding: 10px;
+		}
 
-/*.column {
+		/*.column {
     flex: 1;
     border: 1px solid black;
     justify-content: center;
@@ -66,96 +67,96 @@ body {
     height: 100%;
 }*/
 
-.row-1 .column:nth-child(1) {
-    background-color: #ff9800;
-    color: white;
-    width: 20%;
-	justify-content: center;
-    align-items: center;
-}
+		.row-1 .column:nth-child(1) {
+			background-color: #ff9800;
+			color: white;
+			width: 20%;
+			justify-content: center;
+			align-items: center;
+		}
 
-/* Timer */
-.row-1 .column:nth-child(2) {
-    background-color: #f44336;
-    color: white;
-    width: 60%;
-}
+		/* Timer */
+		.row-1 .column:nth-child(2) {
+			background-color: #f44336;
+			color: white;
+			width: 60%;
+		}
 
-/* Player 2 Score */
-.row-1 .column:nth-child(3) {
-    background-color: #4caf50;
-    color: white;
-    width: 20%;
-}
+		/* Player 2 Score */
+		.row-1 .column:nth-child(3) {
+			background-color: #4caf50;
+			color: white;
+			width: 20%;
+		}
 
-/* Player 1 Stats */
-.row-2 .column:nth-child(1) {
-    background-color: #e0e0e0;
-    width: 30%;
-}
+		/* Player 1 Stats */
+		.row-2 .column:nth-child(1) {
+			background-color: #e0e0e0;
+			width: 30%;
+		}
 
-/* Problem */
-.row-2 .column:nth-child(2) {
-    background-color: #f5f5f5;
-    width: 40%;
-}
+		/* Problem */
+		.row-2 .column:nth-child(2) {
+			background-color: #f5f5f5;
+			width: 40%;
+		}
 
-/* Player 2 Stats */
-.row-2 .column:nth-child(3) {
-    background-color: #e0e0e0;
-    width: 30%;
-}
+		/* Player 2 Stats */
+		.row-2 .column:nth-child(3) {
+			background-color: #e0e0e0;
+			width: 30%;
+		}
 
-.answer-field {
-    width: 70%;
-    padding: 10px;
-    border-radius: 5px 0 0 5px;
-    border: none;
-    background-color: #f5f5f5;
-    margin-right: -5px;
-}
+		.answer-field {
+			width: 70%;
+			padding: 10px;
+			border-radius: 5px 0 0 5px;
+			border: none;
+			background-color: #f5f5f5;
+			margin-right: -5px;
+		}
 
-.answer-field:focus {
-    outline: none;
-}
+		.answer-field:focus {
+			outline: none;
+		}
 
-.answer-field-container {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    background-color: #f5f5f5;
-    width: 33.33%;
-}
+		.answer-field-container {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			justify-content: center;
+			background-color: #f5f5f5;
+			width: 33.33%;
+		}
 
-/* Submit Buttons */
-.submit-button {
-    padding: 10px 20px;
-    background-color: #2196f3;
-    color: white;
-    border: none;
-    border-radius: 0 5px 5px 0;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
+		/* Submit Buttons */
+		.submit-button {
+			padding: 10px 20px;
+			background-color: #2196f3;
+			color: white;
+			border: none;
+			border-radius: 0 5px 5px 0;
+			cursor: pointer;
+			transition: background-color 0.3s ease;
+		}
 
-.submit-button:hover {
-    background-color: #0c7cd5;
-}
+		.submit-button:hover {
+			background-color: #0c7cd5;
+		}
 
-.invite-button {
-    padding: 10px 20px;
-    background-color: #e0e0e0;
-    color: black;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
+		.invite-button {
+			padding: 10px 20px;
+			background-color: #e0e0e0;
+			color: black;
+			border: none;
+			border-radius: 5px;
+			cursor: pointer;
+			transition: background-color 0.3s ease;
+		}
 
-.invite-button:hover {
-    background-color: #bdbdbd;
-}
+		.invite-button:hover {
+			background-color: #bdbdbd;
+		}
 
 		.score {
 			font-size: 24px;
@@ -165,6 +166,7 @@ body {
 			padding: 10px;
 			border-radius: 5px;
 		}
+
 		.timer {
 			font-size: 24px;
 			font-weight: bold;
@@ -173,6 +175,7 @@ body {
 			padding: 10px;
 			border-radius: 5px;
 		}
+
 		.player-stats {
 			font-size: 16px;
 			text-align: center;
@@ -180,6 +183,7 @@ body {
 			padding: 10px;
 			border-radius: 5px;
 		}
+
 		.problem {
 			font-size: 24px;
 			font-weight: bold;
@@ -189,6 +193,7 @@ body {
 			border-radius: 5px;
 			position: relative;
 		}
+
 		.start-button {
 			position: relative;
 			bottom: 10px;
@@ -204,11 +209,14 @@ body {
 		}
 	</style>
 </head>
+
 <body>
+	<!-- Load icon library -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 	<div class="game-container">
 		<div class="row-1">
 			<div class="column-1">
-				<span>Player 1 Score: 0</span>
+				<span>Player 1Score: 0</span>
 			</div>
 			<div class="column-2">
 				<span>Timer: 00:00</span>
@@ -243,8 +251,12 @@ body {
 				<button class="submit-button">Submit</button>
 			</div>
 			<div class="column centered-row">
-				<button class="invite-button" id="invite">Invite Your Friends</button>
-				<table id="myTable"></table>
+				<button class="invite-button" id="search">Search For Your Friends</button>
+				<input type="text" id="search_box" style="display:none" placeholder="Search by Full Name">
+				<button type="submit" id="search_icon" style="display:none"><i class="fa fa-search"></i></button>
+				<form id="friend_list">
+					<input type="submit" id="invite" value="Invite" style="display:none">
+				</form>
 			</div>
 			<div class="column answer-field-container">
 				<input type="text" class="answer-field" placeholder="Enter answer...">
@@ -253,7 +265,8 @@ body {
 		</div>
 	</div>
 </body>
+
 </html>
-    
+
 <!--script src="/js/game.js"></script-->
 <script src="/js/invite_friend.js"></script>

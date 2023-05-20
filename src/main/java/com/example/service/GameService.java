@@ -1,4 +1,6 @@
 package com.example.service;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -25,6 +27,16 @@ public class GameService {
         game.setStatus(NEW);
         GameStorage.getInstance().setGame(game);
         return game;
+    }
+
+    public String getGameCodeByUsername(String player1Username) {
+        Map<String, Game> allGames = GameStorage.getInstance().getGames();
+        for(String key : allGames.keySet()) {
+            if(allGames.get(key).getPlayer1().getUsername().equals(player1Username)) {
+                return key;
+            }
+        }
+        return "";
     }
 
     public Game connectToGame(User player2, String gameId) throws InvalidParamException, InvalidGameException {
