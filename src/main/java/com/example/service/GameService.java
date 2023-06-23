@@ -1,4 +1,5 @@
 package com.example.service;
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -39,7 +40,26 @@ public class GameService {
         return "";
     }
 
-    public Game connectToGame(User player2, String gameId) throws InvalidParamException, InvalidGameException {
+    /* public Game getGameByUsername(String username) {
+        Map<String, Game> allGames = GameStorage.getInstance().getGames();
+        for(String key : allGames.keySet()) {
+            String player2Username = allGames.get(key).getPlayer2().getUsername();
+            if()
+        }
+    } */
+
+    public Game getGameById(String gameId) {
+        Map<String, Game> allGames = GameStorage.getInstance().getGames();
+        for(String key : allGames.keySet()) {
+            Game game = allGames.get(key);
+            if(game.getGameId().equals(gameId)) {
+                return game;
+            }
+        }
+        return null;
+    }
+
+    /* public Game connectToGame(User player2, String gameId) throws InvalidParamException, InvalidGameException {
         if (!GameStorage.getInstance().getGames().containsKey(gameId)) {
             throw new InvalidParamException("Game with provided id doesn't exist");
         }
@@ -54,8 +74,8 @@ public class GameService {
         GameStorage.getInstance().setGame(game);
         return game;
     }
-
-    public Game connectToRandomGame(User player2) throws NotFoundException {
+ */
+    /* public Game connectToRandomGame(User player2) throws NotFoundException {
         Game game = GameStorage.getInstance().getGames().values().stream()
                 .filter(it -> it.getStatus().equals(NEW))
                 .findFirst().orElseThrow(() -> new NotFoundException("Game not found"));
@@ -77,5 +97,5 @@ public class GameService {
 
         GameStorage.getInstance().setGame(game);
         return game;
-    }
+    } */
 }

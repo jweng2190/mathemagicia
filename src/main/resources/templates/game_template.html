@@ -216,7 +216,7 @@
 	<div class="game-container">
 		<div class="row-1">
 			<div class="column-1">
-				<span>Player 1Score: 0</span>
+				<span>Player 1 Score: 0</span>
 			</div>
 			<div class="column-2">
 				<span>Timer: 00:00</span>
@@ -249,6 +249,8 @@
 			<div class="column answer-field-container">
 				<input type="text" class="answer-field" placeholder="Enter answer...">
 				<button class="submit-button">Submit</button>
+				<!--debugging-->
+				<button onclick="sendHello()">Send</button>
 			</div>
 			<div class="column centered-row">
 				<button class="invite-button" id="search">Search For Your Friends</button>
@@ -262,6 +264,8 @@
 				<input type="text" class="answer-field" placeholder="Enter answer...">
 				<button class="submit-button">Submit</button>
 			</div>
+			<!--debugging-->
+			<button id="ready" onclick="readyUp()">Ready!</button>
 		</div>
 	</div>
 </body>
@@ -270,3 +274,6 @@
 
 <!--script src="/js/game.js"></script-->
 <script src="/js/invite_friend.js"></script>
+<script src="/js/socket_js.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>

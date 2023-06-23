@@ -9,6 +9,16 @@ public class Game {
     private User player2;
     private GameStatus status;
     private User winner;
+    private boolean player1Ready;
+    private boolean player2Ready;
+
+    public Game() {
+    }
+
+    public Game(User player1, User player2) {
+        this.player1 = player1;
+        this.player1 = player2;
+    }
 
     public String getGameId() {
         return this.gameId;
@@ -50,4 +60,19 @@ public class Game {
         this.winner = winner;
     }
 
+    public boolean isPlayer1Ready() {
+        return this.player1Ready;
+    }
+
+    public void setPlayer1Ready(boolean player1Ready) {
+        this.player1Ready = player1Ready;
+    }
+
+    public boolean isPlayer2Ready() {
+        return this.player2Ready;
+    }
+
+    public void setPlayer2Ready(boolean player2Ready) {
+        this.player2Ready = player2Ready;
+    }
 }

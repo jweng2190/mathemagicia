@@ -1,32 +1,152 @@
 const url = "http://localhost:8080";
-let stompClient;
-let gameId;
+var stompClient = null;
+var username;
+getUsername().then((result) => {
+    username = result;
+});
 
-function connectToSocket(gameId) {
-    console.log("connecting to the game");
-    let socket = new SockJS(url + "/gameplay");
-    stompClient = Stomp.over(socket);
-    stompClient.connect({}, function (frame) {
-        console.log("connected to the frame: " + frame);
-        stompClient.subscribe("/topic/game-progress/" + gameId, function (response) {
-            let data = JSON.parse(response.body);
-            console.log(data);
-            displayResponse(data);
-        })
-    })
+var gameUrl = window.location.href;
+var gameIdIndex = gameUrl.lastIndexOf("/") + 1;
+var gameId = gameUrl.substring(gameIdIndex);
+
+const sendMessage = (message) => {
+    stompClient.send(`/app/${message.type}`, {}, JSON.stringify(message));
 }
 
-/*async function getUsername(url = "http://localhost:8080/username") {
-    const response = await fetch(url, {
-      method: "GET", // *GET, POST, PUT, DELETE, etc.
-      mode: "cors", // no-cors, *cors, same-origin
-      cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-      credentials: "same-origin", // include, *same-origin, omit
-      redirect: "follow", // manual, *follow, error
-      referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+const handleMessage = (message) => {
+    if (messagesTypes[message.type])
+        messagesTypes[message.type](message);
+}
+
+const messagesTypes = {
+    "game.join": (message) => {
+        updateGame(message);
+    },
+    /* "game.gameOver": (message) => {
+        updateGame(message);
+        if (message.gameState === 'TIE') alert("Game over! It's a tie!");
+        else showWinner(message.winner);
+    }, */
+    "game.joined": (message) => {
+        updateGame(message);
+    },
+
+    "game.ready": (message) => {
+        updateGame(message);
+    }
+    /* "game.move": (message) => {
+        updateGame(message);
+    },
+    "game.left": (message) => {
+        updateGame(message);
+        if (message.winner) showWinner(message.winner);
+    },
+    "error": (message) => {
+        toastr.error(message.content);
+    } */
+}
+
+
+function connect() {
+    const socket = new SockJS('/ws/connect');
+
+    console.log('WebSocket connection established');
+
+    stompClient = Stomp.over(socket);
+    stompClient.connect({}, function (frame) {
+        console.log("Connected" + frame);
+        stompClient.subscribe('/topic/game.state', function (message) {
+            handleMessage(JSON.parse(message.body));
+        });
+
+        var isCreated;
+        isCreatedByUser(gameId).then((result) => {
+            console.log(result);
+            isCreated = result;
+        });
+
+        setTimeout(() => {
+        if(!isCreated) {
+            joinGame();
+        }}, 3000);  
     });
-    return response;
-  }*/
+};
+
+function readyUp() {
+    readyButton = document.getElementById("ready");
+    readyButton.innerHTML = "Waiting for opponent...";
+    const socket = new SockJS('/ws/ready');
+    stompClient = Stomp.over(socket);
+    stompClient.connect({}, function (frame) {
+        console.log("Connected: " + frame);
+        stompClient.subscribe(`/topic/game.ready`, function (message) {
+            //still need to do stuff with game status
+            handleMessage(JSON.parse(message.body));
+            handleGameStatus(message);
+        });
+        setTimeout(queueGame(), 3000);
+    });
+}
+
+
+async function isCreatedByUser(gameId) {  
+    const response = await fetch("/game/created/" + gameId);
+    if (!response.ok) {
+        const message = `An error has occured: ${response.status}`;
+        throw new Error(message);
+    }
+    const isCreated = await response.text();
+    return (isCreated === "true");
+}
+
+
+function joinGame() {
+    sendMessage({
+        type: "game.join",
+        playerUsername: username
+    });
+}
+
+function queueGame() {
+    sendMessage({
+        type: "game.ready",
+        playerUsername: username
+    });
+}
+
+
+function updateGame(message) {
+    game = messageToGame(message);
+    console.log(game);
+    /* document.getElementById("player1").innerHTML = game.player1;
+    document.getElementById("player2").innerHTML = game.player2 || (game.winner ? '-' : 'Waiting for player 2...');
+    document.getElementById("turn").innerHTML = game.turn;
+    document.getElementById("winner").innerHTML = game.winner || '-'; */
+}
+
+function handleGameStatus(message) {
+    messageStatus = message.gameStatus;
+    console.log(messageStatus);
+}
+
+function messageToGame(message) {
+    /*message.setGameId(game.getGameId());
+        message.setPlayer1(game.getPlayer1());
+        message.setPlayer2(game.getPlayer2());
+        message.setGameStatus(game.getStatus());
+        message.setWinner(game.getWinner()); */
+    return {
+        gameId: message.gameId,
+        player1: message.player1,
+        player2: message.player2,
+        gameStatus: message.gameStatus,
+        winner: message.winner
+    }
+}
+
+window.onload = function() {
+    connect();
+}
 
 async function getUsername() {
     const response = await fetch(url + '/username');
@@ -37,43 +157,9 @@ async function getUsername() {
     const username = await response.text();
     return username;
 }
-  
 
-function create_game() {
-    fetch("/game/create")
-        .then((response) => response.text()
-            .then((text) => {
-                gameId= text;
 
-                alert(gameId);
-                window.location.href = "/game/" + gameId;
-            }));
-
-    
-
-    /*getUsername().then(username => {
-        $.ajax({
-            url: url + "/game/start",
-            type: 'POST',
-            dataType: "json",
-            contentType: "application/json",
-            data: JSON.stringify({
-                "username": username
-            }),
-            success: function (data) {
-                gameId = data.gameId;
-                connectToSocket(gameId);
-                alert("Your created a game. Game id is: " + data.gameId);
-                window.location.replace(url + "/game?gameId=" + gameId);
-            },
-            error: function (error) {
-                console.log(error);
-            }
-        })
-    });*/   
-}
-
-function connectToRandom() {
+/* function connectToRandom() {
     getUsername().then(username => {
         $.ajax({
             url: url + "/game/connect/random",
@@ -124,4 +210,4 @@ function connectToSpecificGame() {
             }
         })
     })
-}
+} */
