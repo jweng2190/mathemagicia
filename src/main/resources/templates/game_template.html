@@ -216,18 +216,18 @@
 	<div class="game-container">
 		<div class="row-1">
 			<div class="column-1">
-				<span>Player 1 Score: 0</span>
+				<span id="player1score">Player 1 Score: 0</span>
 			</div>
 			<div class="column-2">
 				<span>Timer: 00:00</span>
 			</div>
 			<div class="column-3">
-				<span>Player 2 Score: 0</span>
+				<span id="player2score">Player 2 Score: 0</span>
 			</div>
 		</div>
 		<div class="row-2">
-			<div class="column-1">
-				<h3>Player 1</h3>
+			<div class="column-1" id="player1">
+				<h3 id="player1name">Player 1</h3>
 				<p>Level: 1</p>
 				<p>Stats: 0 wins, 0 losses</p>
 				<p>Badges: None</p>
@@ -238,8 +238,8 @@
 					<button class="start-button">Start</button>
 				</div>
 			</div>
-			<div class="column-3">
-				<h3>Player 2</h3>
+			<div class="column-3" id="player2">
+				<h3 id="player2name">Player 2</h3>
 				<p>Level: 1</p>
 				<p>Stats: 0 wins, 0 losses</p>
 				<p>Badges: None</p>
@@ -247,10 +247,13 @@
 		</div>
 		<div class="row-3">
 			<div class="column answer-field-container">
-				<input type="text" class="answer-field" placeholder="Enter answer...">
-				<button class="submit-button">Submit</button>
-				<!--debugging-->
-				<button onclick="sendHello()">Send</button>
+				<form id="answer_form">
+					<label for="player_answer">Answer:</label><br>
+  					<input type="text" id="player_answer" placeholder="Enter answer...">
+					<input type="submit" id="answer_submit" value="Submit">
+				</form>
+				<!-- <input type="text" id="player_answer" class="answer-field" placeholder="Enter answer...">
+				<button class="submit-button" id="player_submit">Submit</button> -->
 			</div>
 			<div class="column centered-row">
 				<button class="invite-button" id="search">Search For Your Friends</button>
@@ -260,11 +263,6 @@
 					<input type="submit" id="invite" value="Invite" style="display:none">
 				</form>
 			</div>
-			<div class="column answer-field-container">
-				<input type="text" class="answer-field" placeholder="Enter answer...">
-				<button class="submit-button">Submit</button>
-			</div>
-			<!--debugging-->
 			<button id="ready" onclick="readyUp()">Ready!</button>
 		</div>
 	</div>

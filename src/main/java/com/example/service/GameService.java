@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.model.Game;
 import com.example.model.GamePlay;
+import com.example.model.Problem;
 import com.example.model.User;
 import com.example.storage.GameStorage;
 import com.exception.InvalidGameException;
@@ -21,11 +22,14 @@ import lombok.AllArgsConstructor;
 @Service
 @AllArgsConstructor
 public class GameService {
+    private ProblemService problemService;
+
     public Game createGame(User player) {
         Game game = new Game();
         game.setGameId(UUID.randomUUID().toString());
         game.setPlayer1(player);
         game.setStatus(NEW);
+        game.setProblemSet(problemService.getRandomProblems(ProblemService.PROBLEM_SET_SIZE));
         GameStorage.getInstance().setGame(game);
         return game;
     }

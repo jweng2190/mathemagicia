@@ -1,5 +1,7 @@
 package com.example.model;
 
+import java.util.List;
+
 import lombok.Data;
 
 @Data
@@ -11,6 +13,10 @@ public class Game {
     private User winner;
     private boolean player1Ready;
     private boolean player2Ready;
+    private List<Problem> problemSet;
+    private Integer player1Score = 0;
+    private Integer player2Score = 0;
+
 
     public Game() {
     }
@@ -18,6 +24,8 @@ public class Game {
     public Game(User player1, User player2) {
         this.player1 = player1;
         this.player1 = player2;
+        player1Score = 0;
+        player2Score = 0;
     }
 
     public String getGameId() {
@@ -74,5 +82,29 @@ public class Game {
 
     public void setPlayer2Ready(boolean player2Ready) {
         this.player2Ready = player2Ready;
+    }
+
+    public List<Problem> getProblemSet() {
+        return this.problemSet;
+    }
+
+    public void setProblemSet(List<Problem> problemSet) {
+        this.problemSet = problemSet;
+    }
+
+    public Integer getPlayer1Score() {
+        return this.player1Score;
+    }
+
+    public void setPlayer1Score(Integer player1Score) {
+        this.player1Score = player1Score;
+    }
+
+    public Integer getPlayer2Score() {
+        return this.player2Score;
+    }
+
+    public void setPlayer2Score(Integer player2Score) {
+        this.player2Score = player2Score;
     }
 }

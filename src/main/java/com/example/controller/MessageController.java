@@ -1,9 +1,17 @@
 package com.example.controller;
 
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.parsing.ProblemReporter;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -11,7 +19,9 @@ import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
+import com.example.dao.ProblemRepository;
 import com.example.dao.UserRepository;
+import com.example.dto.message.AnswerMessage;
 import com.example.dto.message.GameMessage;
 import com.example.dto.message.JoinMessage;
 import com.example.dto.message.ReadyMessage;
@@ -31,6 +41,11 @@ public class MessageController {
 
     @Autowired
     private UserRepository userDao;
+
+    @Autowired
+    private ProblemRepository problemDao;
+
+    private static ConcurrentMap<String, Long> answerTimestamps = new ConcurrentHashMap<>();
 
     @MessageMapping("/game.join")
     @SendTo("/topic/game.state")
@@ -85,15 +100,70 @@ public class MessageController {
             currentGame.setPlayer2Ready(true);
         }
 
-        if(currentGame.isPlayer1Ready()) {
+        if(currentGame.isPlayer1Ready() && !currentGame.isPlayer2Ready()) {
             currentGame.setStatus(GameStatus.READY1);
-        } else if(currentGame.isPlayer2Ready()) {
+        } else if(currentGame.isPlayer2Ready() && !currentGame.isPlayer1Ready()) {
             currentGame.setStatus(GameStatus.READY1);
         } else if(currentGame.isPlayer1Ready() && currentGame.isPlayer2Ready()) {
             currentGame.setStatus(GameStatus.READY2);
         }
 
         return currentGame;
+    }
+
+    @MessageMapping("/game.answer")
+    @SendTo("/topic/game.answer")
+    public Object checkAnswer(@Payload AnswerMessage answerMessage) {
+        String activeGameId = answerMessage.getGameId();
+        Game activeGame = gameService.getGameById(activeGameId);
+
+        //get both usernames
+        String player1Username = activeGame.getPlayer1().getUsername();
+        String player2Username = activeGame.getPlayer2().getUsername();
+
+        String playerUsername = answerMessage.getPlayerUsername();
+
+        String userAnswer = answerMessage.getAnswer();
+        int currentProblemId = answerMessage.getCurrentProblemId();
+
+        String correctAnswer = problemDao.findAnswerByProblem(currentProblemId);
+        String userAnswerTrimmed = userAnswer.trim();
+
+        long timestamp = answerMessage.getTimestamp();
+        answerTimestamps.put(playerUsername, timestamp);
+
+        if(userAnswerTrimmed.equals(correctAnswer)) {
+            String firstCorrectAnswer = findFirstCorrectAnswer();
+            if(firstCorrectAnswer.equals(player1Username)) {
+                int currentPlayerScore = activeGame.getPlayer1Score();
+                activeGame.setPlayer1Score(currentPlayerScore + 1);
+            } else if(firstCorrectAnswer.equals(player2Username)) {
+                int currentPlayerScore = activeGame.getPlayer2Score();
+                activeGame.setPlayer2Score(currentPlayerScore + 1);
+            }
+            clearTimestamps();
+        }
+
+        GameMessage gameMessage = gameToMessage(activeGame);
+        return gameMessage;
+    }
+
+    private static String findFirstCorrectAnswer() {
+        return answerTimestamps.entrySet()
+                .stream()
+                .min(Comparator.comparing(Map.Entry::getValue))
+                .map(Map.Entry::getKey)
+                .orElse(null);
+    }
+
+    private static void clearTimestamps() {
+        Set keySet = answerTimestamps.keySet();
+        Iterator iterator = keySet.iterator();
+
+        while(iterator.hasNext()) {
+            iterator.next();
+            iterator.remove();
+        }
     }
     
 
@@ -103,7 +173,10 @@ public class MessageController {
         message.setPlayer1(game.getPlayer1());
         message.setPlayer2(game.getPlayer2());
         message.setGameStatus(game.getStatus());
+        message.setProblemSet(game.getProblemSet());
         message.setWinner(game.getWinner());
+        message.setScore1(game.getPlayer1Score());
+        message.setScore2(game.getPlayer2Score());
         return message;
     }
 }

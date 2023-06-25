@@ -9,6 +9,22 @@ var gameUrl = window.location.href;
 var gameIdIndex = gameUrl.lastIndexOf("/") + 1;
 var gameId = gameUrl.substring(gameIdIndex);
 
+let currentProblem;
+let currentProblemId;
+let currentProblemIndex = 0;
+let numProblems;
+var problems;
+
+let answerForm = document.getElementById("answer_form");
+
+let readyButton = document.getElementById("ready");
+//get answer from form
+let playerInput = document.getElementsByTagName("input")[0];
+
+let player1Score = 0;
+let player2Score = 0;
+
+
 const sendMessage = (message) => {
     stompClient.send(`/app/${message.type}`, {}, JSON.stringify(message));
 }
@@ -20,7 +36,7 @@ const handleMessage = (message) => {
 
 const messagesTypes = {
     "game.join": (message) => {
-        updateGame(message);
+        updateGame(message);      
     },
     /* "game.gameOver": (message) => {
         updateGame(message);
@@ -33,6 +49,10 @@ const messagesTypes = {
 
     "game.ready": (message) => {
         updateGame(message);
+    },
+
+    "game.answer": (message) => {
+        //TODO
     }
     /* "game.move": (message) => {
         updateGame(message);
@@ -48,15 +68,22 @@ const messagesTypes = {
 
 
 function connect() {
-    const socket = new SockJS('/ws/connect');
-
+    const socketConnect = new SockJS("/ws/connect");
     console.log('WebSocket connection established');
 
-    stompClient = Stomp.over(socket);
+    stompClient = Stomp.over(socketConnect);
     stompClient.connect({}, function (frame) {
         console.log("Connected" + frame);
         stompClient.subscribe('/topic/game.state', function (message) {
-            handleMessage(JSON.parse(message.body));
+            var messageObject = JSON.parse(message.body);
+            handleMessage(messageObject);
+            problems = messageObject.problemSet;
+            numProblems = Object.keys(problems).length;
+            currentProblem = problems[0];
+            currentProblemId = problems[0].problemId;
+            console.log("Current Problem: " + objectToProblem(currentProblem));
+            console.log("Current ProblemId: " + currentProblemId);
+            console.log("Current ProblemIndex: " + currentProblemIndex);
         });
 
         var isCreated;
@@ -73,16 +100,14 @@ function connect() {
 };
 
 function readyUp() {
-    readyButton = document.getElementById("ready");
     readyButton.innerHTML = "Waiting for opponent...";
-    const socket = new SockJS('/ws/ready');
-    stompClient = Stomp.over(socket);
+    const socketReady = new SockJS("/ws/ready");
+    stompClient = Stomp.over(socketReady);
     stompClient.connect({}, function (frame) {
         console.log("Connected: " + frame);
         stompClient.subscribe(`/topic/game.ready`, function (message) {
-            //still need to do stuff with game status
             handleMessage(JSON.parse(message.body));
-            handleGameStatus(message);
+            handleGameStatus(message.body);
         });
         setTimeout(queueGame(), 3000);
     });
@@ -118,14 +143,78 @@ function queueGame() {
 function updateGame(message) {
     game = messageToGame(message);
     console.log(game);
+}
+
+function startGame() {
+    console.log("Game started!");
+    checkAnswer();
     /* document.getElementById("player1").innerHTML = game.player1;
     document.getElementById("player2").innerHTML = game.player2 || (game.winner ? '-' : 'Waiting for player 2...');
     document.getElementById("turn").innerHTML = game.turn;
     document.getElementById("winner").innerHTML = game.winner || '-'; */
 }
 
+//submitButton.addEventListener("submit", sendAnswer());
+
+var sendAnswer = function(event) {
+    event.preventDefault();
+    var playerAnswer = playerInput.value;
+    playerInput.value = "";
+    //check
+    if(stompClient !== null) {
+        sendMessage({
+            type: "game.answer",
+            playerUsername: username,
+            gameId: gameId,
+            answer: playerAnswer,
+            currentProblemId: currentProblemId,
+            timestamp: Date.now()
+        });
+    }
+}
+
+function checkAnswer() {
+    const socket = new SockJS('/ws/answer');
+    stompClient = Stomp.over(socket);
+    stompClient.connect({}, function (frame) {
+        console.log("Connected: " + frame);
+        stompClient.subscribe(`/topic/game.answer`, function (message) {
+            var message = JSON.parse(message.body);
+
+            var originalScore1 = player1Score;
+            var originalScore2 = player2Score;
+            player1Score = message.score1;
+            player2Score = message.score2;
+            console.log("Player 1 Score: " + player1Score + "\nPlayer 2 Score: " + player2Score);
+
+            if((player1Score - originalScore1 > 0) || (player2Score - originalScore2 > 0)) {
+                nextProblem();
+            }
+        });
+        answerForm.addEventListener("submit", sendAnswer);
+    });
+}
+
+function nextProblem() {
+    if(currentProblemIndex + 1 <= numProblems) {
+        currentProblemIndex++;
+        currentProblem = problems[currentProblemIndex];
+        currentProblemId = problems[currentProblemIndex].problemId;
+        console.log("Current Problem: " + objectToProblem(currentProblem));
+        console.log("Current ProblemId: " + currentProblemId);
+        console.log("Current ProblemIndex: " + currentProblemIndex);
+    }
+}
+
+
 function handleGameStatus(message) {
-    messageStatus = message.gameStatus;
+    messageObject = JSON.parse(message);
+    messageStatus = messageObject.status;
+    if(messageStatus === "READY2") {
+        readyButton.innerHTML = "READY!";
+        setTimeout(startGame(), 2000);
+    }
+
     console.log(messageStatus);
 }
 
@@ -139,8 +228,22 @@ function messageToGame(message) {
         gameId: message.gameId,
         player1: message.player1,
         player2: message.player2,
+        player1Score: message.score1,
+        player2Score: message.score2,
         gameStatus: message.gameStatus,
+        problemSet: message.problemSet,
         winner: message.winner
+    }
+}
+
+function objectToProblem(problemObject) {
+    return {
+        problemId: problemObject.problemId,
+        contest: problemObject.contest,
+        problemDescription: problemObject.problemDescription,
+        difficulty: problemObject.difficulty,
+        answer: problemObject.answer,
+        solution: problemObject.solution
     }
 }
 
@@ -157,57 +260,3 @@ async function getUsername() {
     const username = await response.text();
     return username;
 }
-
-
-/* function connectToRandom() {
-    getUsername().then(username => {
-        $.ajax({
-            url: url + "/game/connect/random",
-            type: 'POST',
-            dataType: "json",
-            contentType: "application/json",
-            data: JSON.stringify({
-                "username": username
-            }),
-            success: function (data) {
-                gameId = data.gameId;
-                connectToSocket(gameId);
-                alert("Congrats, you're playing with: " + data.player1.username);
-                window.location.replace("/game");
-            },
-            error: function (error) {
-                console.log(error);
-            }
-        })
-    })   
-}
-
-function connectToSpecificGame() {
-    let gameId = document.getElementById("game_id").value;
-    if (gameId == null || gameId === '') {
-        alert("Please enter game id");
-    }
-    getUsername().then(username => {
-        $.ajax({
-            url: url + "/game/connect",
-            type: 'POST',
-            dataType: "json",
-            contentType: "application/json",
-            data: JSON.stringify({
-                "player": {
-                    "username": username
-                },
-                "gameId": gameId
-            }),
-            success: function (data) {
-                gameId = data.gameId;
-                connectToSocket(gameId);
-                alert("Congrats, you're playing with: " + data.player1.username);
-                window.location.replace(url + "/game?gameId=" + gameId);
-            },
-            error: function (error) {
-                console.log(error);
-            }
-        })
-    })
-} */

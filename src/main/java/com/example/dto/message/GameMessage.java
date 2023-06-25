@@ -1,6 +1,9 @@
 package com.example.dto.message;
 
+import java.util.List;
+
 import com.example.model.GameStatus;
+import com.example.model.Problem;
 import com.example.model.User;
 
 public class GameMessage {
@@ -9,16 +12,18 @@ public class GameMessage {
     private User player1;
     private User player2;
     private User winner;
-    private String score1;
-    private String score2;
-    private GameStatus gameStatus;
+    private int score1;
+    private int score2;
+    private GameStatus status;
     private String content;
-    
+    private List<Problem> problemSet;
+
+
     public GameMessage() {
     }
 
     public GameMessage(String type, String gameId, User player1Username, User player2Username, User winner,
-            String score1, String score2, GameStatus gameStatus, String content) {
+            int score1, int score2, GameStatus status, String content) {
         this.type = type;
         this.gameId = gameId;
         this.player1 = player1Username;
@@ -26,7 +31,7 @@ public class GameMessage {
         this.winner = winner;
         this.score1 = score1;
         this.score2 = score2;
-        this.gameStatus = gameStatus;
+        this.status = status;
         this.content = content;
     }
 
@@ -70,28 +75,28 @@ public class GameMessage {
         this.winner = winner;
     }
 
-    public String getScore1() {
+    public int getScore1() {
         return score1;
     }
 
-    public void setScore1(String score1) {
+    public void setScore1(int score1) {
         this.score1 = score1;
     }
 
-    public String getScore2() {
+    public int getScore2() {
         return score2;
     }
 
-    public void setScore2(String score2) {
+    public void setScore2(int score2) {
         this.score2 = score2;
     }
 
     public GameStatus getGameStatus() {
-        return gameStatus;
+        return status;
     }
 
-    public void setGameStatus(GameStatus gameStatus) {
-        this.gameStatus = gameStatus;
+    public void setGameStatus(GameStatus status) {
+        this.status = status;
     }
 
     public String getContent() {
@@ -100,5 +105,13 @@ public class GameMessage {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public List<Problem> getProblemSet() {
+        return this.problemSet;
+    }
+
+    public void setProblemSet(List<Problem> problemSet) {
+        this.problemSet = problemSet;
     }
 }
