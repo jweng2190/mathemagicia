@@ -43,6 +43,14 @@ public class GameStorage {
         return null;
     }
 
+    public void deleteGame(String gameId) {
+        for(String key : games.keySet()) {
+            if(key.equals(gameId)) {
+                games.remove(key);
+            }
+        }
+    }
+
     public void setGame(Game game) {
         games.put(game.getGameId(), game);
     }

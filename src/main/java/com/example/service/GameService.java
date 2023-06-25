@@ -44,6 +44,10 @@ public class GameService {
         return "";
     }
 
+    public void deleteGame(String gameId) {
+        GameStorage.getInstance().deleteGame(gameId);
+    }
+
     /* public Game getGameByUsername(String username) {
         Map<String, Game> allGames = GameStorage.getInstance().getGames();
         for(String key : allGames.keySet()) {

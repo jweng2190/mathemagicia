@@ -5,8 +5,10 @@ import com.example.model.User;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface UserRepository extends JpaRepository<User, Integer> {
     @Query("SELECT u FROM User u WHERE u.username = :username")
@@ -23,4 +25,13 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     @Query("SELECT u FROM User u WHERE u.verificationCode = ?1")
     public User findByVerificationCode(String code);
+
+    @Query(value="SELECT score FROM user WHERE username = ?1", nativeQuery = true)
+    int getScoreByUsername(String username);
+
+    @Transactional
+    @Modifying
+    //@Query(value="UPDATE user SET score=?1 WHERE username=?2", nativeQuery = true)
+    @Query("UPDATE User u SET u.score = :score WHERE u.username = :username")
+    void setScoreByUsername(int score, String username);
 }

@@ -196,14 +196,39 @@ function checkAnswer() {
 }
 
 function nextProblem() {
-    if(currentProblemIndex + 1 <= numProblems) {
+    if(currentProblemIndex + 1 < numProblems) {
         currentProblemIndex++;
         currentProblem = problems[currentProblemIndex];
         currentProblemId = problems[currentProblemIndex].problemId;
         console.log("Current Problem: " + objectToProblem(currentProblem));
         console.log("Current ProblemId: " + currentProblemId);
         console.log("Current ProblemIndex: " + currentProblemIndex);
+    } else if(currentProblemIndex + 1 == numProblems) {
+        //end game
+        alert("Game Ended!");
+        //display score
+        endGame();
     }
+}
+
+function endGame() {
+    const socket = new SockJS('/ws/end');
+    stompClient = Stomp.over(socket);
+    stompClient.connect({}, function (frame) {
+        console.log("Connected: " + frame);
+        stompClient.subscribe(`/topic/game.end`, function (message) {
+            //Do nothing, game end
+        });
+        sendScores();
+    });
+}
+
+function sendScores() {
+    sendMessage({
+        type: "game.end",
+        gameId: gameId,
+        playerUsername: username
+    });
 }
 
 

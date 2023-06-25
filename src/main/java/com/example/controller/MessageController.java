@@ -1,8 +1,10 @@
 package com.example.controller;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
@@ -22,11 +24,13 @@ import org.springframework.stereotype.Controller;
 import com.example.dao.ProblemRepository;
 import com.example.dao.UserRepository;
 import com.example.dto.message.AnswerMessage;
+import com.example.dto.message.EndMessage;
 import com.example.dto.message.GameMessage;
 import com.example.dto.message.JoinMessage;
 import com.example.dto.message.ReadyMessage;
 import com.example.model.Game;
 import com.example.model.GameStatus;
+import com.example.model.Problem;
 import com.example.model.User;
 import com.example.service.GameService;
 import com.example.storage.GameStorage;
@@ -45,7 +49,7 @@ public class MessageController {
     @Autowired
     private ProblemRepository problemDao;
 
-    private static ConcurrentMap<String, Long> answerTimestamps = new ConcurrentHashMap<>();
+    private static ConcurrentMap<List<String>, Long> answerTimestamps = new ConcurrentHashMap<>();
 
     @MessageMapping("/game.join")
     @SendTo("/topic/game.state")
@@ -117,6 +121,8 @@ public class MessageController {
         String activeGameId = answerMessage.getGameId();
         Game activeGame = gameService.getGameById(activeGameId);
 
+        List<Problem> problemSet = activeGame.getProblemSet();
+
         //get both usernames
         String player1Username = activeGame.getPlayer1().getUsername();
         String player2Username = activeGame.getPlayer2().getUsername();
@@ -129,11 +135,15 @@ public class MessageController {
         String correctAnswer = problemDao.findAnswerByProblem(currentProblemId);
         String userAnswerTrimmed = userAnswer.trim();
 
-        long timestamp = answerMessage.getTimestamp();
-        answerTimestamps.put(playerUsername, timestamp);
 
         if(userAnswerTrimmed.equals(correctAnswer)) {
-            String firstCorrectAnswer = findFirstCorrectAnswer();
+            long timestamp = answerMessage.getTimestamp();
+            List<String> answerInfo = new ArrayList<String>();
+            answerInfo.add(0, playerUsername);
+            answerInfo.add(1, String.valueOf(currentProblemId));
+            answerTimestamps.put(answerInfo, timestamp);
+
+            String firstCorrectAnswer = findFirstCorrectAnswer(currentProblemId);
             if(firstCorrectAnswer.equals(player1Username)) {
                 int currentPlayerScore = activeGame.getPlayer1Score();
                 activeGame.setPlayer1Score(currentPlayerScore + 1);
@@ -141,20 +151,57 @@ public class MessageController {
                 int currentPlayerScore = activeGame.getPlayer2Score();
                 activeGame.setPlayer2Score(currentPlayerScore + 1);
             }
-            clearTimestamps();
+            //clearTimestamps();
         }
 
         GameMessage gameMessage = gameToMessage(activeGame);
         return gameMessage;
     }
 
-    private static String findFirstCorrectAnswer() {
-        return answerTimestamps.entrySet()
-                .stream()
-                .min(Comparator.comparing(Map.Entry::getValue))
-                .map(Map.Entry::getKey)
-                .orElse(null);
+    private static String findFirstCorrectAnswer(int currentProblemId) {
+        Set<List<String>> keySet = answerTimestamps.keySet();
+        long minTime = System.currentTimeMillis();
+        List<String> fastestKey = null;
+
+        for(List<String> key : keySet) {
+            if(Integer.parseInt(key.get(1)) == currentProblemId) {
+                if(answerTimestamps.get(key) < minTime) {
+                    minTime = answerTimestamps.get(key);
+                    fastestKey = key;
+                }
+            }
+        }
+
+        return fastestKey.get(0);
     }
+
+    @MessageMapping("/game.end")
+    @SendTo("/topic/game.end")
+    private void endGame(@Payload EndMessage endMessage) {
+        String activeGameId = endMessage.getGameId();
+        Game activeGame = gameService.getGameById(activeGameId);
+        String playerUsername = endMessage.getPlayerUsername();
+
+        String player1 = activeGame.getPlayer1().getUsername();
+        String player2 = activeGame.getPlayer2().getUsername();
+
+        if(playerUsername.equals(player1)) {
+            int gameScore1 = activeGame.getPlayer1Score();
+            int originalScore1 = userDao.getScoreByUsername(player1);
+            int updatedScore1 = gameScore1 + originalScore1;
+            userDao.setScoreByUsername(updatedScore1, player1);
+        }
+
+        if(playerUsername.equals(player2)) {
+            int gameScore2 = activeGame.getPlayer2Score();
+            int originalScore2 = userDao.getScoreByUsername(player2);
+            int updatedScore2 = gameScore2 + originalScore2;
+            userDao.setScoreByUsername(updatedScore2, player2);
+        }
+            
+        activeGame.setStatus(GameStatus.FINISHED);
+    }
+
 
     private static void clearTimestamps() {
         Set keySet = answerTimestamps.keySet();
