@@ -28,6 +28,7 @@ public class GameService {
         Game game = new Game();
         game.setGameId(UUID.randomUUID().toString());
         game.setPlayer1(player);
+        game.setPlayer1Joined(true);
         game.setStatus(NEW);
         game.setProblemSet(problemService.getRandomProblems(ProblemService.PROBLEM_SET_SIZE));
         GameStorage.getInstance().setGame(game);

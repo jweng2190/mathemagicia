@@ -14,6 +14,8 @@ public class GameMessage {
     private User winner;
     private int score1;
     private int score2;
+    private boolean player1Joined;
+    private boolean player2Joined;
     private GameStatus status;
     private String content;
     private List<Problem> problemSet;
@@ -22,17 +24,20 @@ public class GameMessage {
     public GameMessage() {
     }
 
-    public GameMessage(String type, String gameId, User player1Username, User player2Username, User winner,
-            int score1, int score2, GameStatus status, String content) {
+    public GameMessage(String type, String gameId, User player1, User player2, User winner, int score1, int score2,
+            boolean player1Joined, boolean player2Joined, GameStatus status, String content, List<Problem> problemSet) {
         this.type = type;
         this.gameId = gameId;
-        this.player1 = player1Username;
-        this.player2 = player2Username;
+        this.player1 = player1;
+        this.player2 = player2;
         this.winner = winner;
         this.score1 = score1;
         this.score2 = score2;
+        this.player1Joined = player1Joined;
+        this.player2Joined = player2Joined;
         this.status = status;
         this.content = content;
+        this.problemSet = problemSet;
     }
 
     public String getType() {
@@ -113,5 +118,21 @@ public class GameMessage {
 
     public void setProblemSet(List<Problem> problemSet) {
         this.problemSet = problemSet;
+    }
+
+    public boolean isPlayer1Joined() {
+        return this.player1Joined;
+    }
+
+    public void setPlayer1Joined(boolean player1Joined) {
+        this.player1Joined = player1Joined;
+    }
+
+    public boolean isPlayer2Joined() {
+        return this.player2Joined;
+    }
+
+    public void setPlayer2Joined(boolean player2Joined) {
+        this.player2Joined = player2Joined;
     }
 }

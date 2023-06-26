@@ -11,6 +11,8 @@ public class Game {
     private User player2;
     private GameStatus status;
     private User winner;
+    private boolean player1Joined;
+    private boolean player2Joined;
     private boolean player1Ready;
     private boolean player2Ready;
     private List<Problem> problemSet;
@@ -66,6 +68,22 @@ public class Game {
 
     public void setWinner(User winner) {
         this.winner = winner;
+    }
+
+    public boolean isPlayer1Joined() {
+        return this.player1Joined;
+    }
+
+    public void setPlayer1Joined(boolean player1Joined) {
+        this.player1Joined = player1Joined;
+    }
+
+    public boolean isPlayer2Joined() {
+        return this.player2Joined;
+    }
+
+    public void setPlayer2Joined(boolean player2Joined) {
+        this.player2Joined = player2Joined;
     }
 
     public boolean isPlayer1Ready() {

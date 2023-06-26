@@ -24,6 +24,9 @@ let playerInput = document.getElementsByTagName("input")[0];
 let player1Score = 0;
 let player2Score = 0;
 
+let player1Joined = false;
+let player2Joined = false;
+
 
 const sendMessage = (message) => {
     stompClient.send(`/app/${message.type}`, {}, JSON.stringify(message));
@@ -44,6 +47,9 @@ const messagesTypes = {
         else showWinner(message.winner);
     }, */
     "game.joined": (message) => {
+        if(player1Joined && player2Joined) {
+            readyButton.style.display = "block";
+        }
         updateGame(message);
     },
 
@@ -76,6 +82,8 @@ function connect() {
         console.log("Connected" + frame);
         stompClient.subscribe('/topic/game.state', function (message) {
             var messageObject = JSON.parse(message.body);
+            player1Joined = messageObject.player1Joined;
+            player2Joined = messageObject.player2Joined;
             handleMessage(messageObject);
             problems = messageObject.problemSet;
             numProblems = Object.keys(problems).length;
@@ -93,9 +101,10 @@ function connect() {
         });
 
         setTimeout(() => {
-        if(!isCreated) {
-            joinGame();
-        }}, 3000);  
+            if(!isCreated) {
+                joinGame();
+            }
+        }, 3000);
     });
 };
 
@@ -109,7 +118,7 @@ function readyUp() {
             handleMessage(JSON.parse(message.body));
             handleGameStatus(message.body);
         });
-        setTimeout(queueGame(), 3000);
+        queueGame();
     });
 }
 
@@ -191,6 +200,7 @@ function checkAnswer() {
                 nextProblem();
             }
         });
+        answerForm.style.display = "block";
         answerForm.addEventListener("submit", sendAnswer);
     });
 }
@@ -255,6 +265,8 @@ function messageToGame(message) {
         player2: message.player2,
         player1Score: message.score1,
         player2Score: message.score2,
+        player1Joined: message.player1Joined,
+        player2Joined: message.player2Joined,
         gameStatus: message.gameStatus,
         problemSet: message.problemSet,
         winner: message.winner

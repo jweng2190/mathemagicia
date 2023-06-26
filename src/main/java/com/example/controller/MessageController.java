@@ -11,6 +11,7 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.parsing.ProblemReporter;
@@ -51,6 +52,7 @@ public class MessageController {
 
     private static ConcurrentMap<List<String>, Long> answerTimestamps = new ConcurrentHashMap<>();
 
+
     @MessageMapping("/game.join")
     @SendTo("/topic/game.state")
     public Object joinGame(@Payload JoinMessage message, SimpMessageHeaderAccessor headerAccessor) {
@@ -63,6 +65,7 @@ public class MessageController {
             if (game.getPlayer1() != null && game.getPlayer2() == null) {
                 User player2 = userDao.getUserByUsername(player2Username);
                 game.setPlayer2(player2);
+                game.setPlayer2Joined(true);
                 game.setStatus(GameStatus.IN_PROGRESS);
                 gameToJoin = game;
             }
@@ -219,6 +222,8 @@ public class MessageController {
         message.setGameId(game.getGameId());
         message.setPlayer1(game.getPlayer1());
         message.setPlayer2(game.getPlayer2());
+        message.setPlayer1Joined(game.isPlayer1Joined());
+        message.setPlayer2Joined(game.isPlayer2Joined());
         message.setGameStatus(game.getStatus());
         message.setProblemSet(game.getProblemSet());
         message.setWinner(game.getWinner());
