@@ -40,13 +40,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers("/");
+        web.ignoring().antMatchers("/" ,"/css/**", "/js/**", "/img/**");
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
-                .authorizeRequests().antMatchers(  "/ws/**", "/register", "/login").permitAll()
+                .authorizeRequests().antMatchers(   "/ws/**", "/register", "/login").permitAll()
                 .and().formLogin().loginPage("/login").defaultSuccessUrl("/home")
                 .and().logout().logoutSuccessUrl("/")
                 .and().httpBasic();
