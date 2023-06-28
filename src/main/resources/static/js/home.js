@@ -17,6 +17,8 @@ createGameLink.addEventListener('click', handleCreateGameClick);
 joinGameLink.addEventListener('click', handleJoinGameClick);
 thirdItemLink.addEventListener('click', handleThirdItemClick);
 
+button.addEventListener("click", handleClickButton);
+
 // Function to handle click on 'Create Game'
 function handleCreateGameClick() {
     // Call your specific function for 'Create Game'
@@ -29,7 +31,6 @@ function handleCreateGameClick() {
     cardText.innerHTML = "Click the button below to create a 1v1 game.";
     button.innerHTML = "Create";
     gameIdDiv.style.display = "none";
-    button.onclick = createGame;
 }
 
 // Function to handle click on 'Join Game'
@@ -44,7 +45,6 @@ function handleJoinGameClick() {
     cardText.innerHTML = "Click the button below to join a 1v1 game.";
     button.innerHTML = "Join";
     gameIdDiv.style.display = "block";
-    button.onclick = joinGame;
 }
 
 // Function to handle click on 'Third Item'
@@ -63,13 +63,18 @@ function handleThirdItemClick() {
 
 function createGame() {
     fetch("/game/create")
-        .then((response) => response.text()
-            .then((text) => {
-                gameId = text;
+        .then((response) => {
+            if (!response.ok) {
+                alert("Error: cannot create more than 1 game at the same time!");
+            } else {
+            response.text()
+                .then((text) => {
+                    gameId = text;
 
-                alert(gameId);
-                window.location.href = "/game/" + gameId;
-            }));
+                    alert(gameId);
+                    window.location.href = "/game/" + gameId;
+                })
+        }});
 }
 
 function joinGame() {
@@ -77,4 +82,14 @@ function joinGame() {
     gameIdInput.value = "";
     alert("You are joining the game with a game ID: " + gameId);
     window.location.href = "/game/" + gameId;
+}
+
+function handleClickButton() {
+    if(currentActiveLink == createGameLink) {
+        createGame();
+    } else if(currentActiveLink == joinGameLink) {
+        joinGame();
+    } else if(currentActiveLink == thirdItemLink) {
+        //do nothing
+    }
 }

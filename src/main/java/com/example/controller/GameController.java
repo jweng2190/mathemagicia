@@ -1,8 +1,10 @@
 package com.example.controller;
 
 import java.security.Principal;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,9 +38,16 @@ public class GameController {
     //private GameStorage gameStorage = GameStorage.getInstance();
 
     @GetMapping("/create")
-    public ResponseEntity<String> createGame(Principal principal) {
+    public ResponseEntity<String> createGame(Principal principal) throws InvalidGameException {
         String username = principal.getName();
         User currentUser = userDao.getUserByUsername(username);
+
+        //check if user has already created a game
+        List<Game> creatorGames = gameService.getGamesByCreator(username);
+        if(creatorGames.size() >= 1) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         Game game = gameService.createGame(currentUser);
         return ResponseEntity.ok(game.getGameId());
     }

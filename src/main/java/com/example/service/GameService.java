@@ -1,6 +1,8 @@
 package com.example.service;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -8,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.model.Game;
 import com.example.model.GamePlay;
+import com.example.model.GameStatus;
 import com.example.model.Problem;
 import com.example.model.User;
 import com.example.storage.GameStorage;
@@ -56,6 +59,22 @@ public class GameService {
             if()
         }
     } */
+
+    public List<Game> getGamesByCreator(String creatorUsername) {
+        Map<String, Game> allGames = GameStorage.getInstance().getGames();
+        List<Game> gameListByUser = new ArrayList<Game>();
+        int i = 0;
+
+        for(String key : allGames.keySet()) {
+            Game game = allGames.get(key);
+            if(game.getPlayer1().getUsername().equals(creatorUsername) && game.getStatus() != GameStatus.FINISHED) {
+                gameListByUser.add(i, game);
+                i++;
+            }
+        }
+
+        return gameListByUser;
+    }
 
     public Game getGameById(String gameId) {
         Map<String, Game> allGames = GameStorage.getInstance().getGames();
