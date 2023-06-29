@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>1v1 Live</title>
+	<!-- CSS styles for the game page -->
+	<style>
+		html,
+		body {
+			margin: 0;
+			padding: 0;
+			height: 100%;
+		}
+
+		.container {
+			height: 100%;
+			margin: auto;
+			text-align: center;
+		}
+
+		.row-1 {
+			display: flex;
+			flex-direction: row;
+			height: 25%;
+			justify-content: space-between;
+			background-color: #f2f2f2;
+			padding: 10px;
+		}
+
+		.row-2 {
+			display: flex;
+			flex-direction: row;
+			height: 50%;
+			justify-content: space-between;
+			align-items: center;
+			padding: 10px;
+		}
+
+		.row-3 {
+			display: flex;
+			flex-direction: row;
+			height: 25%;
+			justify-content: space-between;
+			align-items: center;
+			padding: 10px;
+		}
+
+		/*.column {
+    flex: 1;
+    border: 1px solid black;
+    justify-content: center;
+	  align-items: center;
+}
+
+.centered-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.centered-column {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}*/
+
+		.row-1 .column:nth-child(1) {
+			background-color: #ff9800;
+			color: white;
+			width: 20%;
+			justify-content: center;
+			align-items: center;
+		}
+
+		/* Timer */
+		.row-1 .column:nth-child(2) {
+			background-color: #f44336;
+			color: white;
+			width: 60%;
+		}
+
+		/* Player 2 Score */
+		.row-1 .column:nth-child(3) {
+			background-color: #4caf50;
+			color: white;
+			width: 20%;
+		}
+
+		/* Player 1 Stats */
+		.row-2 .column:nth-child(1) {
+			background-color: #e0e0e0;
+			width: 30%;
+		}
+
+		/* Problem */
+		.row-2 .column:nth-child(2) {
+			background-color: #f5f5f5;
+			width: 40%;
+		}
+
+		/* Player 2 Stats */
+		.row-2 .column:nth-child(3) {
+			background-color: #e0e0e0;
+			width: 30%;
+		}
+
+		.answer-field {
+			width: 70%;
+			padding: 10px;
+			border-radius: 5px 0 0 5px;
+			border: none;
+			background-color: #f5f5f5;
+			margin-right: -5px;
+		}
+
+		.answer-field:focus {
+			outline: none;
+		}
+
+		.answer-field-container {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			justify-content: center;
+			background-color: #f5f5f5;
+			width: 33.33%;
+		}
+
+		/* Submit Buttons */
+		.submit-button {
+			padding: 10px 20px;
+			background-color: #2196f3;
+			color: white;
+			border: none;
+			border-radius: 0 5px 5px 0;
+			cursor: pointer;
+			transition: background-color 0.3s ease;
+		}
+
+		.submit-button:hover {
+			background-color: #0c7cd5;
+		}
+
+		.invite-button {
+			padding: 10px 20px;
+			background-color: #e0e0e0;
+			color: black;
+			border: none;
+			border-radius: 5px;
+			cursor: pointer;
+			transition: background-color 0.3s ease;
+		}
+
+		.invite-button:hover {
+			background-color: #bdbdbd;
+		}
+
+		.score {
+			font-size: 24px;
+			font-weight: bold;
+			text-align: center;
+			background-color: #f5f5f5;
+			padding: 10px;
+			border-radius: 5px;
+		}
+
+		.timer {
+			font-size: 24px;
+			font-weight: bold;
+			text-align: center;
+			background-color: #f5f5f5;
+			padding: 10px;
+			border-radius: 5px;
+		}
+
+		.player-stats {
+			font-size: 16px;
+			text-align: center;
+			background-color: #f5f5f5;
+			padding: 10px;
+			border-radius: 5px;
+		}
+
+		.problem {
+			font-size: 24px;
+			font-weight: bold;
+			text-align: center;
+			background-color: #e0e0e0;
+			padding: 20px;
+			border-radius: 5px;
+			position: relative;
+		}
+
+		.start-button {
+			position: relative;
+			bottom: 10px;
+			left: 50%;
+			transform: translateX(-50%);
+			padding: 10px 20px;
+			background-color: #4CAF50;
+			color: white;
+			border: none;
+			border-radius: 5px;
+			font-size: 16px;
+			cursor: pointer;
+		}
+	</style>
+</head>
+
+<body>
+	<!-- Load icon library -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<div class="game-container">
+		<div class="row-1">
+			<div class="column-1">
+				<span id="player1score">Player 1 Score: 0</span>
+			</div>
+			<div class="column-2">
+				<span>Timer: 00:00</span>
+			</div>
+			<div class="column-3">
+				<span id="player2score">Player 2 Score: 0</span>
+			</div>
+		</div>
+		<div class="row-2">
+			<div class="column-1" id="player1">
+				<h3 id="player1name">Player 1</h3>
+				<p>Level: 1</p>
+				<p>Stats: 0 wins, 0 losses</p>
+				<p>Badges: None</p>
+			</div>
+			<div class="column-2">
+				<div class="problem">
+					<p>What is 2 + 2?</p>
+					<button class="start-button">Start</button>
+				</div>
+			</div>
+			<div class="column-3" id="player2">
+				<h3 id="player2name">Player 2</h3>
+				<p>Level: 1</p>
+				<p>Stats: 0 wins, 0 losses</p>
+				<p>Badges: None</p>
+			</div>
+		</div>
+		<div class="row-3">
+			<div class="column answer-field-container">
+				<form id="answer_form" style="display:none">
+					<label for="player_answer">Answer:</label><br>
+  					<input type="text" id="player_answer" placeholder="Enter answer...">
+					<input type="submit" id="answer_submit" value="Submit">
+				</form>
+				<!-- <input type="text" id="player_answer" class="answer-field" placeholder="Enter answer...">
+				<button class="submit-button" id="player_submit">Submit</button> -->
+			</div>
+			<div class="column centered-row">
+				<button class="invite-button" id="search">Search For Your Friends</button>
+				<input type="text" id="search_box" style="display:none" placeholder="Search by Full Name">
+				<button type="submit" id="search_icon" style="display:none"><i class="fa fa-search"></i></button>
+				<form id="friend_list">
+					<input type="submit" id="invite" value="Invite" style="display:none">
+				</form>
+			</div>
+			<button style="display:none" id="ready" onclick="readyUp()">Ready!</button>
+		</div>
+	</div>
+</body>
+
+</html>
+
+<script src="/js/invite_friend.js"></script>
+<script src="/js/socket_js.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
