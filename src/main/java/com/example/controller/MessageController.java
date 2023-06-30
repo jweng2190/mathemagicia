@@ -76,8 +76,7 @@ public class MessageController {
             errorMessage.setContent("Error: Unable to enter the game. The game is already full or an internal error has occurred.");
             return errorMessage;
         }
-        headerAccessor.getSessionAttributes().put("gameId", gameToJoin.getGameId());
-        headerAccessor.getSessionAttributes().put("player", message.getPlayerUsername());
+
         gameToJoin.setPlayer1Ready(false);
         gameToJoin.setPlayer2Ready(false);
 
@@ -175,7 +174,12 @@ public class MessageController {
             }
         }
 
-        return fastestKey.get(0);
+        if(fastestKey == null) {
+            System.out.println("Got null value");
+            return "";
+        } else {
+            return fastestKey.get(0);
+        }
     }
 
     @MessageMapping("/game.end")
