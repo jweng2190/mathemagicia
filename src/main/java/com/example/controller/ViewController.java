@@ -27,6 +27,12 @@ public class ViewController {
     }
 
     @RolesAllowed({"USER"})
+    @GetMapping("/invite_friend")
+    public String inviteFriend() {
+        return "invite_friend";
+    }
+
+    @RolesAllowed({"USER"})
     @GetMapping("/game_home")
     public String gameHome() {
         return "game";

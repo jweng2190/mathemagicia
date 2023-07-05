@@ -72,7 +72,9 @@ function createGame() {
                     gameId = text;
 
                     alert(gameId);
-                    window.location.href = "/game/" + gameId;
+                    sessionStorage.setItem("gameId", gameId);
+
+                    window.location.href = "/invite_friend";
                 })
         }});
 }

@@ -17,6 +17,7 @@ import javax.annotation.security.RolesAllowed;
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -44,10 +45,19 @@ public class UserController {
 
     @PostMapping(path = "/search", consumes = MediaType.TEXT_PLAIN_VALUE)
     @RolesAllowed({"USER"})
-    public ResponseEntity<List<String>> searchUser(@RequestBody String fullName) {
+    public ResponseEntity<ArrayList<List<String>>> searchUser(@RequestBody String fullName) {
         List<String> emailList = userDao.getEmailsByFullName(fullName);
+        ArrayList<List<String>> usernameAndEmailList = new ArrayList<List<String>>();
+
+        for(int i = 0; i < emailList.size(); i++) {
+            String email = emailList.get(i);
+            String username = userDao.getUsernameByEmail(email);
+
+            usernameAndEmailList.add(i, Arrays.asList(username, email));
+        }
+
         if(!emailList.isEmpty()) {
-            return ResponseEntity.ok().body(emailList);
+            return ResponseEntity.ok().body(usernameAndEmailList);
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
