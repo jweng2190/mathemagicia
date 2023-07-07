@@ -1,19 +1,16 @@
 <!DOCTYPE html>
-<html data-bs-theme="light" lang="en">
+<html data-bs-theme="light" lang="en" data-bss-forced-theme="light">
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <title>1v1 Live</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css"
-          rel="stylesheet"
-          integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx"
-          crossorigin="anonymous">
-    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css">
 </head>
 
-<body class="d-flex flex-column" style="height: 673px;">
-    <div class="bg-body shadow d-flex flex-column flex-shrink-0 position-fixed top-0 bottom-0" style="width: 4.5rem;"><a class="text-center link-body-emphasis d-block p-3 text-decoration-none border-bottom" href="/" title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Icon-only"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-bootstrap-fill" style="font-size: 25px;">
+<body class="d-flex flex-column d-flex" style="height:673px;">
+    <div class="bg-body shadow d-flex flex-column flex-shrink-0 position-fixed top-0 bottom-0" style="width: 6%;"><a class="text-center link-body-emphasis d-block p-3 text-decoration-none border-bottom" href="/" title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Icon-only"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-bootstrap-fill" style="font-size: 25px;">
                 <path d="M6.375 7.125V4.658h1.78c.973 0 1.542.457 1.542 1.237 0 .802-.604 1.23-1.764 1.23H6.375zm0 3.762h1.898c1.184 0 1.81-.48 1.81-1.377 0-.885-.65-1.348-1.886-1.348H6.375v2.725z"></path>
                 <path d="M4.002 0a4 4 0 0 0-4 4v8a4 4 0 0 0 4 4h8a4 4 0 0 0 4-4V4a4 4 0 0 0-4-4h-8zm1.06 12V3.545h3.399c1.587 0 2.543.809 2.543 2.11 0 .884-.65 1.675-1.483 1.816v.1c1.143.117 1.904.931 1.904 2.033 0 1.488-1.084 2.396-2.888 2.396H5.062z"></path>
             </svg><span class="visually-hidden">Icon-only</span></a>
@@ -42,47 +39,64 @@
             </div>
         </div>
     </div>
-    <div class="row" style="height: 180px;">
-        <div class="col" style="height: 180px;">
-            <div class="container" id="timer_container" style="height: 135px;">
-                <div class="countdown-container" style="display: none;">
-                    <div id="countdown-timer">00:00</div>
-                </div>
+    <div class="container-fluid ms-auto" id="timer_container" style="height: 10%;padding-right: 0px;padding-left: 0px;border-bottom-width: 1.25px;border-bottom-style: solid;">
+        <p class="d-flex d-xxl-flex justify-content-center align-items-center timer-container" id="timer_p" style="visibility: hidden; height: 100%;width: 20%;text-align: center;vertical-align: middle;font-size: 25px;margin: auto;"></p>
+        <!--style="height: 100%;width: 20%;text-align: center;vertical-align: middle;font-size: 25px;margin: auto;"-->
+    </div>
+    <div class="container d-flex flex-row align-self-end" style="width: 94%;height: 90%;margin-right: 0px;margin-left: 0px;padding-right: 0px;padding-left: 0px;">
+        <div class="col-xl-5" style="width: 75%;">
+            <h1 class="d-flex justify-content-center align-items-center" id="problem_number" style="text-align: center;height: 10%;font-size: 20px;font-weight: bold;"></h1>
+            <p id="problem_description" style="margin-left: 20px;margin-right: 20px;text-align: center;"></p>
+            <img class="d-block" id="problem_image" style="margin: auto;">
+            <div id="answer_div" class="input-group d-flex flex-row justify-content-center align-items-center align-items-xl-center" style="height: 25%;">
+                <form id="answer_form" style="width: 50%;margin: auto; visibility: hidden;">
+                    <div style="display: flex;" id="input_answer_div">
+                        <input class="form-control" type="text" id="player_answer" placeholder="Enter answer...">
+                        <button class="btn btn-primary" id="answer_submit" type="button">Submit</button>
+                    </div>
+                </form>
+                <!-- <div class="input-group" id="answer_div_main" style="width: 50%;margin: auto;">
+                    <input id="player_answer" class="form-control" type="text" placeholder="Enter answer...">
+                    <button id="answer_submit" class="btn btn-primary" type="button">Submit</button>
+                </div> -->
             </div>
-            <div class="container d-flex justify-content-end justify-content-xxl-end" style="height: 434.396px;">
-                <div></div>
-                <div class="row d-flex">
-                    <div class="col-md-6 order-2" style="height: 343.396px;">
-                        <h2 id="player1_username" style="text-align: center;margin-top: 3px;font-size: 25px;">Heading</h2><img class="d-block" id="player1_pfp" style="margin: auto;margin-top: 30px;">
-                        <h3 id="player1score_field" class="text-center d-flex align-items-xl-center align-items-xxl-center" style="text-align: center;margin: auto;margin-top: 34px;height: 80.5938px;width: 97px;font-size: 25px;border-style: solid;">0</h3>
-                    </div>
-                    <div class="col-md-6 order-3" style="height: 343.396px;">
-                        <h2 id="player2_username" style="text-align: center;margin-top: 3px;font-size: 25px;">Heading</h2><img class="d-block" id="player2_pfp" style="margin: auto;margin-top: 30px;">
-                        <h3 id="player2score_field" class="text-center d-flex align-items-xl-center align-items-xxl-center" style="text-align: center;margin: auto;margin-top: 34px;height: 80.5938px;width: 97px;font-size: 25px;border-style: solid;">0</h3>
-                    </div>
-                    <div class="col align-self-center order-last"><button class="btn btn-primary" style="display:none" id="ready" type="button" onclick="readyUp()">Ready!</button></div>
-                </div>
-                <div class="col text-center d-flex flex-column align-items-center align-content-start order-first align-items-xxl-center" id="answer_input" style="height: 525.396px;">
-                    <h3 id="problem_number" style="height: 67.396px;"></h3>
-                    <p id="problem_description" style="width: 900px;"></p>
-                    <img class="d-flex d-xxl-flex justify-content-center justify-content-xxl-center" id="problem_image">
-                    <div class="input-group d-xxl-flex justify-content-center justify-content-xxl-center" style="width: 349px;">
-                        <form id="answer_form" style="display:none">
-                            <input class="form-control" type="text" id="player_answer" placeholder="Enter answer...">
-                            <button class="btn btn-primary" id="answer_submit"
-                                type="submit">Submit</button>
-                        </form>
-                    </div>
+        </div>
+        <div class="col flex-row justify-content-xl-center" style="width: 25%;">
+            <div class="table-responsive justify-content-xxl-center" id="players_table" style="width: 85%;border-collapse: collapse;table-layout: fixed;">
+                <table class="table table-hover">
+                    <thead id="username_header">
+                        <tr>
+                            <th id="player1_username" style="text-align: center;width: 50%;font-size: 14px;">Column 1</th>
+                            <th id="player2_username" style="text-align: center;width: 50%;font-size: 14px;">Column 2</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr id="pfp_row">
+                            <td style="width: 50%;"><img class="d-block" id="player1_pfp" style="margin: auto;"></td>
+                            <td style="width: 50%;"><img class="d-block" id="player2_pfp" style="margin: auto;"></td>
+                        </tr>
+                        <tr id="score_row">
+                            <td id="player1score_field" style="text-align: center;white-space: nowrap;height: 100px;vertical-align: middle;width: 50%;">0</td>
+                            <td id="player2score_field" style="height: 100px;text-align: center;white-space: nowrap;vertical-align: middle;width: 50%;">0</td>
+                        </tr>
+                        <tr></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="row" style="width: 85%;margin: 0px;">
+                <div class="col" id="ready_col">
+                    <button class="btn btn-primary d-block" id="ready" type="button" onclick="readyUp()" style="visibility: hidden; margin:auto">Ready!</button>
+                    <!--style="margin: auto"-->
                 </div>
             </div>
         </div>
     </div>
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa"
             crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
-    <script src="/js/game.js"></script>        
+    <script src="/js/game.js"></script> 
 </body>
 
 </html>

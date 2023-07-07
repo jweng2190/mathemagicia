@@ -39,8 +39,9 @@ const mins = 0.5;
 let countdown;
 
 function startTimer() {
-    let timerContainer = document.getElementsByClassName("countdown-container")[0];
-    timerContainer.style.display = "block";
+    let timer = document.getElementById('timer_p');
+    timer.style.visibility = "visible";
+
     const now = new Date().getTime();
     const deadline = mins * 60 * 1000 + now;
 
@@ -56,7 +57,7 @@ function startTimer() {
         }
 
         const formattedTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        document.getElementById('countdown-timer').textContent = formattedTime;
+        document.getElementById('timer_p').innerHTML = formattedTime;
     }, 500);
 }
 
@@ -87,7 +88,7 @@ const messagesTypes = {
     }, */
     "game.joined": (message) => {
         if(player1Joined && player2Joined) {
-            readyButton.style.display = "block";
+            readyButton.style.visibility = "visible";
         }
         updateGame(message);
     },
@@ -196,7 +197,7 @@ function updateGame(message) {
 function startGame() {
     startTimer();
     console.log("Game started!");
-    readyButton.style.display = "none";
+    readyButton.style.visibility = "hidden";
     checkAnswer();
     /* document.getElementById("player1").innerHTML = game.player1;
     document.getElementById("player2").innerHTML = game.player2 || (game.winner ? '-' : 'Waiting for player 2...');
@@ -245,7 +246,7 @@ function checkAnswer() {
                 nextProblem();
             }
         });
-        answerForm.style.display = "block";
+        answerForm.style.visibility = "visible";
         problemNumberBox.innerHTML = "Problem " + (currentProblemIndex + 1);
         problemDescriptionBox.innerHTML = currentProblem.problemDescription;
         if(currentProblem.image == null) {
@@ -283,9 +284,10 @@ function nextProblem() {
 }
 
 function disableAnswer() {
-    let formChildren = answerForm.children;
-    let answerInput = formChildren[0];
-    let answerButton = formChildren[1];
+    let formDiv = answerForm.children[0];
+    let divChildren = formDiv.children;
+    let answerInput = divChildren[0];
+    let answerButton = divChildren[1];
 
     answerInput.readOnly = true;
     answerButton.disabled = true;
