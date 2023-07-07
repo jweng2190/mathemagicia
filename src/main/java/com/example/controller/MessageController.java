@@ -97,7 +97,7 @@ public class MessageController {
     public Game queueGame(@Payload ReadyMessage readyMessage, SimpMessageHeaderAccessor headerAccessor) {
         User readyUser = userDao.getUserByUsername(readyMessage.getPlayerUsername());
         GameStorage gameStorage = GameStorage.getInstance();
-        Game currentGame = gameStorage.getGameByUser(readyUser);
+        Game currentGame = gameStorage.getActiveGameByUser(readyUser);
         
         if(currentGame.getPlayer1().getUsername().equals(readyUser.getUsername())) {
             currentGame.setPlayer1Ready(true);
