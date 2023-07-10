@@ -48,4 +48,9 @@ public class ViewController {
 
         return "redirect:/home";
     }
+
+    @GetMapping("/test_end")
+    public String testEnd() {
+        return "test_end";
+    }
 }

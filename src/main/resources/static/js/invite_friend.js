@@ -3,6 +3,9 @@ var searchButton = document.getElementById("search_button");
 var form = document.getElementById("invite_form");
 var table = document.getElementById("friend_table");
 
+//debugging convenience
+var skipButton = document.getElementById("skip");
+
 var activeButtonId = null;
 
 searchButton.addEventListener("click", processSearch);
@@ -122,4 +125,10 @@ async function postRequest(url = "", data = {}) {
         body: data, // body data type must match "Content-Type" header
     });
     return response.json();
+}
+
+//debugging
+function skip() {
+    var gameId = sessionStorage.getItem("gameId");
+    window.location.href = "/game/" + gameId;
 }

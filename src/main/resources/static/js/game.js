@@ -35,8 +35,66 @@ let player1Joined = false;
 let player2Joined = false;
 
 
-const mins = 0.5;
+const mins = 10;
 let countdown;
+
+const leftWindow = document.getElementById('left-window');
+const rightWindow = document.getElementById('right-window');
+
+const player1ScoreElement = document.getElementById('player1-score');
+const player2ScoreElement = document.getElementById('player2-score'); 
+
+const gameContent = document.getElementsByClassName('game-page')[0];
+
+
+/* leftWindow.addEventListener('animationend', function () {
+    playScoreAnimation(true);
+    //score animation for player 1
+});
+
+player1ScoreElement.addEventListener('animationend', function() {
+    leftWindow.style.animation = 'slide-out-left 1.5s forwards';
+});
+
+leftWindow.addEventListener('animationiteration', function (e) {
+    if(e.animationName === 'slide-in-left') {
+        setTimeout(() => {
+            playScoreAnimation(true);
+        }, 1500);
+        //repeat score animation for player 1
+    }
+});
+
+player1ScoreElement.addEventListener('animationiteration', function() {
+    setTimeout(() => {
+        leftWindow.style.animation = 'slide-out-left 1.5s forwards';
+    }, 1500);
+});
+
+rightWindow.addEventListener('animationend', function () {
+    playScoreAnimation(false);
+    //score animation for player 2
+});
+
+player2ScoreElement.addEventListener('animationend', function() {
+    rightWindow.style.animation = 'slide-out-right 1.5s forwards';
+});
+
+rightWindow.addEventListener('animationiteration', function (e) {
+    if(e.animationName === 'slide-in-right') {
+        setTimeout(() => {
+            playScoreAnimation(false);
+        }, 1500);
+        //repeat score animation for player 2
+    }
+});
+
+player2ScoreElement.addEventListener('animationiteration', function() {
+    setTimeout(() => {
+        rightWindow.style.animation = 'slide-out-right 1.5s forwards';
+    }, 1500);
+}); */
+
 
 function startTimer() {
     let timer = document.getElementById('timer_p');
@@ -242,8 +300,12 @@ function checkAnswer() {
 
             console.log("Player 1 Score: " + player1Score + "\nPlayer 2 Score: " + player2Score);
 
-            if((player1Score - originalScore1 > 0) || (player2Score - originalScore2 > 0)) {
-                nextProblem();
+            if ((player1Score - originalScore1 > 0) || (player2Score - originalScore2 > 0)) {
+                showScores();
+                setTimeout(() => {
+
+                    nextProblem();
+                }, 5000);
             }
         });
         answerForm.style.visibility = "visible";
@@ -259,6 +321,9 @@ function checkAnswer() {
 }
 
 function nextProblem() {
+    //send game page back to front
+    gameContent.style.zIndex = 1;
+
     if(currentProblemIndex + 1 < numProblems) {
         currentProblemIndex++;
         currentProblem = problems[currentProblemIndex];
@@ -292,6 +357,60 @@ function disableAnswer() {
     answerInput.readOnly = true;
     answerButton.disabled = true;
 }
+
+function showScores() {
+    /* leftWindow.addEventListener('animationend', function () {
+        player1ScoreElement.style.animation = 'score-animation 1.5s';
+        setTimeout(() => {
+            player1ScoreElement.innerText = player1Score;
+        }, 300);
+
+        player1ScoreElement.addEventListener('animationend', function() {
+            leftWindow.style.animation = 'slide-out-left 1.5s forwards';
+        });
+    });
+
+    rightWindow.addEventListener('animationend', function () {
+        player2ScoreElement.style.animation = 'score-animation 1.5s';
+        setTimeout(() => {
+            player2ScoreElement.innerText = player2Score;
+        }, 300);
+
+        player2ScoreElement.addEventListener('animationend', function() {
+            rightWindow.style.animation = 'slide-out-right 1.5s forwards';
+        });
+    }); */
+
+    //send to back
+    gameContent.style.zIndex = -1;
+    leftWindow.style.animation = 'slide-in-left 1.5s forwards';
+    rightWindow.style.animation = 'slide-in-right 1.5s forwards';
+    
+    setTimeout(() => {
+        playScoreAnimation(true);
+        playScoreAnimation(false);
+    }, 1500);
+
+    setTimeout(() => {
+        leftWindow.style.animation = 'slide-out-left 1.5s forwards';
+        rightWindow.style.animation = 'slide-out-right 1.5s forwards';
+    }, 3000);
+}
+
+function playScoreAnimation(player) {
+    if (player === true) {
+        player1ScoreElement.style.animation = 'score-animation 1.5s';
+        setTimeout(() => {
+            player1ScoreElement.innerText = player1Score;
+        }, 300);  
+    } else if(player === false) {
+        player2ScoreElement.style.animation = 'score-animation 1.5s';
+        setTimeout(() => {
+            player2ScoreElement.innerText = player2Score;
+        }, 300);  
+    }
+}
+
 
 function showFinalScores() {
     //TODO
