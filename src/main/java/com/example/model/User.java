@@ -45,7 +45,7 @@ public class User {
     private Set<Role> roles;
 
     @ManyToMany(cascade = {
-        CascadeType.PERSIST, CascadeType.MERGE
+        CascadeType.PERSIST
     }, fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_game",

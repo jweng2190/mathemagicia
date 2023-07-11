@@ -1,6 +1,7 @@
 package com.example.controller;
 
 import com.example.dao.UserRepository;
+import com.example.model.Game;
 import com.example.model.User;
 import com.example.service.EmailService;
 
@@ -42,6 +43,17 @@ public class UserController {
         Principal principal = request.getUserPrincipal();
         return principal.getName();
     }
+
+    @GetMapping("/all_games")
+    @RolesAllowed({"USER"})
+    public ResponseEntity<List<Game>> getAllGames(HttpServletRequest request) {
+        Principal principal = request.getUserPrincipal();
+        String username = principal.getName();
+        User user = userDao.getUserByUsername(username);
+        List<Game> allGames = user.getGames();
+        return ResponseEntity.ok().body(allGames);
+    }
+
 
     @PostMapping(path = "/search", consumes = MediaType.TEXT_PLAIN_VALUE)
     @RolesAllowed({"USER"})

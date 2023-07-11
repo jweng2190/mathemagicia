@@ -199,7 +199,7 @@ public class MessageController {
         String playerUsername = endMessage.getPlayerUsername();
 
         activeGame.setStatus(GameStatus.FINISHED);
-        
+
         String winner = getWinner(activeGame);
         activeGame.setWinner(winner);
 
@@ -214,6 +214,8 @@ public class MessageController {
             int originalScore1 = userDao.getScoreByUsername(player1);
             int updatedScore1 = gameScore1 + originalScore1;
             userDao.setScoreByUsername(updatedScore1, player1);
+            User player1User = userDao.getUserByUsername(player1);
+            saveGame(activeGame, player1User);
         }
 
         if(playerUsername.equals(player2)) {
@@ -221,6 +223,8 @@ public class MessageController {
             int originalScore2 = userDao.getScoreByUsername(player2);
             int updatedScore2 = gameScore2 + originalScore2;
             userDao.setScoreByUsername(updatedScore2, player2);
+            User player2User = userDao.getUserByUsername(player2);
+            saveGame(activeGame, player2User);
         }
 
         checkBothPlayersFinished(activeGame);
@@ -267,5 +271,12 @@ public class MessageController {
         if (player1Finished.get() && player2Finished.get() && !gameCompleted) {
             gameDao.save(game);
         }
+    }
+
+    private void saveGame(Game game, User user) {
+        List<Game> games = user.getGames();
+        //add most recent first
+        games.add(0, game);
+        userDao.save(user);
     }
 }

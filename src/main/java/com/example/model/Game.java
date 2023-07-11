@@ -47,7 +47,7 @@ public class Game {
     private boolean player2Ready;
 
     @ManyToMany(cascade = {
-        CascadeType.PERSIST, CascadeType.MERGE
+        CascadeType.PERSIST
     }, fetch = FetchType.EAGER)
     @JoinTable(
         name = "game_problem",
