@@ -49,6 +49,11 @@ public class ViewController {
         return "redirect:/home";
     }
 
+    @GetMapping("past_games")
+    public String pastGames() {
+        return "past_games";
+    }
+
     @GetMapping("/test_end")
     public String testEnd() {
         return "test_end";

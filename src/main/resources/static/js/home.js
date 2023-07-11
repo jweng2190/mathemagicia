@@ -19,6 +19,9 @@ thirdItemLink.addEventListener('click', handleThirdItemClick);
 
 button.addEventListener("click", handleClickButton);
 
+let pastGamesButton = document.getElementById('past_games_button');
+pastGamesButton.addEventListener("click", pastGames);
+
 // Function to handle click on 'Create Game'
 function handleCreateGameClick() {
     // Call your specific function for 'Create Game'
@@ -77,6 +80,10 @@ function createGame() {
                     window.location.href = "/invite_friend";
                 })
         }});
+}
+
+function pastGames() {
+    window.location.href = "/past_games";
 }
 
 function joinGame() {

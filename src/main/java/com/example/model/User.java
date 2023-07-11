@@ -2,6 +2,7 @@ package com.example.model;
 
 import javax.persistence.*;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -43,12 +44,30 @@ public class User {
     )
     private Set<Role> roles;
 
+    @ManyToMany(cascade = {
+        CascadeType.PERSIST, CascadeType.MERGE
+    }, fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_game",
+            joinColumns = @JoinColumn(name="user_id", referencedColumnName="user_id"),
+            inverseJoinColumns = @JoinColumn(name="game_id", referencedColumnName="id")
+    )
+    private List<Game> games;
+
     public Set<Role> getRoles() {
         return roles;
     }
 
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
+    }
+
+    public List<Game> getGames() {
+        return this.games;
+    }
+
+    public void setGames(List<Game> games) {
+        this.games = games;
     }
 
     public int getUserId() {

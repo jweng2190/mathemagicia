@@ -6,8 +6,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.stereotype.Service;
 
+import com.example.dao.GameRepository;
 import com.example.model.Game;
 import com.example.model.GamePlay;
 import com.example.model.GameStatus;
@@ -27,14 +30,23 @@ import lombok.AllArgsConstructor;
 public class GameService {
     private ProblemService problemService;
 
+    @Autowired
+    private GameRepository gameDao;
+
     public Game createGame(User player) {
         Game game = new Game();
         game.setGameId(UUID.randomUUID().toString());
         game.setPlayer1(player);
+        game.setPlayer1Username(player.getUsername());
         game.setPlayer1Joined(true);
         game.setStatus(NEW);
-        game.setProblemSet(problemService.getRandomProblems(ProblemService.PROBLEM_SET_SIZE));
+
+        List<Problem> problems = problemService.getRandomProblems(ProblemService.PROBLEM_SET_SIZE);
+        game.setProblemSet(problems);
+
         GameStorage.getInstance().setGame(game);
+        gameDao.save(game);
+
         return game;
     }
 

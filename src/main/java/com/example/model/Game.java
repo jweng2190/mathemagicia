@@ -2,21 +2,64 @@ package com.example.model;
 
 import java.util.List;
 
+import javax.persistence.*;
+
 import lombok.Data;
 
+@Entity
+@Table(name = "game")
 @Data
 public class Game {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
+    @Column(name="game_id")
     private String gameId;
+
+    @Column(name="player1_username")
+    private String player1Username;
+
+    @Column(name="player2_username")
+    private String player2Username;
+
+    @Transient
     private User player1;
+
+    @Transient
     private User player2;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name="game_status")
     private GameStatus status;
-    private User winner;
+
+    private String winner;
+
+    @Transient
+    private User winnerUser;
+    @Transient
     private boolean player1Joined;
+    @Transient
     private boolean player2Joined;
+    @Transient
     private boolean player1Ready;
+    @Transient
     private boolean player2Ready;
+
+    @ManyToMany(cascade = {
+        CascadeType.PERSIST, CascadeType.MERGE
+    }, fetch = FetchType.EAGER)
+    @JoinTable(
+        name = "game_problem",
+        joinColumns = @JoinColumn(name = "game_id", referencedColumnName = "id"),
+        inverseJoinColumns = @JoinColumn(name = "problem_id", referencedColumnName = "problem_id")
+    )
     private List<Problem> problemSet;
+
+    @Column(name="player1_score")
     private Integer player1Score = 0;
+
+    @Column(name="player2_score")
     private Integer player2Score = 0;
 
 
@@ -29,6 +72,15 @@ public class Game {
         player1Score = 0;
         player2Score = 0;
     }
+
+    public int getId() {
+        return this.id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
 
     public String getGameId() {
         return this.gameId;
@@ -62,12 +114,12 @@ public class Game {
         this.status = status;
     }
 
-    public User getWinner() {
-        return this.winner;
+    public User getWinnerUser() {
+        return this.winnerUser;
     }
 
-    public void setWinner(User winner) {
-        this.winner = winner;
+    public void setWinnerUser(User winner) {
+        this.winnerUser = winner;
     }
 
     public boolean isPlayer1Joined() {
@@ -124,5 +176,21 @@ public class Game {
 
     public void setPlayer2Score(Integer player2Score) {
         this.player2Score = player2Score;
+    }
+
+    public String getPlayer1Username() {
+        return this.player1Username;
+    }
+
+    public void setPlayer1Username(String player1Username) {
+        this.player1Username = player1Username;
+    }
+
+    public String getPlayer2Username() {
+        return this.player2Username;
+    }
+
+    public void setPlayer2Username(String player2Username) {
+        this.player2Username = player2Username;
     }
 }

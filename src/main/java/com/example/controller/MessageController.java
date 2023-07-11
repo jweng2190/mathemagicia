@@ -22,6 +22,7 @@ import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
+import com.example.dao.GameRepository;
 import com.example.dao.ProblemRepository;
 import com.example.dao.UserRepository;
 import com.example.dto.message.AnswerMessage;
@@ -50,6 +51,13 @@ public class MessageController {
     @Autowired
     private ProblemRepository problemDao;
 
+    @Autowired
+    private GameRepository gameDao;
+
+    private AtomicBoolean player1Finished = new AtomicBoolean(false);
+    private AtomicBoolean player2Finished = new AtomicBoolean(false);
+    private boolean gameCompleted = false;
+
     private static ConcurrentMap<List<String>, Long> answerTimestamps = new ConcurrentHashMap<>();
 
 
@@ -65,6 +73,7 @@ public class MessageController {
             if (game.getPlayer1() != null && game.getPlayer2() == null) {
                 User player2 = userDao.getUserByUsername(player2Username);
                 game.setPlayer2(player2);
+                game.setPlayer2Username(player2.getUsername());
                 game.setPlayer2Joined(true);
                 game.setStatus(GameStatus.IN_PROGRESS);
                 gameToJoin = game;
@@ -189,24 +198,32 @@ public class MessageController {
         Game activeGame = gameService.getGameById(activeGameId);
         String playerUsername = endMessage.getPlayerUsername();
 
+        activeGame.setStatus(GameStatus.FINISHED);
+        
+        String winner = getWinner(activeGame);
+        activeGame.setWinner(winner);
+
         String player1 = activeGame.getPlayer1().getUsername();
         String player2 = activeGame.getPlayer2().getUsername();
 
+        int gameScore1 = activeGame.getPlayer1Score();
+        int gameScore2 = activeGame.getPlayer2Score();
+
         if(playerUsername.equals(player1)) {
-            int gameScore1 = activeGame.getPlayer1Score();
+            player1Finished.set(true);
             int originalScore1 = userDao.getScoreByUsername(player1);
             int updatedScore1 = gameScore1 + originalScore1;
             userDao.setScoreByUsername(updatedScore1, player1);
         }
 
         if(playerUsername.equals(player2)) {
-            int gameScore2 = activeGame.getPlayer2Score();
+            player2Finished.set(true);
             int originalScore2 = userDao.getScoreByUsername(player2);
             int updatedScore2 = gameScore2 + originalScore2;
             userDao.setScoreByUsername(updatedScore2, player2);
         }
-            
-        activeGame.setStatus(GameStatus.FINISHED);
+
+        checkBothPlayersFinished(activeGame);
     }
 
 
@@ -230,9 +247,25 @@ public class MessageController {
         message.setPlayer2Joined(game.isPlayer2Joined());
         message.setGameStatus(game.getStatus());
         message.setProblemSet(game.getProblemSet());
-        message.setWinner(game.getWinner());
+        message.setWinner(game.getWinnerUser());
         message.setScore1(game.getPlayer1Score());
         message.setScore2(game.getPlayer2Score());
         return message;
+    }
+
+    public String getWinner(Game game) {
+        if(game.getPlayer1Score() > game.getPlayer2Score()) {
+            return game.getPlayer1Username();
+        } else if (game.getPlayer1Score() < game.getPlayer2Score()) {
+            return game.getPlayer2Username();
+        } else {
+            return null;
+        }
+    }
+
+    private synchronized void checkBothPlayersFinished(Game game) {
+        if (player1Finished.get() && player2Finished.get() && !gameCompleted) {
+            gameDao.save(game);
+        }
     }
 }
