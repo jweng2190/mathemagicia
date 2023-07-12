@@ -1,3 +1,11 @@
+window.addEventListener('beforeunload', function () {
+    if (eventSource != null) {
+        eventSource.close();
+    }
+});
+//firefox bug?? interrupted websocket
+
+
 const url = "http://localhost:8080";
 var stompClient = null;
 var username;
@@ -313,6 +321,7 @@ function checkAnswer() {
         problemDescriptionBox.innerHTML = currentProblem.problemDescription;
         if(currentProblem.image == null) {
             problemImage.removeAttribute("src");
+            problemImage.style.flex = 0;
         } else {
             problemImage.src = 'data:image/jpeg;base64,' + currentProblem.image;
         }
@@ -333,8 +342,11 @@ function nextProblem() {
         problemDescriptionBox.innerHTML = currentProblem.problemDescription;
         if(currentProblem.image == null) {
             problemImage.removeAttribute("src");
+            problemImage.style.flex = 0;
         } else {
             problemImage.src = 'data:image/jpeg;base64,' + currentProblem.image;
+            //show image if there is one
+            problemImage.style.flex = 25;
         }
 
         console.log("Current Problem: " + objectToProblem(currentProblem));
