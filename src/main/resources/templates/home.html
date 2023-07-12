@@ -14,9 +14,9 @@
 </head>
 
 <body>
-    <div class="btn-toolbar" style="transform: translate(0px);margin: 0px;width: 1400px;padding: 0px;">
+    <!-- <div class="btn-toolbar" style="transform: translate(0px);margin: 0px;width: 1400px;padding: 0px;">
         <div class="btn-group focus-ring focus-ring-primary d-flex d-xl-flex flex-row justify-content-end align-content-end ms-auto justify-content-xl-end" role="group" style="border-style: none;padding-top: 17px;padding-right: 45px;"><button class="btn btn-primary" id="friends" type="button" style="background: url(&quot;assets/img/2125411311649763117-128.png&quot;) center / contain;width: 75px;height: 75px;margin: 5px;"></button><button class="btn btn-primary" id="play" type="button" style="background: url(&quot;assets/img/4775108651584418709-128.png&quot;) center / contain;margin: 5px;width: 75px;height: 75px;">&nbsp;</button><button class="btn btn-primary" id="messages" type="button" style="background: url(&quot;assets/img/15378291991558965373-128.png&quot;) center / contain;margin: 5px;width: 75px;height: 75px;"></button><button class="btn btn-primary d-flex d-xl-flex flex-row justify-content-evenly me-auto justify-content-xl-end" id="settings" type="button" style="margin: 5px;background: url(&quot;assets/img/19580304091552644365-128.png&quot;) center / contain;width: 75px;height: 75px;"></button></div>
-    </div>
+    </div> -->
     <div class="container py-4 py-xl-5" style="transform: translate(0px);margin-left: 85px;margin-right: 91px;">
         <div class="row mb-5">
             <div class="col-md-8 col-xl-6 text-center mx-auto">
@@ -25,36 +25,7 @@
                 <p class="w-lg-50">Curae hendrerit donec commodo hendrerit egestas tempus, turpis facilisis nostra nunc. Vestibulum dui eget ultrices.</p>
             </div>
         </div>
-        <div class="row gy-4 row-cols-1 row-cols-md-2 row-cols-xl-3">
-            <div class="col">
-                <div><img class="rounded img-fluid d-block w-100 fit-cover" style="height: 200px;" src="https://cdn.bootstrapstudio.io/placeholders/1400x800.png">
-                    <div class="py-4">
-                        <h4 class="text-center">Learn</h4>
-                        <p>Nullam id dolor id nibh ultricies vehicula ut id elit. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col">
-                <div><img class="rounded img-fluid d-block w-100 fit-cover" style="height: 200px;" src="https://cdn.bootstrapstudio.io/placeholders/1400x800.png">
-                    <div class="py-4">
-                        <h4 class="text-center">Play Computer</h4>
-                        <p>Nullam id dolor id nibh ultricies vehicula ut id elit. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus.</p>
-                    </div>
-                </div>
-            </div>
-            <div id="past_games" class="col">
-                <div>
-                    <img class="rounded img-fluid d-block w-100 fit-cover" style="height: 200px;" src="https://cdn.bootstrapstudio.io/placeholders/1400x800.png" />
-                    <div class="py-4"><button id="past_games_button" class="btn btn-primary d-block" type="button" style="margin: auto;width: 85%;background: var(--bs-orange);color: rgb(0,0,0);font-size: 24px;">Past Games</button></div>
-                </div>
-            </div>
-            <div class="col">
-                <header></header>
-            </div>
-            <div class="col">
-                <div></div>
-            </div>
-        </div>
+        
     </div>
     <h1 id="game_dashboard" class="dashboard" style="text-align: center;">Game Dashboard</h1>
     <div class="card" style="margin-left: 85px;">
@@ -74,6 +45,23 @@
             <p class="card-text">Click the button below to create a 1v1 game.</p><button class="btn btn-primary" id="dashboard_button" type="button">Create</button>
         </div>
     </div>
+        <div class="row gy-4 row-cols-1 row-cols-md-2 row-cols-xl-3" style="padding-left: 6%;">
+            <div id="learn" class="col">
+                <div><img class="rounded img-fluid d-block w-100 fit-cover" src="/img/learn_bulb.png" style="height: 200px;object-fit: contain;margin: auto;max-height: 50%;" />
+                    <div class="py-4"><button id="learn_button" class="btn btn-primary d-block" type="button" style="margin: auto;width: 80%;font-size: 24px;">Learn</button></div>
+                </div>
+            </div>
+            <div id="play_computer" class="col">
+                <div><img class="rounded img-fluid d-block d-block w-100 fit-cover" style="object-fit: contain;margin: auto;max-width: 33%;max-height: 50%;height: 200px;" src="/img/bot.png" />
+                    <div class="py-4"><button id="play_computer_button" class="btn btn-primary d-block" type="button" style="margin: auto;width: 80%;font-size: 24px;">Play Computer</button></div>
+                </div>
+            </div>
+            <div id="past_games" class="col">
+                <div><img class="rounded img-fluid d-block w-100 fit-cover" style="height: 199px;margin: auto;max-height: 50%;max-width: 35%;padding-top: 30px;padding-bottom: 30px;" src="/img/past_calendar.png" />
+                    <div class="py-4"><button id="past_games_button" class="btn btn-primary d-block" type="button" style="margin: auto;width: 80%;font-size: 24px;">Past Games</button></div>
+                </div>
+            </div>
+        </div>
     <div class="bg-body shadow d-flex flex-column flex-shrink-0 position-fixed top-0 bottom-0" style="width: 4.5rem;"><a class="text-center link-body-emphasis d-block p-3 text-decoration-none border-bottom" href="/" title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Icon-only"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-bootstrap-fill" style="font-size: 25px;">
                 <path d="M6.375 7.125V4.658h1.78c.973 0 1.542.457 1.542 1.237 0 .802-.604 1.23-1.764 1.23H6.375zm0 3.762h1.898c1.184 0 1.81-.48 1.81-1.377 0-.885-.65-1.348-1.886-1.348H6.375v2.725z"></path>
                 <path d="M4.002 0a4 4 0 0 0-4 4v8a4 4 0 0 0 4 4h8a4 4 0 0 0 4-4V4a4 4 0 0 0-4-4h-8zm1.06 12V3.545h3.399c1.587 0 2.543.809 2.543 2.11 0 .884-.65 1.675-1.483 1.816v.1c1.143.117 1.904.931 1.904 2.033 0 1.488-1.084 2.396-2.888 2.396H5.062z"></path>
