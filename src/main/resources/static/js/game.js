@@ -1,8 +1,8 @@
-window.addEventListener('beforeunload', function () {
+/* window.addEventListener('beforeunload', function () {
     if (eventSource != null) {
         eventSource.close();
     }
-});
+}); */
 //firefox bug?? interrupted websocket
 
 
@@ -53,55 +53,6 @@ const player1ScoreElement = document.getElementById('player1-score');
 const player2ScoreElement = document.getElementById('player2-score'); 
 
 const gameContent = document.getElementsByClassName('game-page')[0];
-
-
-/* leftWindow.addEventListener('animationend', function () {
-    playScoreAnimation(true);
-    //score animation for player 1
-});
-
-player1ScoreElement.addEventListener('animationend', function() {
-    leftWindow.style.animation = 'slide-out-left 1.5s forwards';
-});
-
-leftWindow.addEventListener('animationiteration', function (e) {
-    if(e.animationName === 'slide-in-left') {
-        setTimeout(() => {
-            playScoreAnimation(true);
-        }, 1500);
-        //repeat score animation for player 1
-    }
-});
-
-player1ScoreElement.addEventListener('animationiteration', function() {
-    setTimeout(() => {
-        leftWindow.style.animation = 'slide-out-left 1.5s forwards';
-    }, 1500);
-});
-
-rightWindow.addEventListener('animationend', function () {
-    playScoreAnimation(false);
-    //score animation for player 2
-});
-
-player2ScoreElement.addEventListener('animationend', function() {
-    rightWindow.style.animation = 'slide-out-right 1.5s forwards';
-});
-
-rightWindow.addEventListener('animationiteration', function (e) {
-    if(e.animationName === 'slide-in-right') {
-        setTimeout(() => {
-            playScoreAnimation(false);
-        }, 1500);
-        //repeat score animation for player 2
-    }
-});
-
-player2ScoreElement.addEventListener('animationiteration', function() {
-    setTimeout(() => {
-        rightWindow.style.animation = 'slide-out-right 1.5s forwards';
-    }, 1500);
-}); */
 
 
 function startTimer() {
@@ -354,7 +305,7 @@ function nextProblem() {
         console.log("Current ProblemIndex: " + currentProblemIndex);
     } else if(currentProblemIndex + 1 == numProblems) {
         //end game
-        alert("Game Ended!");
+        //alert("Game Ended!");
         //display score
         endGame();
     }
@@ -371,27 +322,8 @@ function disableAnswer() {
 }
 
 function showScores() {
-    /* leftWindow.addEventListener('animationend', function () {
-        player1ScoreElement.style.animation = 'score-animation 1.5s';
-        setTimeout(() => {
-            player1ScoreElement.innerText = player1Score;
-        }, 300);
-
-        player1ScoreElement.addEventListener('animationend', function() {
-            leftWindow.style.animation = 'slide-out-left 1.5s forwards';
-        });
-    });
-
-    rightWindow.addEventListener('animationend', function () {
-        player2ScoreElement.style.animation = 'score-animation 1.5s';
-        setTimeout(() => {
-            player2ScoreElement.innerText = player2Score;
-        }, 300);
-
-        player2ScoreElement.addEventListener('animationend', function() {
-            rightWindow.style.animation = 'slide-out-right 1.5s forwards';
-        });
-    }); */
+    player1ScoreElement.style.animation = "";
+    player2ScoreElement.style.animation = "";
 
     //send to back
     gameContent.style.zIndex = -1;
@@ -425,18 +357,23 @@ function playScoreAnimation(player) {
 
 
 function showFinalScores() {
-    //TODO
+    var myModal = new bootstrap.Modal(document.getElementById('modal-end'));
+    myModal.show();
 }
 
 function endGame() {
     disableAnswer();
-    showFinalScores();
+    stopTimer();
     const socket = new SockJS('/end');
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
         console.log("Connected: " + frame);
         stompClient.subscribe(`/topic/game.end`, function (message) {
-            //Do nothing, game end
+            var isDone = (message.body === 'true');
+            if(isDone === true) {
+                connectRematch();
+                showFinalScores();
+            }
         });
         sendScores();
     });
@@ -447,6 +384,35 @@ function sendScores() {
         type: "game.end",
         gameId: gameId,
         playerUsername: username
+    });
+}
+
+function sendRematch(rematchStatus) {
+    sendMessage({
+        type: "game.rematch",
+        gameId: gameId,
+        playerUsername: username,
+        accepted: rematchStatus
+    });
+}
+
+function rematch() {
+    sendRematch(true);
+}
+
+
+function returnHome() {
+    sendRematch(false);   
+}
+
+function connectRematch() {
+    const socketRematch = new SockJS('/rematch');
+    stompClient = Stomp.over(socketRematch);
+    stompClient.connect({}, function (frame) {
+        console.log("Connected: " + frame);
+        stompClient.subscribe(`/topic/game.rematch`, function (message) {
+            handleRematchStatus(message.body);
+        });
     });
 }
 
@@ -461,6 +427,19 @@ function handleGameStatus(message) {
 
     console.log(messageStatus);
 }
+
+function handleRematchStatus(message) {
+    messageObject = JSON.parse(message);
+    messageStatus = messageObject.status;
+    if(messageStatus === "REMATCH2") {
+        console.log("REMATCH SUCCESS");
+    } else if(messageStatus === "REMATCH1") {
+        console.log("WAITING FOR REMATCH");
+    } else {
+        console.log("NO REMATCH");
+    }
+}
+
 
 function messageToGame(message) {
     /*message.setGameId(game.getGameId());

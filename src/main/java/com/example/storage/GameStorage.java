@@ -55,6 +55,18 @@ public class GameStorage {
         return null;
     }
 
+    public synchronized Game getCompletedGamesByUser(User user) {
+        for(Game game : games.values()) {
+            if(game.getPlayer1().getUsername().equals(user.getUsername()) || 
+            game.getPlayer2().getUsername().equals(user.getUsername())) {
+                if(game.getStatus() == GameStatus.FINISHED) {
+                    return game;
+                }
+            }
+        }
+        return null;
+    }
+
     public void deleteGame(String gameId) {
         for(String key : games.keySet()) {
             if(key.equals(gameId)) {

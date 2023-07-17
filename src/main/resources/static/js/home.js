@@ -1,26 +1,33 @@
-let cardText = document.getElementsByClassName("card-text")[0];
-let cardTitle = document.getElementsByClassName("card-title")[0];
-
-let button = document.getElementById("dashboard_button");
-
 let createGameLink = document.getElementById('createGameLink');
 let joinGameLink = document.getElementById('joinGameLink');
 let thirdItemLink = document.getElementById('thirdItemLink');
 
-let gameIdDiv = document.getElementsByClassName("group")[0];
-let gameIdInput = document.getElementsByClassName("game_id_input")[0];
-
-let currentActiveLink = createGameLink;
-
-// Add click event listeners to the list elements
 createGameLink.addEventListener('click', handleCreateGameClick);
 joinGameLink.addEventListener('click', handleJoinGameClick);
 thirdItemLink.addEventListener('click', handleThirdItemClick);
 
-button.addEventListener("click", handleClickButton);
+let currentActiveLink = createGameLink;
+
+let cardText = document.getElementsByClassName("card-text")[0];
+let cardTitle = document.getElementsByClassName("card-title")[0];
+
+let dashboardButton = document.getElementById("dashboard_button");
+// Add click event listeners to the list elements
+dashboardButton.addEventListener("click", handleClickButton);
 
 let pastGamesButton = document.getElementById('past_games_button');
 pastGamesButton.addEventListener("click", pastGames);
+
+let homeLink = document.getElementById("home_link");
+let gameDashLink = document.getElementById("game_dashboard_link");
+let sidebarLink = homeLink;
+
+homeLink.addEventListener("click", handleHomeLink);
+gameDashLink.addEventListener("click", handleGameDashLink);
+
+
+let gameIdDiv = document.getElementsByClassName("group")[0];
+let gameIdInput = document.getElementsByClassName("game_id_input")[0];
 
 // Function to handle click on 'Create Game'
 function handleCreateGameClick() {
@@ -32,7 +39,7 @@ function handleCreateGameClick() {
     currentActiveLink = createGameLink;
     cardTitle.innerHTML = "Create Game";
     cardText.innerHTML = "Click the button below to create a 1v1 game.";
-    button.innerHTML = "Create";
+    dashboardButton.innerHTML = "Create";
     gameIdDiv.style.display = "none";
 }
 
@@ -46,7 +53,7 @@ function handleJoinGameClick() {
     currentActiveLink = joinGameLink;
     cardTitle.innerHTML = "Join Game";
     cardText.innerHTML = "Click the button below to join a 1v1 game.";
-    button.innerHTML = "Join";
+    dashboardButton.innerHTML = "Join";
     gameIdDiv.style.display = "block";
 }
 
@@ -60,9 +67,22 @@ function handleThirdItemClick() {
     currentActiveLink = thirdItemLink;
     cardTitle.innerHTML = "Bruh";
     cardText.innerHTML = "Haven't decided yet";
-    button.innerHTML = "IDK";
+    dashboardButton.innerHTML = "IDK";
     gameIdDiv.style.display = "none";
 }
+
+function handleHomeLink() {
+    sidebarLink.classList.remove("active", "link-light");
+    homeLink.classList.add("active", "link-light");
+    sidebarLink = homeLink;
+}
+
+function handleGameDashLink() {
+    sidebarLink.classList.remove("active", "link-light");
+    gameDashLink.classList.add("active", "link-light");
+    sidebarLink = gameDashLink;
+}
+
 
 function createGame() {
     fetch("/game/create")

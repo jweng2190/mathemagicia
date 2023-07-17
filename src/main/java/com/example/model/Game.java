@@ -45,6 +45,10 @@ public class Game {
     private boolean player1Ready;
     @Transient
     private boolean player2Ready;
+    @Transient
+    private boolean player1Rematch;
+    @Transient
+    private boolean player2Rematch;
 
     @ManyToMany(cascade = {
         CascadeType.PERSIST
@@ -150,8 +154,20 @@ public class Game {
         return this.player2Ready;
     }
 
-    public void setPlayer2Ready(boolean player2Ready) {
-        this.player2Ready = player2Ready;
+    public boolean isPlayer1Rematch() {
+        return this.player1Rematch;
+    }
+
+    public void setPlayer1Rematch(boolean player1Rematch) {
+        this.player1Rematch = player1Rematch;
+    }
+
+    public boolean isPlayer2Rematch() {
+        return this.player2Rematch;
+    }
+
+    public void setPlayer2Rematch(boolean player2Rematch) {
+        this.player2Rematch = player2Rematch;
     }
 
     public List<Problem> getProblemSet() {

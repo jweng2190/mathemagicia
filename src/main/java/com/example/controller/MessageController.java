@@ -30,6 +30,7 @@ import com.example.dto.message.EndMessage;
 import com.example.dto.message.GameMessage;
 import com.example.dto.message.JoinMessage;
 import com.example.dto.message.ReadyMessage;
+import com.example.dto.message.RematchMessage;
 import com.example.model.Game;
 import com.example.model.GameStatus;
 import com.example.model.Problem;
@@ -57,6 +58,9 @@ public class MessageController {
     private AtomicBoolean player1Finished = new AtomicBoolean(false);
     private AtomicBoolean player2Finished = new AtomicBoolean(false);
     private boolean gameCompleted = false;
+
+    private AtomicBoolean player1Rematch = new AtomicBoolean(false);
+    private AtomicBoolean player2Rematch = new AtomicBoolean(false);
 
     private static ConcurrentMap<List<String>, Long> answerTimestamps = new ConcurrentHashMap<>();
 
@@ -126,6 +130,44 @@ public class MessageController {
         return currentGame;
     }
 
+
+    @MessageMapping("/game.rematch")
+    @SendTo("/topic/game.rematch")
+    public Game rematch(@Payload RematchMessage rematchMessage) {
+        String playerUsername = rematchMessage.getPlayerUsername();
+        boolean isAccepted = rematchMessage.isAccepted();
+
+        User player = userDao.getUserByUsername(playerUsername);
+        GameStorage gameStorage = GameStorage.getInstance();
+        Game activeGame = gameStorage.getActiveGameByUser(player);
+        if(activeGame.getPlayer1Username().equals(playerUsername)) {
+            if(isAccepted) {
+                player1Rematch.set(true);
+                activeGame.setStatus(GameStatus.REMATCH1);
+            } else {
+                player1Rematch.set(false);
+                activeGame.setStatus(GameStatus.FINISHED);
+            }
+        }
+
+        if(activeGame.getPlayer2Username().equals(playerUsername)) {
+            if(isAccepted) {
+                player2Rematch.set(true);
+                activeGame.setStatus(GameStatus.REMATCH1);
+            } else {
+                player2Rematch.set(false);
+                activeGame.setStatus(GameStatus.FINISHED);
+            }
+        }
+
+        if(player1Rematch.get() && player2Rematch.get()) {
+            activeGame.setStatus(GameStatus.REMATCH2);
+        }
+
+        return activeGame;
+    }
+
+
     @MessageMapping("/game.answer")
     @SendTo("/topic/game.answer")
     public Object checkAnswer(@Payload AnswerMessage answerMessage) {
@@ -193,12 +235,10 @@ public class MessageController {
 
     @MessageMapping("/game.end")
     @SendTo("/topic/game.end")
-    private void endGame(@Payload EndMessage endMessage) {
+    private boolean endGame(@Payload EndMessage endMessage) {
         String activeGameId = endMessage.getGameId();
         Game activeGame = gameService.getGameById(activeGameId);
         String playerUsername = endMessage.getPlayerUsername();
-
-        activeGame.setStatus(GameStatus.FINISHED);
 
         String winner = getWinner(activeGame);
         activeGame.setWinner(winner);
@@ -228,6 +268,7 @@ public class MessageController {
         }
 
         checkBothPlayersFinished(activeGame);
+        return (player1Finished.get() && player2Finished.get());
     }
 
 
