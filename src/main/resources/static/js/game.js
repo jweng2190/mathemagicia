@@ -392,7 +392,8 @@ function sendRematch(rematchStatus) {
         type: "game.rematch",
         gameId: gameId,
         playerUsername: username,
-        accepted: rematchStatus
+        accepted: rematchStatus,
+        currentTime: Date.now()
     });
 }
 
@@ -429,11 +430,14 @@ function handleGameStatus(message) {
 }
 
 function handleRematchStatus(message) {
-    messageObject = JSON.parse(message);
-    messageStatus = messageObject.status;
-    if(messageStatus === "REMATCH2") {
+    parsedMessage = JSON.parse(message);
+    rematchStatus = parsedMessage[0];
+    newGameId = parsedMessage[1];
+
+    if(rematchStatus === "REMATCH2") {
         console.log("REMATCH SUCCESS");
-    } else if(messageStatus === "REMATCH1") {
+        window.location.href = "/game/" + newGameId;
+    } else if(rematchStatus === "REMATCH1") {
         console.log("WAITING FOR REMATCH");
     } else {
         console.log("NO REMATCH");

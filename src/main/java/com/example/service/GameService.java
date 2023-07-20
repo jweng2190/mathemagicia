@@ -35,6 +35,7 @@ public class GameService {
 
     public Game createGame(User player) {
         Game game = new Game();
+        //set id
         game.setGameId(UUID.randomUUID().toString());
         game.setPlayer1(player);
         game.setPlayer1Username(player.getUsername());

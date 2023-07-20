@@ -1,6 +1,7 @@
 package com.example.controller;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -57,12 +58,12 @@ public class MessageController {
 
     private AtomicBoolean player1Finished = new AtomicBoolean(false);
     private AtomicBoolean player2Finished = new AtomicBoolean(false);
-    private boolean gameCompleted = false;
 
     private AtomicBoolean player1Rematch = new AtomicBoolean(false);
     private AtomicBoolean player2Rematch = new AtomicBoolean(false);
 
     private static ConcurrentMap<List<String>, Long> answerTimestamps = new ConcurrentHashMap<>();
+    private static ConcurrentMap<String, Long> rematchTimestamps = new ConcurrentHashMap<>();
 
 
     @MessageMapping("/game.join")
@@ -133,9 +134,10 @@ public class MessageController {
 
     @MessageMapping("/game.rematch")
     @SendTo("/topic/game.rematch")
-    public Game rematch(@Payload RematchMessage rematchMessage) {
+    public List<String> rematch(@Payload RematchMessage rematchMessage) {
         String playerUsername = rematchMessage.getPlayerUsername();
         boolean isAccepted = rematchMessage.isAccepted();
+        long currentTime = rematchMessage.getCurrentTime();
 
         User player = userDao.getUserByUsername(playerUsername);
         GameStorage gameStorage = GameStorage.getInstance();
@@ -143,28 +145,47 @@ public class MessageController {
         if(activeGame.getPlayer1Username().equals(playerUsername)) {
             if(isAccepted) {
                 player1Rematch.set(true);
-                activeGame.setStatus(GameStatus.REMATCH1);
+                rematchTimestamps.put("Player 1", currentTime);
+                if(!player2Rematch.get()) {
+                    return Arrays.asList("REMATCH1", "");
+                }
             } else {
                 player1Rematch.set(false);
                 activeGame.setStatus(GameStatus.FINISHED);
+                gameDao.save(activeGame);
             }
         }
 
         if(activeGame.getPlayer2Username().equals(playerUsername)) {
             if(isAccepted) {
                 player2Rematch.set(true);
-                activeGame.setStatus(GameStatus.REMATCH1);
+                rematchTimestamps.put("Player 2", currentTime);
+                if(!player1Rematch.get()) {
+                    return Arrays.asList("REMATCH1", "");
+                }
             } else {
                 player2Rematch.set(false);
                 activeGame.setStatus(GameStatus.FINISHED);
+                gameDao.save(activeGame);
             }
         }
 
         if(player1Rematch.get() && player2Rematch.get()) {
-            activeGame.setStatus(GameStatus.REMATCH2);
+            activeGame.setStatus(GameStatus.FINISHED);
+            gameDao.save(activeGame);
+            String rematchFirst = findFirstRematch();
+            String newGameId;
+            if(rematchFirst.equals("Player 1")) {
+                Game rematchGame = gameService.createGame(activeGame.getPlayer1());
+                newGameId = rematchGame.getGameId();
+            } else {
+                Game rematchGame = gameService.createGame(activeGame.getPlayer2());
+                newGameId = rematchGame.getGameId();
+            }
+            return Arrays.asList("REMATCH2", newGameId);
         }
 
-        return activeGame;
+        return Arrays.asList("", "");
     }
 
 
@@ -232,6 +253,27 @@ public class MessageController {
             return fastestKey.get(0);
         }
     }
+
+    private static String findFirstRematch() {
+        Set<String> keySet = rematchTimestamps.keySet();
+        long minTime = System.currentTimeMillis();
+        String fastestKey = null;
+
+        for(String key : keySet) {
+            if(rematchTimestamps.get(key) < minTime) {
+                minTime = rematchTimestamps.get(key);
+                fastestKey = key;
+            }
+        }
+
+        if(fastestKey == null) {
+            System.out.println("Got null value");
+            return "";
+        } else {
+            return fastestKey;
+        }
+    }
+
 
     @MessageMapping("/game.end")
     @SendTo("/topic/game.end")
@@ -309,7 +351,7 @@ public class MessageController {
     }
 
     private synchronized void checkBothPlayersFinished(Game game) {
-        if (player1Finished.get() && player2Finished.get() && !gameCompleted) {
+        if (player1Finished.get() && player2Finished.get()) {
             gameDao.save(game);
         }
     }

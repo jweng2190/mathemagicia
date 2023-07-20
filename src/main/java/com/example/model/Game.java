@@ -50,9 +50,9 @@ public class Game {
     @Transient
     private boolean player2Rematch;
 
-    @ManyToMany(cascade = {
+    @ManyToMany(/* cascade = {
         CascadeType.PERSIST
-    }, fetch = FetchType.EAGER)
+    }, */ fetch = FetchType.EAGER)
     @JoinTable(
         name = "game_problem",
         joinColumns = @JoinColumn(name = "game_id", referencedColumnName = "id"),
