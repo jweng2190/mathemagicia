@@ -58,4 +58,9 @@ public class ViewController {
     public String testEnd() {
         return "test_end";
     }
+
+    @GetMapping("/test_latex")
+    public String testLatex() {
+        return "test_latex";
+    }
 }
