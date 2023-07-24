@@ -2,7 +2,8 @@ package com.example.controller;
 
 import com.example.dao.UserRepository;
 import com.example.model.User;
-import com.example.security.UserService;
+import com.example.service.UserService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.ui.Model;

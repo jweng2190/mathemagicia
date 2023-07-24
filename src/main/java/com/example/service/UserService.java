@@ -1,9 +1,11 @@
-package com.example.security;
+package com.example.service;
 
 import com.example.dao.RoleRepository;
 import com.example.dao.UserRepository;
 import com.example.model.Role;
 import com.example.model.User;
+import com.exception.CustomerNotFoundException;
+
 import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -36,6 +38,29 @@ public class UserService {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
+    }
+
+    public void updatePassword(User user, String newPassword) {
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        String encodedPassword = passwordEncoder.encode(newPassword);
+        user.setPassword(encodedPassword);
+         
+        user.setResetPasswordToken(null);
+        repo.save(user);
+    }
+
+    public User getByResetPasswordToken(String token) {
+        return repo.getUserByToken(token);
+    }
+
+    public void updateResetPasswordToken(String token, String email) throws CustomerNotFoundException {
+        User user = repo.getUserByEmail(email);
+        if (user != null) {
+            user.setResetPasswordToken(token);
+            repo.save(user);
+        } else {
+            throw new CustomerNotFoundException("Could not find any customer with the email " + email);
+        }
     }
 
 

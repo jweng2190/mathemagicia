@@ -14,6 +14,12 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query("SELECT u FROM User u WHERE u.username = :username")
     User getUserByUsername(@Param("username") String username);
 
+    @Query("SELECT u FROM User u WHERE u.email = :email")
+    public User getUserByEmail(@Param("email") String email);
+
+    @Query("SELECT u FROM User u WHERE u.resetPasswordToken = :token")
+    public User getUserByToken(@Param("token") String token);
+
     @Query(value="SELECT email FROM user WHERE CONCAT(first_name, ' ', last_name) = ?1", nativeQuery = true)
     List<String> getEmailsByFullName(String fullName);
 

@@ -36,6 +36,9 @@ public class User {
 
     private Integer team;
 
+    @Column(name = "reset_password_token")
+    private String resetPasswordToken;
+
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_role",
@@ -156,6 +159,14 @@ public class User {
 
     public void setTeam(Integer team) {
         this.team = team;
+    }
+
+    public String getResetPasswordToken() {
+        return this.resetPasswordToken;
+    }
+
+    public void setResetPasswordToken(String resetPasswordToken) {
+        this.resetPasswordToken = resetPasswordToken;
     }
 
     public String getFullName() {
