@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import com.example.model.Game;
 import com.example.model.GameStatus;
+import com.example.model.User;
 import com.example.service.GameService;
 
 
@@ -25,4 +26,7 @@ public interface GameRepository extends JpaRepository<Game, Integer> {
     @Param("player1Username") String player1Username, @Param("player2Username") String player2Username,
     @Param("status") String status, @Param("winner") String winner, @Param("player1Score") 
     int player1Score, @Param("player2Score") int player2Score);
+
+    @Query("SELECT game FROM Game game WHERE game.gameId = :gameId")
+    Game getGameByGameId(@Param("gameId") String gameId);
 }

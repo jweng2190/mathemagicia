@@ -138,10 +138,10 @@ public class MessageController {
         String playerUsername = rematchMessage.getPlayerUsername();
         boolean isAccepted = rematchMessage.isAccepted();
         long currentTime = rematchMessage.getCurrentTime();
+        String gameId = rematchMessage.getGameId();
+        
+        Game activeGame = gameDao.getGameByGameId(gameId);
 
-        User player = userDao.getUserByUsername(playerUsername);
-        GameStorage gameStorage = GameStorage.getInstance();
-        Game activeGame = gameStorage.getActiveGameByUser(player);
         if(activeGame.getPlayer1Username().equals(playerUsername)) {
             if(isAccepted) {
                 player1Rematch.set(true);
