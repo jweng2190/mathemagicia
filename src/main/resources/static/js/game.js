@@ -54,6 +54,8 @@ const player2ScoreElement = document.getElementById('player2-score');
 
 const gameContent = document.getElementsByClassName('game-page')[0];
 
+var myModal = new bootstrap.Modal(document.getElementById('modal-end'));
+
 
 function startTimer() {
     let timer = document.getElementById('timer_p');
@@ -357,8 +359,13 @@ function playScoreAnimation(player) {
 
 
 function showFinalScores() {
-    var myModal = new bootstrap.Modal(document.getElementById('modal-end'));
+    //var myModal = new bootstrap.Modal(document.getElementById('modal-end'));
     myModal.show();
+}
+
+function closeModal() {
+    //var myModal = new bootstrap.Modal(document.getElementById('modal-end'));
+    myModal.hide();
 }
 
 function endGame() {

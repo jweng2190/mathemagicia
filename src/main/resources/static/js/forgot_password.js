@@ -26,14 +26,21 @@ form.addEventListener("submit", function(event) {
                     console.log(message);
                     messageStatus.textContent = message;
                 });
+
+                form.reset();
+                var allElements = form.elements;
+                for (var i = 0, l = allElements.length; i < l; ++i) {
+                    allElements[i].disabled=true;
+                }
             }
         })
         .catch((error) => {
             console.log(error);
             messageStatus.textContent = error;
             messageStatus.style.color = 'rgb(255, 0, 0)';
+            form.reset();
         });
 
     // Clear the form after submitting
-    form.reset();
+    // form.reset();
 })

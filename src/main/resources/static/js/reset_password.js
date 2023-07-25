@@ -35,6 +35,12 @@ form.addEventListener("submit", function(event) {
                     spanReset.style.color = 'rgb(255, 147, 20)';
                     linkLogin.style.display = 'inline-block';
                 });
+
+                form.reset();
+                var allElements = form.elements;
+                for (var i = 0, l = allElements.length; i < l; ++i) {
+                    allElements[i].disabled=true;
+                }
             }
         })
         .catch((error) => {
@@ -42,10 +48,11 @@ form.addEventListener("submit", function(event) {
             spanReset.textContent = error;
             spanReset.style.color = 'red';
             linkLogin.style.display = 'none';
+            form.reset();
         });
 
     // Clear the form after submitting
-    form.reset();
+    // form.reset();
 });
 
 function checkPasswordMatch(fieldConfirmPassword) {
