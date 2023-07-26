@@ -39,7 +39,7 @@ public class GameController {
     @GetMapping("/create")
     public ResponseEntity<String> createGame(Principal principal) throws InvalidGameException {
         String username = principal.getName();
-        User currentUser = userDao.getUserByUsername(username);
+        //User currentUser = userDao.getUserByUsername(username);
 
         //check if user has already created a game
         List<Game> creatorGames = gameService.getGamesByCreator(username);
@@ -47,7 +47,7 @@ public class GameController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
-        Game game = gameService.createGame(currentUser);
+        Game game = gameService.createGame(username);
         return ResponseEntity.ok(game.getGameId());
     }
 
@@ -55,7 +55,7 @@ public class GameController {
     public ResponseEntity<String> isCreatedWithId(@PathVariable("id") String gameId, Principal principal) {
         Game game = gameService.getGameById(gameId);
         String currentUsername = principal.getName();
-        return ResponseEntity.ok(String.valueOf(game.getPlayer1().getUsername().equals(currentUsername)));
+        return ResponseEntity.ok(String.valueOf(game.getPlayer1Username().equals(currentUsername)));
     }
 
     /* @PostMapping("/start")

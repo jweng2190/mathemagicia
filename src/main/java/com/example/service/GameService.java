@@ -33,12 +33,12 @@ public class GameService {
     @Autowired
     private GameRepository gameDao;
 
-    public Game createGame(User player) {
+    public Game createGame(String playerUsername) {
         Game game = new Game();
         //set id
         game.setGameId(UUID.randomUUID().toString());
-        game.setPlayer1(player);
-        game.setPlayer1Username(player.getUsername());
+        //game.setPlayer1(player);
+        game.setPlayer1Username(playerUsername);
         game.setPlayer1Joined(true);
         game.setStatus(NEW);
 
@@ -54,7 +54,7 @@ public class GameService {
     public String getGameCodeByUsername(String player1Username) {
         Map<String, Game> allGames = GameStorage.getInstance().getGames();
         for(String key : allGames.keySet()) {
-            if(allGames.get(key).getPlayer1().getUsername().equals(player1Username)) {
+            if(allGames.get(key).getPlayer1Username().equals(player1Username)) {
                 return key;
             }
         }
@@ -80,7 +80,7 @@ public class GameService {
 
         for(String key : allGames.keySet()) {
             Game game = allGames.get(key);
-            if(game.getPlayer1().getUsername().equals(creatorUsername) && game.getStatus() != GameStatus.FINISHED) {
+            if(game.getPlayer1Username().equals(creatorUsername) && game.getStatus() != GameStatus.FINISHED) {
                 gameListByUser.add(i, game);
                 i++;
             }

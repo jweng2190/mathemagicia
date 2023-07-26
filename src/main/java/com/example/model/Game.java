@@ -1,5 +1,6 @@
 package com.example.model;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import javax.persistence.*;
@@ -23,32 +24,17 @@ public class Game {
     @Column(name="player2_username")
     private String player2Username;
 
-    @Transient
+    /* @Transient
     private User player1;
 
     @Transient
-    private User player2;
+    private User player2; */
 
     @Enumerated(EnumType.STRING)
     @Column(name="game_status")
     private GameStatus status;
 
     private String winner;
-
-    @Transient
-    private User winnerUser;
-    @Transient
-    private boolean player1Joined;
-    @Transient
-    private boolean player2Joined;
-    @Transient
-    private boolean player1Ready;
-    @Transient
-    private boolean player2Ready;
-    @Transient
-    private boolean player1Rematch;
-    @Transient
-    private boolean player2Rematch;
 
     @ManyToMany(/* cascade = {
         CascadeType.PERSIST
@@ -66,16 +52,37 @@ public class Game {
     @Column(name="player2_score")
     private Integer player2Score = 0;
 
+    @Column(name="game_date", columnDefinition = "DATE")
+    private LocalDate gameDate;
+
+    @Column(name="player1_joined")
+    private boolean player1Joined;
+
+    @Column(name="player2_joined")
+    private boolean player2Joined;
+
+    @Column(name="player1_ready")
+    private boolean player1Ready;
+
+    @Column(name="player2_ready")
+    private boolean player2Ready;
+
+    @Column(name="player1_rematch")
+    private boolean player1Rematch;
+
+    @Column(name="player2_rematch")
+    private boolean player2Rematch;
+
 
     public Game() {
     }
 
-    public Game(User player1, User player2) {
+    /* public Game(User player1, User player2) {
         this.player1 = player1;
         this.player1 = player2;
         player1Score = 0;
         player2Score = 0;
-    }
+    } */
 
     public int getId() {
         return this.id;
@@ -94,7 +101,7 @@ public class Game {
         this.gameId = gameId;
     }
 
-    public User getPlayer1() {
+    /* public User getPlayer1() {
         return this.player1;
     }
 
@@ -108,7 +115,7 @@ public class Game {
 
     public void setPlayer2(User player2) {
         this.player2 = player2;
-    }
+    } */
 
     public GameStatus getStatus() {
         return this.status;
@@ -116,14 +123,6 @@ public class Game {
 
     public void setStatus(GameStatus status) {
         this.status = status;
-    }
-
-    public User getWinnerUser() {
-        return this.winnerUser;
-    }
-
-    public void setWinnerUser(User winner) {
-        this.winnerUser = winner;
     }
 
     public boolean isPlayer1Joined() {
@@ -208,5 +207,13 @@ public class Game {
 
     public void setPlayer2Username(String player2Username) {
         this.player2Username = player2Username;
+    }
+
+    public LocalDate getGameDate() {
+        return this.gameDate;
+    }
+
+    public void setGameDate(LocalDate gameDate) {
+        this.gameDate = gameDate;
     }
 }

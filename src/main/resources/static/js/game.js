@@ -196,14 +196,16 @@ async function isCreatedByUser(gameId) {
 function joinGame() {
     sendMessage({
         type: "game.join",
-        playerUsername: username
+        playerUsername: username,
+        gameId: gameId
     });
 }
 
 function queueGame() {
     sendMessage({
         type: "game.ready",
-        playerUsername: username
+        playerUsername: username,
+        gameId: gameId
     });
 }
 

@@ -1,5 +1,6 @@
 package com.example.controller;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -59,31 +60,17 @@ public class MessageController {
     private AtomicBoolean player1Finished = new AtomicBoolean(false);
     private AtomicBoolean player2Finished = new AtomicBoolean(false);
 
-    private AtomicBoolean player1Rematch = new AtomicBoolean(false);
-    private AtomicBoolean player2Rematch = new AtomicBoolean(false);
-
     private static ConcurrentMap<List<String>, Long> answerTimestamps = new ConcurrentHashMap<>();
     private static ConcurrentMap<String, Long> rematchTimestamps = new ConcurrentHashMap<>();
 
 
     @MessageMapping("/game.join")
     @SendTo("/topic/game.state")
-    public Object joinGame(@Payload JoinMessage message, SimpMessageHeaderAccessor headerAccessor) {
+    public Object joinGame(@Payload JoinMessage message) {
         String player2Username = message.getPlayerUsername();
-        GameStorage gameStorage = GameStorage.getInstance();
-        ConcurrentHashMap<String, Game> games = (ConcurrentHashMap<String, Game>) gameStorage.getGames();
-        Game gameToJoin = null;
+        String gameId = message.getGameId();
 
-        for (Game game : games.values()) {
-            if (game.getPlayer1() != null && game.getPlayer2() == null) {
-                User player2 = userDao.getUserByUsername(player2Username);
-                game.setPlayer2(player2);
-                game.setPlayer2Username(player2.getUsername());
-                game.setPlayer2Joined(true);
-                game.setStatus(GameStatus.IN_PROGRESS);
-                gameToJoin = game;
-            }
-        }
+        Game gameToJoin = gameDao.getGameByGameId(gameId);
         if (gameToJoin == null) {
             GameMessage errorMessage = new GameMessage();
             errorMessage.setType("error");
@@ -91,42 +78,49 @@ public class MessageController {
             return errorMessage;
         }
 
+        if (gameToJoin.getPlayer1Username() != null && gameToJoin.getPlayer2Username() == null) {
+            User player2 = userDao.getUserByUsername(player2Username);
+            gameToJoin.setPlayer2Username(player2.getUsername());
+            gameToJoin.setPlayer2Joined(true);
+            gameToJoin.setStatus(GameStatus.IN_PROGRESS);
+        }  
+
         gameToJoin.setPlayer1Ready(false);
         gameToJoin.setPlayer2Ready(false);
+
+        gameDao.save(gameToJoin);
 
         GameMessage gameMessage = gameToMessage(gameToJoin);
         gameMessage.setType("game.joined");
         return gameMessage;
     }
 
-    @MessageMapping("/game.created")
-    @SendTo("/topic/game.created")
-    public boolean loadGame(@Payload String gameId, SimpMessageHeaderAccessor headerAccessor) {
-        Game game = gameService.getGameById(gameId);
-        return (game == null);
-    }
 
     @MessageMapping("/game.ready")
     @SendTo("/topic/game.ready")
-    public Game queueGame(@Payload ReadyMessage readyMessage, SimpMessageHeaderAccessor headerAccessor) {
+    public Game queueGame(@Payload ReadyMessage readyMessage) {
         User readyUser = userDao.getUserByUsername(readyMessage.getPlayerUsername());
-        GameStorage gameStorage = GameStorage.getInstance();
-        Game currentGame = gameStorage.getActiveGameByUser(readyUser);
+        String gameId = readyMessage.getGameId();
+        Game currentGame = gameDao.getGameByGameId(gameId);
         
-        if(currentGame.getPlayer1().getUsername().equals(readyUser.getUsername())) {
+        if(currentGame.getPlayer1Username().equals(readyUser.getUsername())) {
             currentGame.setPlayer1Ready(true);
         }
-        if(currentGame.getPlayer2().getUsername().equals(readyUser.getUsername())) {
+        if(currentGame.getPlayer2Username().equals(readyUser.getUsername())) {
             currentGame.setPlayer2Ready(true);
         }
 
         if(currentGame.isPlayer1Ready() && !currentGame.isPlayer2Ready()) {
             currentGame.setStatus(GameStatus.READY1);
-        } else if(currentGame.isPlayer2Ready() && !currentGame.isPlayer1Ready()) {
+        }
+        if(currentGame.isPlayer2Ready() && !currentGame.isPlayer1Ready()) {
             currentGame.setStatus(GameStatus.READY1);
-        } else if(currentGame.isPlayer1Ready() && currentGame.isPlayer2Ready()) {
+        }
+        if(currentGame.isPlayer1Ready() && currentGame.isPlayer2Ready()) {
             currentGame.setStatus(GameStatus.READY2);
         }
+
+        gameDao.save(currentGame);
 
         return currentGame;
     }
@@ -144,42 +138,50 @@ public class MessageController {
 
         if(activeGame.getPlayer1Username().equals(playerUsername)) {
             if(isAccepted) {
-                player1Rematch.set(true);
+                activeGame.setPlayer1Rematch(true);
+                //player1Rematch.set(true);
                 rematchTimestamps.put("Player 1", currentTime);
-                if(!player2Rematch.get()) {
+                if(!activeGame.isPlayer2Rematch()) {
+                    gameDao.save(activeGame);
                     return Arrays.asList("REMATCH1", "");
                 }
             } else {
-                player1Rematch.set(false);
+                activeGame.setPlayer1Rematch(false);
+                //player1Rematch.set(false);
                 activeGame.setStatus(GameStatus.FINISHED);
-                gameDao.save(activeGame);
+                
             }
+            gameDao.save(activeGame);
         }
 
         if(activeGame.getPlayer2Username().equals(playerUsername)) {
             if(isAccepted) {
-                player2Rematch.set(true);
+                activeGame.setPlayer2Rematch(true);
+                //player2Rematch.set(true);
                 rematchTimestamps.put("Player 2", currentTime);
-                if(!player1Rematch.get()) {
+                if(!activeGame.isPlayer1Rematch()) {
+                    gameDao.save(activeGame);
                     return Arrays.asList("REMATCH1", "");
                 }
             } else {
-                player2Rematch.set(false);
+                activeGame.setPlayer2Rematch(false);
+                //player2Rematch.set(false);
                 activeGame.setStatus(GameStatus.FINISHED);
-                gameDao.save(activeGame);
+                
             }
+            gameDao.save(activeGame);
         }
 
-        if(player1Rematch.get() && player2Rematch.get()) {
+        if(activeGame.isPlayer1Rematch() && activeGame.isPlayer2Rematch()) {
             activeGame.setStatus(GameStatus.FINISHED);
             gameDao.save(activeGame);
             String rematchFirst = findFirstRematch();
             String newGameId;
             if(rematchFirst.equals("Player 1")) {
-                Game rematchGame = gameService.createGame(activeGame.getPlayer1());
+                Game rematchGame = gameService.createGame(activeGame.getPlayer1Username());
                 newGameId = rematchGame.getGameId();
             } else {
-                Game rematchGame = gameService.createGame(activeGame.getPlayer2());
+                Game rematchGame = gameService.createGame(activeGame.getPlayer2Username());
                 newGameId = rematchGame.getGameId();
             }
             return Arrays.asList("REMATCH2", newGameId);
@@ -193,13 +195,11 @@ public class MessageController {
     @SendTo("/topic/game.answer")
     public Object checkAnswer(@Payload AnswerMessage answerMessage) {
         String activeGameId = answerMessage.getGameId();
-        Game activeGame = gameService.getGameById(activeGameId);
-
-        List<Problem> problemSet = activeGame.getProblemSet();
+        Game activeGame = gameDao.getGameByGameId(activeGameId);
 
         //get both usernames
-        String player1Username = activeGame.getPlayer1().getUsername();
-        String player2Username = activeGame.getPlayer2().getUsername();
+        String player1Username = activeGame.getPlayer1Username();
+        String player2Username = activeGame.getPlayer2Username();
 
         String playerUsername = answerMessage.getPlayerUsername();
 
@@ -226,6 +226,8 @@ public class MessageController {
                 activeGame.setPlayer2Score(currentPlayerScore + 1);
             }
             //clearTimestamps();
+
+            gameDao.save(activeGame);
         }
 
         GameMessage gameMessage = gameToMessage(activeGame);
@@ -279,14 +281,14 @@ public class MessageController {
     @SendTo("/topic/game.end")
     private boolean endGame(@Payload EndMessage endMessage) {
         String activeGameId = endMessage.getGameId();
-        Game activeGame = gameService.getGameById(activeGameId);
+        Game activeGame = gameDao.getGameByGameId(activeGameId);
         String playerUsername = endMessage.getPlayerUsername();
 
         String winner = getWinner(activeGame);
         activeGame.setWinner(winner);
 
-        String player1 = activeGame.getPlayer1().getUsername();
-        String player2 = activeGame.getPlayer2().getUsername();
+        String player1 = activeGame.getPlayer1Username();
+        String player2 = activeGame.getPlayer2Username();
 
         int gameScore1 = activeGame.getPlayer1Score();
         int gameScore2 = activeGame.getPlayer2Score();
@@ -328,13 +330,13 @@ public class MessageController {
     private GameMessage gameToMessage(Game game) {
         GameMessage message = new GameMessage();
         message.setGameId(game.getGameId());
-        message.setPlayer1(game.getPlayer1());
-        message.setPlayer2(game.getPlayer2());
+        //message.setPlayer1(game.getPlayer1());
+        //message.setPlayer2(game.getPlayer2());
         message.setPlayer1Joined(game.isPlayer1Joined());
         message.setPlayer2Joined(game.isPlayer2Joined());
         message.setGameStatus(game.getStatus());
         message.setProblemSet(game.getProblemSet());
-        message.setWinner(game.getWinnerUser());
+        //message.setWinner(game.getWinnerUser());
         message.setScore1(game.getPlayer1Score());
         message.setScore2(game.getPlayer2Score());
         return message;
@@ -352,6 +354,7 @@ public class MessageController {
 
     private synchronized void checkBothPlayersFinished(Game game) {
         if (player1Finished.get() && player2Finished.get()) {
+            game.setGameDate(LocalDate.now());
             gameDao.save(game);
         }
     }

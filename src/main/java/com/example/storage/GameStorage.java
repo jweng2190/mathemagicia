@@ -33,7 +33,7 @@ public class GameStorage {
         return games;
     }
 
-    public synchronized Game getGameByUser(User user) {
+    /* public synchronized Game getGameByUser(User user) {
         for(Game game : games.values()) {
             if(game.getPlayer1().getUsername().equals(user.getUsername()) || 
             game.getPlayer2().getUsername().equals(user.getUsername())) {
@@ -41,9 +41,9 @@ public class GameStorage {
             }
         }
         return null;
-    }
+    } */
 
-    public synchronized Game getActiveGameByUser(User user) {
+    /* public synchronized Game getActiveGameByUser(User user) {
         for(Game game : games.values()) {
             if(game.getPlayer1().getUsername().equals(user.getUsername()) || 
             game.getPlayer2().getUsername().equals(user.getUsername())) {
@@ -53,9 +53,9 @@ public class GameStorage {
             }
         }
         return null;
-    }
+    } */
 
-    public synchronized Game getCompletedGamesByUser(User user) {
+    /* public synchronized Game getCompletedGamesByUser(User user) {
         for(Game game : games.values()) {
             if(game.getPlayer1().getUsername().equals(user.getUsername()) || 
             game.getPlayer2().getUsername().equals(user.getUsername())) {
@@ -66,7 +66,7 @@ public class GameStorage {
         }
         return null;
     }
-
+ */
     public void deleteGame(String gameId) {
         for(String key : games.keySet()) {
             if(key.equals(gameId)) {
