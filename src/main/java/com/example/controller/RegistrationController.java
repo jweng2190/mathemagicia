@@ -30,7 +30,7 @@ public class RegistrationController {
     public ModelAndView showRegistrationForm(Model model) {
         model.addAttribute("user", new User());
 
-        modelAndView.setViewName("registration_form.html");
+        modelAndView.setViewName("register.html");
         return modelAndView;
     }
 

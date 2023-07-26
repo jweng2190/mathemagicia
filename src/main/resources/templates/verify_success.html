@@ -1,17 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html data-bs-theme="light" lang="en">
+
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <title>User Verification</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css"
-          rel="stylesheet"
-          integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx"
-          crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
-<body>
-<div class="container text-center">
-    <h3>Congratulations, your account has been verified!</h3>
-    <h4><a href="/login">Click here to Login</a></h4>
-</div>
+
+<body style="background: url(&quot;/img/background.jpg&quot;) center / auto no-repeat;">
+    <div class="d-flex flex-column justify-content-center align-items-center" style="padding-top: 55px;"><img src="/img/blue_verified.png" style="height: 100px;width: 100px;margin-bottom: 34px;">
+        <h2 class="text-center" style="color: white;font-size: 33px;height: 59.5938px;margin-bottom: 46px;">Congratulations, your account has been verified!</h2><button class="btn btn-primary" id="register_login" type="button" onclick="window.location.href = '/login';">Click here to Login</button>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
