@@ -16,4 +16,11 @@ public class HomeController {
         modelAndView.setViewName("home.html");
         return modelAndView;
     }
+
+    @RolesAllowed({"USER"})
+    @GetMapping("/dashboard")
+    public ModelAndView gameDashboard() {
+        modelAndView.setViewName("dashboard.html");
+        return modelAndView;
+    }
 }
