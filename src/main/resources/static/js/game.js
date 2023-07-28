@@ -151,19 +151,22 @@ function connect() {
             console.log("Current Problem: " + objectToProblem(currentProblem));
             console.log("Current ProblemId: " + currentProblemId);
             console.log("Current ProblemIndex: " + currentProblemIndex);
-        });
 
-        var isCreated;
+            
+        });
+        
+        joinGame();
+        /* var isCreated;
         isCreatedByUser(gameId).then((result) => {
             console.log(result);
             isCreated = result;
-        });
+        }); */
 
-        setTimeout(() => {
+        /* setTimeout(() => {
             if(!isCreated) {
                 joinGame();
             }
-        }, 3000);
+        }, 3000); */
     });
 };
 

@@ -4,6 +4,7 @@ import java.security.Principal;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.simp.user.SimpUser;
 import org.springframework.messaging.simp.user.SimpUserRegistry;
@@ -17,6 +18,8 @@ import com.example.storage.UserSessionMap;
 public class WebSocketEventListener {
     private final SimpUserRegistry simpUserRegistry;
     private final UserSessionMap userSessionMap;
+    @Autowired
+    private SimpMessagingTemplate simpMessagingTemplate;
     
     public WebSocketEventListener(SimpUserRegistry simpUserRegistry, UserSessionMap userSessionMap) {
         this.simpUserRegistry = simpUserRegistry;

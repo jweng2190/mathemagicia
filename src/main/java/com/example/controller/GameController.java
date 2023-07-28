@@ -41,11 +41,12 @@ public class GameController {
         String username = principal.getName();
         //User currentUser = userDao.getUserByUsername(username);
 
-        //check if user has already created a game
+        /* //check if user has already created a game
         List<Game> creatorGames = gameService.getGamesByCreator(username);
         if(creatorGames.size() >= 1) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
+        } */
+        //for testing purposes
 
         Game game = gameService.createGame(username);
         return ResponseEntity.ok(game.getGameId());

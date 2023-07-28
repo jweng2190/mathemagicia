@@ -67,7 +67,7 @@ public class MessageController {
     @MessageMapping("/game.join")
     @SendTo("/topic/game.state")
     public Object joinGame(@Payload JoinMessage message) {
-        String player2Username = message.getPlayerUsername();
+        String playerUsername = message.getPlayerUsername();
         String gameId = message.getGameId();
 
         Game gameToJoin = gameDao.getGameByGameId(gameId);
@@ -77,22 +77,27 @@ public class MessageController {
             errorMessage.setContent("Error: Unable to enter the game. The game is already full or an internal error has occurred.");
             return errorMessage;
         }
+        if(playerUsername.equals(gameToJoin.getPlayer1Username())) {
+            GameMessage gameMessage = gameToMessage(gameToJoin);
+            gameMessage.setType("game.joined");
+            return gameMessage;
+        } else {
+            if (gameToJoin.getPlayer1Username() != null && gameToJoin.getPlayer2Username() == null) {
+                User player2 = userDao.getUserByUsername(playerUsername);
+                gameToJoin.setPlayer2Username(player2.getUsername());
+                gameToJoin.setPlayer2Joined(true);
+                gameToJoin.setStatus(GameStatus.IN_PROGRESS);
+            }
 
-        if (gameToJoin.getPlayer1Username() != null && gameToJoin.getPlayer2Username() == null) {
-            User player2 = userDao.getUserByUsername(player2Username);
-            gameToJoin.setPlayer2Username(player2.getUsername());
-            gameToJoin.setPlayer2Joined(true);
-            gameToJoin.setStatus(GameStatus.IN_PROGRESS);
-        }  
+            gameToJoin.setPlayer1Ready(false);
+            gameToJoin.setPlayer2Ready(false);
 
-        gameToJoin.setPlayer1Ready(false);
-        gameToJoin.setPlayer2Ready(false);
+            gameDao.save(gameToJoin);
 
-        gameDao.save(gameToJoin);
-
-        GameMessage gameMessage = gameToMessage(gameToJoin);
-        gameMessage.setType("game.joined");
-        return gameMessage;
+            GameMessage gameMessage = gameToMessage(gameToJoin);
+            gameMessage.setType("game.joined");
+            return gameMessage;
+        }   
     }
 
 
