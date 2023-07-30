@@ -152,23 +152,24 @@ function connect() {
             console.log("Current ProblemId: " + currentProblemId);
             console.log("Current ProblemIndex: " + currentProblemIndex);
 
-            
+            connectStatus();
         });
         
         joinGame();
-        /* var isCreated;
-        isCreatedByUser(gameId).then((result) => {
-            console.log(result);
-            isCreated = result;
-        }); */
-
-        /* setTimeout(() => {
-            if(!isCreated) {
-                joinGame();
-            }
-        }, 3000); */
     });
-};
+}
+
+function connectStatus() {
+    const socketStatus = new SockJS("/status");
+    stompClient = Stomp.over(socketStatus);
+
+    stompClient.connect({}, function (frame) {
+        stompClient.subscribe('/user/' + username + '/status', function (message) {
+            var statusMsg = message.body;
+            console.log(statusMsg);
+        });
+    });
+}
 
 function readyUp() {
     readyButton.innerHTML = "Waiting for opponent...";

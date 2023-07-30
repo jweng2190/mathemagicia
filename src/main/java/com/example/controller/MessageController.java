@@ -33,6 +33,7 @@ import com.example.dto.message.GameMessage;
 import com.example.dto.message.JoinMessage;
 import com.example.dto.message.ReadyMessage;
 import com.example.dto.message.RematchMessage;
+import com.example.dto.message.StatusMessage;
 import com.example.model.Game;
 import com.example.model.GameStatus;
 import com.example.model.Problem;
@@ -89,8 +90,13 @@ public class MessageController {
                 gameToJoin.setStatus(GameStatus.IN_PROGRESS);
             }
 
-            gameToJoin.setPlayer1Ready(false);
-            gameToJoin.setPlayer2Ready(false);
+            if(!gameToJoin.isPlayer1Ready()) {
+                gameToJoin.setPlayer1Ready(false);
+            }
+
+            if(!gameToJoin.isPlayer2Ready()) {
+                gameToJoin.setPlayer2Ready(false);
+            }
 
             gameDao.save(gameToJoin);
 
@@ -99,6 +105,14 @@ public class MessageController {
             return gameMessage;
         }   
     }
+
+    /* @MessageMapping("/game.status")
+    @SendTo("/user/game.status")
+    public String getStatus(@Payload String statusMessage) {
+        if(statusMessage.equals("Disconnected")) {
+            return 
+        }
+    } */
 
 
     @MessageMapping("/game.ready")

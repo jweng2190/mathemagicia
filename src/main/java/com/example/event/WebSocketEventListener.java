@@ -34,6 +34,7 @@ public class WebSocketEventListener {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
         String sessionId = headerAccessor.getSessionId();
 
+        simpMessagingTemplate.convertAndSendToUser(username, "/status", "Connected");
         /* // Retrieve user details from SimpUserRegistry using sessionId
         SimpUser simpUser = simpUserRegistry.getUser(sessionId);
         String username = simpUser != null ? simpUser.getName() : null; */
@@ -52,6 +53,7 @@ public class WebSocketEventListener {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
         String sessionId = headerAccessor.getSessionId();
 
+        simpMessagingTemplate.convertAndSendToUser(username, "/status", "Disconnected");
         /* // Retrieve user details from SimpUserRegistry using sessionId
         SimpUser simpUser = simpUserRegistry.getUser(sessionId);
         String username = simpUser != null ? simpUser.getName() : null; */
