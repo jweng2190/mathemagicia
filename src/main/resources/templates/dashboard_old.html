@@ -10,16 +10,16 @@
     <link rel="stylesheet" href="/css/dashboard.css">
 </head>
 
-<body style="overflow-x: hidden;">
+<body>
     <div class="bg-body shadow d-flex flex-column flex-shrink-0 position-fixed top-0 bottom-0" style="flex: 0 0 94%;"><a class="text-center link-body-emphasis d-block p-3 text-decoration-none border-bottom" href="/" title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Icon-only"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-bootstrap-fill" style="font-size: 25px;">
                 <path d="M6.375 7.125V4.658h1.78c.973 0 1.542.457 1.542 1.237 0 .802-.604 1.23-1.764 1.23H6.375zm0 3.762h1.898c1.184 0 1.81-.48 1.81-1.377 0-.885-.65-1.348-1.886-1.348H6.375v2.725z"></path>
                 <path d="M4.002 0a4 4 0 0 0-4 4v8a4 4 0 0 0 4 4h8a4 4 0 0 0 4-4V4a4 4 0 0 0-4-4h-8zm1.06 12V3.545h3.399c1.587 0 2.543.809 2.543 2.11 0 .884-.65 1.675-1.483 1.816v.1c1.143.117 1.904.931 1.904 2.033 0 1.488-1.084 2.396-2.888 2.396H5.062z"></path>
             </svg><span class="visually-hidden">Icon-only</span></a>
         <ul class="nav nav-pills flex-column text-center nav-flush mb-auto">
-            <li class="nav-item"><a class="nav-link py-3 border-bottom rounded-0" id="home" href="/home" aria-current="page"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-house-door" style="width: 30px;height: 30px;">
+            <li class="nav-item"><a class="nav-link py-3 border-bottom rounded-0" id="home_link" href="/home" aria-current="page"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-house-door" style="width: 30px;height: 30px;">
                         <path d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146ZM2.5 14V7.707l5.5-5.5 5.5 5.5V14H10v-4a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5v4H2.5Z"></path>
                     </svg></a></li>
-            <li class="nav-item"><a class="nav-link active link-light py-3 border-bottom rounded-0" id="dashboard" href="/dashboard"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-controller" style="width: 30px;height: 30px;">
+            <li class="nav-item"><a class="nav-link active link-light py-3 border-bottom rounded-0" id="game_dashboard_link" href="/dashboard"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-controller" style="width: 30px;height: 30px;">
                         <path d="M11.5 6.027a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0zm-1.5 1.5a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1zm2.5-.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0zm-1.5 1.5a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1zm-6.5-3h1v1h1v1h-1v1h-1v-1h-1v-1h1v-1z"></path>
                         <path d="M3.051 3.26a.5.5 0 0 1 .354-.613l1.932-.518a.5.5 0 0 1 .62.39c.655-.079 1.35-.117 2.043-.117.72 0 1.443.041 2.12.126a.5.5 0 0 1 .622-.399l1.932.518a.5.5 0 0 1 .306.729c.14.09.266.19.373.297.408.408.78 1.05 1.095 1.772.32.733.599 1.591.805 2.466.206.875.34 1.78.364 2.606.024.816-.059 1.602-.328 2.21a1.42 1.42 0 0 1-1.445.83c-.636-.067-1.115-.394-1.513-.773-.245-.232-.496-.526-.739-.808-.126-.148-.25-.292-.368-.423-.728-.804-1.597-1.527-3.224-1.527-1.627 0-2.496.723-3.224 1.527-.119.131-.242.275-.368.423-.243.282-.494.575-.739.808-.398.38-.877.706-1.513.773a1.42 1.42 0 0 1-1.445-.83c-.27-.608-.352-1.395-.329-2.21.024-.826.16-1.73.365-2.606.206-.875.486-1.733.805-2.466.315-.722.687-1.364 1.094-1.772a2.34 2.34 0 0 1 .433-.335.504.504 0 0 1-.028-.079zm2.036.412c-.877.185-1.469.443-1.733.708-.276.276-.587.783-.885 1.465a13.748 13.748 0 0 0-.748 2.295 12.351 12.351 0 0 0-.339 2.406c-.022.755.062 1.368.243 1.776a.42.42 0 0 0 .426.24c.327-.034.61-.199.929-.502.212-.202.4-.423.615-.674.133-.156.276-.323.44-.504C4.861 9.969 5.978 9.027 8 9.027s3.139.942 3.965 1.855c.164.181.307.348.44.504.214.251.403.472.615.674.318.303.601.468.929.503a.42.42 0 0 0 .426-.241c.18-.408.265-1.02.243-1.776a12.354 12.354 0 0 0-.339-2.406 13.753 13.753 0 0 0-.748-2.295c-.298-.682-.61-1.19-.885-1.465-.264-.265-.856-.523-1.733-.708-.85-.179-1.877-.27-2.913-.27-1.036 0-2.063.091-2.913.27z"></path>
                     </svg></a></li>
@@ -123,31 +123,34 @@
                     </div>
                 </li>
                 <li class="nav-item dropdown no-arrow" id="profile">
-                    <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle d-flex flex-row justify-content-center align-items-center nav-link" aria-expanded="false" data-bs-toggle="dropdown" href="#" style="height: 55px;"><span class="d-none d-lg-inline me-2 text-gray-600 small" id="topbar_username"></span><img class="border rounded-circle img-profile" src="assets/img/avatars/avatar1.jpeg" style="width: 50px;height: 50px;"></a>
+                    <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle d-flex flex-row justify-content-center align-items-center nav-link" aria-expanded="false" data-bs-toggle="dropdown" href="#" style="height: 55px;"><span class="d-none d-lg-inline me-2 text-gray-600 small">Valerie Luna</span><img class="border rounded-circle img-profile" src="assets/img/avatars/avatar1.jpeg" style="width: 50px;height: 50px;"></a>
                         <div class="dropdown-menu shadow dropdown-menu-end animated--grow-in"><a class="dropdown-item" href="#"><i class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Profile</a><a class="dropdown-item" href="#"><i class="fas fa-cogs fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Settings</a><a class="dropdown-item" href="#"><i class="fas fa-list fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Activity log</a>
-                            <div class="dropdown-divider"></div><a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Logout</a>
+                            <div class="dropdown-divider"></div><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Logout</a>
                         </div>
                     </div>
                 </li>
             </ul>
         </div>
     </nav>
-    <div style="display: flex;align-items: center;justify-content: center;margin-top: 54px;">
-        <div id="create_game" style="width: 25%;border-radius: 12px;/*border-color: var(--bs-emphasis-color);*/border: 2px solid #808080;margin-right: 26px;margin-left: 27px;background: linear-gradient(#2863fb, #9ebeed);height: 350px;"><img class="d-block" style="margin: auto;width: 100px;margin-top: 48px;display: block;/*padding-bottom: 26px;*/" src="/img/create_game.png">
-            <p class="text-center" style="margin-bottom: 43px;margin-top: 55px;"><strong>Create 1v1 Game</strong></p><button class="btn btn-primary" type="button" style="margin: auto;display: block;margin-bottom: 19px;" onclick="createGame()">Create!</button>
-        </div>
-        <div id="join_game" style="width: 25%;margin-right: 26px;border: 2px solid #808080;border-radius: 12px;background: linear-gradient(#d55eff, #f7c8fb);height: 350px;"><img class="d-block" style="margin: auto;display: block;margin-top: 24px;width: 150px;" src="/img/join_game.png">
-            <p class="text-center" style="margin-bottom: 43px;margin-top: 30px;"><strong>Join 1v1 Game</strong></p>
-            <div style="width: 60%;margin: auto;display: flex;flex-direction: row;height: 38px;"><input type="text" id="game_id_input" style="width: 75%;margin: auto;background: var(--bs-border-color-translucent);height: 38px;">
-                <div class="grow" onclick="joinGame()">
-                    <a href="#">
-                        <img style="height: 38px;width: auto;" src="/img/arrow.png">
-                    </a>
-                </div>
+    <div class="container d-flex flex-column" style="flex: 1;justify-content: center;align-items: center; width: 85vw">
+        <h1>Game Dashboard</h1>
+        <div class="card">
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs">
+                    <li class="nav-item"><a class="nav-link active" id="createGameLink">Create Game</a></li>
+                    <li class="nav-item"><a class="nav-link" id="joinGameLink">Join Game</a></li>
+                    <li class="nav-item"><a class="nav-link" id="thirdItemLink">Third Item</a></li>
+                </ul>
             </div>
-        </div>
-        <div id="teams" style="width: 25%;border-radius: 12px;border: 2px solid #808080;background: linear-gradient(#f9467c, #ffb5b5);height: 350px;"><img style="margin: auto;display: block;width: 100px;margin-top: 48px;/*padding-bottom: 55px;*/" src="/img/teams.png">
-            <p class="text-center" style="margin-top: 55px;margin-bottom: 43px;"><strong>Team Mode</strong></p><button class="btn btn-primary" type="button" style="display: block;margin: auto;">Coming Soon!</button>
+            <div class="card-body">
+                <h4 class="card-title">Create Game</h4>
+                <br>
+                <div class="group" style="display:none">
+                    <input class="game_id_input" type="text" required /><span class="highlight"></span><span class="bar"></span><label>Paste Game ID Here</label>
+                </div>
+                <p class="card-text">Click the button below to create a 1v1 game.</p>
+                <button class="btn btn-primary" id="dashboard_button" type="button" onclick="createGame()">Create</button>
+            </div>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

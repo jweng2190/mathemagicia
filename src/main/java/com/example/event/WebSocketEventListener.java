@@ -43,6 +43,7 @@ public class WebSocketEventListener {
             // Add the user and their sessionId to the UserSessionMap
             userSessionMap.addUserSession(username, sessionId);
         }
+        System.out.println("Connect- " + username + " : " + sessionId);
     }
 
     @EventListener
@@ -62,5 +63,7 @@ public class WebSocketEventListener {
             // Remove the user from the UserSessionMap when they disconnect
             userSessionMap.removeUserSession(username);
         }
+
+        System.out.println("Disconnect- " + username + " : " + sessionId);
     }
 }

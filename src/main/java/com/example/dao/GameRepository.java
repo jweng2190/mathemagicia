@@ -29,4 +29,7 @@ public interface GameRepository extends JpaRepository<Game, Integer> {
 
     @Query("SELECT game FROM Game game WHERE game.gameId = :gameId")
     Game getGameByGameId(@Param("gameId") String gameId);
+
+    @Query(value="SELECT * FROM game ORDER BY id DESC LIMIT 0, 1", nativeQuery=true)
+    Game getRecentGame();
 }

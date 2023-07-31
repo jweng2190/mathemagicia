@@ -167,6 +167,9 @@ function connectStatus() {
         stompClient.subscribe('/user/' + username + '/status', function (message) {
             var statusMsg = message.body;
             console.log(statusMsg);
+            if(statusMsg === "Disconnected") {
+                alert("Your opponent has disconnected!");
+            }
         });
     });
 }
