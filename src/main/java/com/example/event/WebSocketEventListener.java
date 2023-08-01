@@ -4,33 +4,43 @@ import java.security.Principal;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.simp.user.SimpUser;
 import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.stereotype.Component;
+import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.messaging.SessionConnectEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
-import com.example.storage.UserSessionMap;
+import com.example.dao.GameRepository;
+import com.example.dto.message.StatusMessage;
+import com.example.model.Game;
+import com.example.model.GameStatus;
+import com.example.storage.GameSession;
+import com.example.storage.UserSession;
 
 @Component
 public class WebSocketEventListener {
-    private final SimpUserRegistry simpUserRegistry;
-    private final UserSessionMap userSessionMap;
+    private SimpUserRegistry simpUserRegistry;
+    private UserSession userSession;
+    private GameSession gameSession;
+    @Autowired
+    private GameRepository gameDao;
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
     
-    public WebSocketEventListener(SimpUserRegistry simpUserRegistry, UserSessionMap userSessionMap) {
+    /* public WebSocketEventListener(SimpUserRegistry simpUserRegistry, UserSession userSession) {
         this.simpUserRegistry = simpUserRegistry;
-        this.userSessionMap = userSessionMap;
-    }
+        this.userSession = userSession;
+    } */
 
     @EventListener
     public void handleWebSocketConnect(SessionConnectEvent event) {
         Principal principal = event.getUser();
         String username = principal != null ? principal.getName() : null;
-
+        
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
         String sessionId = headerAccessor.getSessionId();
 
@@ -39,10 +49,9 @@ public class WebSocketEventListener {
         SimpUser simpUser = simpUserRegistry.getUser(sessionId);
         String username = simpUser != null ? simpUser.getName() : null; */
 
-        if (username != null) {
-            // Add the user and their sessionId to the UserSessionMap
-            userSessionMap.addUserSession(username, sessionId);
-        }
+        /* if (username != null) {
+            userSession.addUserSession(username, sessionId);
+        } */
         System.out.println("Connect- " + username + " : " + sessionId);
     }
 
@@ -51,19 +60,26 @@ public class WebSocketEventListener {
         Principal principal = event.getUser();
         String username = principal != null ? principal.getName() : null;
 
+        //SimpMessageHeaderAccessor headers = SimpMessageHeaderAccessor.wrap(event.getMessage());
+
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
-        String sessionId = headerAccessor.getSessionId();
+        if(headerAccessor.getSessionAttributes() != null) {
+            String gameId = (String) headerAccessor.getSessionAttributes().get("gameId");
 
-        simpMessagingTemplate.convertAndSendToUser(username, "/status", "Disconnected");
-        /* // Retrieve user details from SimpUserRegistry using sessionId
-        SimpUser simpUser = simpUserRegistry.getUser(sessionId);
-        String username = simpUser != null ? simpUser.getName() : null; */
+            if(gameId != null) {
+                Game game = gameDao.getGameByGameId(gameId);
+                GameStatus currentStatus = game.getStatus();
 
-        if (username != null) {
-            // Remove the user from the UserSessionMap when they disconnect
-            userSessionMap.removeUserSession(username);
+                String username1 = game.getPlayer1Username();
+                String username2 = game.getPlayer2Username();
+
+                if(currentStatus.equals(GameStatus.READY2)) {
+                    simpMessagingTemplate.convertAndSendToUser(username1, "/status", "Disconnected");
+                    simpMessagingTemplate.convertAndSendToUser(username2, "/status", "Disconnected");
+                }
+            }
         }
 
-        System.out.println("Disconnect- " + username + " : " + sessionId);
+        System.out.println("Disconnect- " + username);
     }
 }

@@ -1,5 +1,6 @@
 package com.example.controller;
 
+import java.security.Principal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,14 +22,17 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.socket.WebSocketSession;
 
 import com.example.dao.GameRepository;
 import com.example.dao.ProblemRepository;
 import com.example.dao.UserRepository;
 import com.example.dto.message.AnswerMessage;
 import com.example.dto.message.EndMessage;
+import com.example.dto.message.GameIdPayload;
 import com.example.dto.message.GameMessage;
 import com.example.dto.message.JoinMessage;
 import com.example.dto.message.ReadyMessage;
@@ -67,9 +71,13 @@ public class MessageController {
 
     @MessageMapping("/game.join")
     @SendTo("/topic/game.state")
-    public Object joinGame(@Payload JoinMessage message) {
+    public Object joinGame(@Payload JoinMessage message, SimpMessageHeaderAccessor headerAccessor) {
         String playerUsername = message.getPlayerUsername();
         String gameId = message.getGameId();
+
+        if(headerAccessor.getSessionAttributes() != null) {
+            headerAccessor.getSessionAttributes().computeIfAbsent("gameId", key -> gameId);
+        }
 
         Game gameToJoin = gameDao.getGameByGameId(gameId);
         if (gameToJoin == null) {
@@ -117,10 +125,14 @@ public class MessageController {
 
     @MessageMapping("/game.ready")
     @SendTo("/topic/game.ready")
-    public Game queueGame(@Payload ReadyMessage readyMessage) {
+    public Game queueGame(@Payload ReadyMessage readyMessage, SimpMessageHeaderAccessor headerAccessor) {
         User readyUser = userDao.getUserByUsername(readyMessage.getPlayerUsername());
         String gameId = readyMessage.getGameId();
         Game currentGame = gameDao.getGameByGameId(gameId);
+
+        if(headerAccessor.getSessionAttributes() != null) {
+            headerAccessor.getSessionAttributes().computeIfAbsent("gameId", key -> gameId);
+        }
         
         if(currentGame.getPlayer1Username().equals(readyUser.getUsername())) {
             currentGame.setPlayer1Ready(true);
@@ -147,11 +159,15 @@ public class MessageController {
 
     @MessageMapping("/game.rematch")
     @SendTo("/topic/game.rematch")
-    public List<String> rematch(@Payload RematchMessage rematchMessage) {
+    public List<String> rematch(@Payload RematchMessage rematchMessage, SimpMessageHeaderAccessor headerAccessor) {
         String playerUsername = rematchMessage.getPlayerUsername();
         boolean isAccepted = rematchMessage.isAccepted();
         long currentTime = rematchMessage.getCurrentTime();
         String gameId = rematchMessage.getGameId();
+
+        if(headerAccessor.getSessionAttributes() != null) {
+            headerAccessor.getSessionAttributes().computeIfAbsent("gameId", key -> gameId);
+        }
         
         Game activeGame = gameDao.getGameByGameId(gameId);
 
@@ -210,11 +226,24 @@ public class MessageController {
     }
 
 
+    /* @MessageMapping("/setGameId")
+    public void setGameId(@Payload GameIdPayload payload) {
+        String gameId = payload.getGameId();
+        SimpMessageHeaderAccessor headerAccessor = SimpMessageHeaderAccessor.create(SimpMessageType.MESSAGE);
+        WebSocketSession session = (WebSocketSession) headerAccessor.getSessionAttributes().get("session");
+        session.getAttributes().put("gameId", gameId);
+    } */
+
+
     @MessageMapping("/game.answer")
     @SendTo("/topic/game.answer")
-    public Object checkAnswer(@Payload AnswerMessage answerMessage) {
+    public Object checkAnswer(@Payload AnswerMessage answerMessage, SimpMessageHeaderAccessor headerAccessor) {
         String activeGameId = answerMessage.getGameId();
         Game activeGame = gameDao.getGameByGameId(activeGameId);
+
+        if(headerAccessor.getSessionAttributes() != null) {
+            headerAccessor.getSessionAttributes().computeIfAbsent("gameId", key -> activeGameId);
+        }
 
         //get both usernames
         String player1Username = activeGame.getPlayer1Username();
@@ -298,10 +327,14 @@ public class MessageController {
 
     @MessageMapping("/game.end")
     @SendTo("/topic/game.end")
-    private boolean endGame(@Payload EndMessage endMessage) {
+    private boolean endGame(@Payload EndMessage endMessage, SimpMessageHeaderAccessor headerAccessor) {
         String activeGameId = endMessage.getGameId();
         Game activeGame = gameDao.getGameByGameId(activeGameId);
         String playerUsername = endMessage.getPlayerUsername();
+
+        if(headerAccessor.getSessionAttributes() != null) {
+            headerAccessor.getSessionAttributes().computeIfAbsent("gameId", key -> activeGameId);
+        }
 
         String winner = getWinner(activeGame);
         activeGame.setWinner(winner);

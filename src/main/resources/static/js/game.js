@@ -13,6 +13,7 @@ getUsername().then((result) => {
     username = result;
 });
 
+//get the gameId
 var gameUrl = window.location.href;
 var gameIdIndex = gameUrl.lastIndexOf("/") + 1;
 var gameId = gameUrl.substring(gameIdIndex);
@@ -118,7 +119,7 @@ const messagesTypes = {
 
     "game.answer": (message) => {
         //TODO
-    }
+    },
     /* "game.move": (message) => {
         updateGame(message);
     },
@@ -129,6 +130,11 @@ const messagesTypes = {
     "error": (message) => {
         toastr.error(message.content);
     } */
+
+    "game.disconnect": (message) => {
+        console.log(message.body);
+        alert("Opponent disconnected! You win");
+    }
 }
 
 
@@ -137,7 +143,7 @@ function connect() {
     console.log('WebSocket connection established');
 
     stompClient = Stomp.over(socketConnect);
-    stompClient.connect({}, function (frame) {
+    stompClient.connect({"gameId" : gameId}, function (frame) {
         console.log("Connected" + frame);
         stompClient.subscribe('/topic/game.state', function (message) {
             var messageObject = JSON.parse(message.body);
@@ -163,8 +169,8 @@ function connectStatus() {
     const socketStatus = new SockJS("/status");
     stompClient = Stomp.over(socketStatus);
 
-    stompClient.connect({}, function (frame) {
-        stompClient.subscribe('/user/' + username + '/status', function (message) {
+    stompClient.connect({"gameId" : gameId}, function (frame) {
+        stompClient.subscribe('/user/' + username + "/status", function (message) {
             var statusMsg = message.body;
             console.log(statusMsg);
             if(statusMsg === "Disconnected") {
@@ -178,7 +184,7 @@ function readyUp() {
     readyButton.innerHTML = "Waiting for opponent...";
     const socketReady = new SockJS("/ready");
     stompClient = Stomp.over(socketReady);
-    stompClient.connect({}, function (frame) {
+    stompClient.connect({"gameId": gameId}, function (frame) {
         console.log("Connected: " + frame);
         stompClient.subscribe(`/topic/game.ready`, function (message) {
             handleMessage(JSON.parse(message.body));
@@ -188,7 +194,7 @@ function readyUp() {
     });
 }
 
-
+//not used
 async function isCreatedByUser(gameId) {  
     const response = await fetch("/game/created/" + gameId);
     if (!response.ok) {
@@ -226,11 +232,16 @@ function startGame() {
     startTimer();
     console.log("Game started!");
     readyButton.style.visibility = "hidden";
+    //checkDisconnect();
     checkAnswer();
-    /* document.getElementById("player1").innerHTML = game.player1;
-    document.getElementById("player2").innerHTML = game.player2 || (game.winner ? '-' : 'Waiting for player 2...');
-    document.getElementById("turn").innerHTML = game.turn;
-    document.getElementById("winner").innerHTML = game.winner || '-'; */
+}
+
+function checkDisconnect() {
+    stompClient.connect({}, function () {
+        stompClient.send("/app/setGameId", {}, JSON.stringify({ gameId: gameId }));
+    }, function (error) {
+        throw new Error(error);
+    });
 }
 
 //submitButton.addEventListener("submit", sendAnswer());
@@ -255,7 +266,7 @@ var sendAnswer = function(event) {
 function checkAnswer() {
     const socket = new SockJS('/answer');
     stompClient = Stomp.over(socket);
-    stompClient.connect({}, function (frame) {
+    stompClient.connect({"gameId": gameId}, function (frame) {
         console.log("Connected: " + frame);
         stompClient.subscribe(`/topic/game.answer`, function (message) {
             var message = JSON.parse(message.body);
@@ -382,7 +393,7 @@ function endGame() {
     stopTimer();
     const socket = new SockJS('/end');
     stompClient = Stomp.over(socket);
-    stompClient.connect({}, function (frame) {
+    stompClient.connect({"gameId": gameId}, function (frame) {
         console.log("Connected: " + frame);
         stompClient.subscribe(`/topic/game.end`, function (message) {
             var isDone = (message.body === 'true');
@@ -425,7 +436,7 @@ function returnHome() {
 function connectRematch() {
     const socketRematch = new SockJS('/rematch');
     stompClient = Stomp.over(socketRematch);
-    stompClient.connect({}, function (frame) {
+    stompClient.connect({"gameId": gameId}, function (frame) {
         console.log("Connected: " + frame);
         stompClient.subscribe(`/topic/game.rematch`, function (message) {
             handleRematchStatus(message.body);
