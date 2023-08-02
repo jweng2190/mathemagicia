@@ -73,6 +73,12 @@ public class Game {
     @Column(name="player2_rematch")
     private boolean player2Rematch;
 
+    @Transient
+    private int numDisconnect1;
+    
+    @Transient
+    private int numDisconnect2;
+
 
     public Game() {
     }
@@ -215,5 +221,21 @@ public class Game {
 
     public void setGameDate(LocalDate gameDate) {
         this.gameDate = gameDate;
+    }
+
+    public int getNumDisconnect1() {
+        return this.numDisconnect1;
+    }
+
+    public void setNumDisconnect1(int numDisconnect1) {
+        this.numDisconnect1 = numDisconnect1;
+    }
+
+    public int getNumDisconnect2() {
+        return this.numDisconnect2;
+    }
+
+    public void setNumDisconnect2(int numDisconnect2) {
+        this.numDisconnect2 = numDisconnect2;
     }
 }

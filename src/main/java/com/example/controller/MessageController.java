@@ -114,13 +114,19 @@ public class MessageController {
         }   
     }
 
-    /* @MessageMapping("/game.status")
-    @SendTo("/user/game.status")
-    public String getStatus(@Payload String statusMessage) {
-        if(statusMessage.equals("Disconnected")) {
-            return 
+    @MessageMapping("/game.status")
+    public void handleGameStatus(@Payload StatusMessage statusMessage, Principal principal) {
+        String username = principal.getName();
+        String gameId = statusMessage.getGameId();
+        System.out.println("Received status from user " + principal.getName() + ": " + statusMessage.getGameId());
+        Game game = gameDao.getGameByGameId(gameId);
+
+        if(game.getStatus() == GameStatus.DISCONNECTED) {
+            simpMessagingTemplate.convertAndSendToUser(username, "/status", "Disconnected");
+        } else {
+            simpMessagingTemplate.convertAndSendToUser(username, "/status", "Connected");
         }
-    } */
+    }
 
 
     @MessageMapping("/game.ready")

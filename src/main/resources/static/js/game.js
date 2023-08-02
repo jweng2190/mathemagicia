@@ -158,7 +158,7 @@ function connect() {
             console.log("Current ProblemId: " + currentProblemId);
             console.log("Current ProblemIndex: " + currentProblemIndex);
 
-            connectStatus();
+            //connectStatus();
         });
         
         joinGame();
@@ -175,8 +175,16 @@ function connectStatus() {
             console.log(statusMsg);
             if(statusMsg === "Disconnected") {
                 alert("Your opponent has disconnected!");
+            } else if(statusMsg === "Connected") {
+                alert("Opponent connected!");
             }
         });
+        let message = {
+            gameId: gameId,
+            playerUsername: username
+        }
+        stompClient.send("/app/game.status", {}, JSON.stringify(message));
+        connect();
     });
 }
 
@@ -504,7 +512,8 @@ function objectToProblem(problemObject) {
 }
 
 window.onload = function() {
-    connect();
+    connectStatus();
+    //connect();
 }
 
 async function getUsername() {
