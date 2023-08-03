@@ -79,6 +79,12 @@ public class Game {
     @Transient
     private int numDisconnect2;
 
+    @Column(name="player1_disconnect")
+    private boolean player1Disconnect;
+
+    @Column(name="player2_disconnect")
+    private boolean player2Disconnect;
+
 
     public Game() {
     }
@@ -237,5 +243,21 @@ public class Game {
 
     public void setNumDisconnect2(int numDisconnect2) {
         this.numDisconnect2 = numDisconnect2;
+    }
+
+    public boolean isPlayer1Disconnect() {
+        return this.player1Disconnect;
+    }
+
+    public void setPlayer1Disconnect(boolean player1Disconnect) {
+        this.player1Disconnect = player1Disconnect;
+    }
+
+    public boolean isPlayer2Disconnect() {
+        return this.player2Disconnect;
+    }
+
+    public void setPlayer2Disconnect(boolean player2Disconnect) {
+        this.player2Disconnect = player2Disconnect;
     }
 }

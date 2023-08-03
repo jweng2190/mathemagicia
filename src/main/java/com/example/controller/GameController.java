@@ -1,8 +1,10 @@
 package com.example.controller;
 
 import java.security.Principal;
+import java.util.Arrays;
 import java.util.List;
 
+import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,10 +16,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.dao.GameRepository;
 import com.example.dao.UserRepository;
 import com.example.dto.ConnectRequest;
 import com.example.model.Game;
 import com.example.model.GamePlay;
+import com.example.model.GameStatus;
 import com.example.model.User;
 import com.example.service.GameService;
 import com.example.storage.GameStorage;
@@ -34,6 +38,7 @@ import lombok.extern.slf4j.Slf4j;
 public class GameController {
     private final GameService gameService;
     private UserRepository userDao;
+    private GameRepository gameDao;
     //private GameStorage gameStorage = GameStorage.getInstance();
 
     @GetMapping("/create")
@@ -52,36 +57,36 @@ public class GameController {
         return ResponseEntity.ok(game.getGameId());
     }
 
-    @GetMapping("/created/{id}")
-    public ResponseEntity<String> isCreatedWithId(@PathVariable("id") String gameId, Principal principal) {
-        Game game = gameService.getGameById(gameId);
-        String currentUsername = principal.getName();
-        return ResponseEntity.ok(String.valueOf(game.getPlayer1Username().equals(currentUsername)));
+    @GetMapping("/type/{id}")
+    public ResponseEntity<String> getPlayerType(@PathVariable("id") String gameId, Principal principal) {
+        Game game = gameDao.getGameByGameId(gameId);
+        String username = principal.getName();
+        if(game.getPlayer1Username().equals(username)) {
+            return ResponseEntity.ok().body("Player 1");
+        } else if(game.getPlayer2Username() == null) {
+            if(game.getStatus() == GameStatus.NEW) {
+                return ResponseEntity.ok().body("Player 2");
+            } else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            }
+        } else if(game.getPlayer2Username() != null) {
+            if(game.getPlayer2Username().equals(username)) {
+                return ResponseEntity.ok().body("Player 2");
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 
-    /* @PostMapping("/start")
-    public ResponseEntity<Game> start(@RequestBody User player) {
-        log.info("start game request: {}", player);
-        return ResponseEntity.ok(gameService.createGame(player));
+    @GetMapping("/disconnect_num/{id}")
+    public ResponseEntity<List<Integer>> getNumDisconnect(@PathVariable("id") String gameId) {
+        Game game = gameDao.getGameByGameId(gameId);
+        if(game != null) {
+            return ResponseEntity.ok().body(Arrays.asList(game.getNumDisconnect1(), game.getNumDisconnect2()));
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
-
-    @PostMapping("/connect")
-    public ResponseEntity<Game> connect(@RequestBody ConnectRequest request) throws InvalidParamException, InvalidGameException {
-        log.info("connect request: {}", request);
-        return ResponseEntity.ok(gameService.connectToGame(request.getPlayer(), request.getGameId()));
-    } */
-
-    /* @PostMapping("/connect/random")
-    public ResponseEntity<Game> connectRandom(@RequestBody User player) throws NotFoundException {
-        log.info("connect random {}", player);
-        return ResponseEntity.ok(gameService.connectToRandomGame(player));
-    } */
-
-    /* @PostMapping("/gameplay")
-    public ResponseEntity<Game> gamePlay(@RequestBody GamePlay request) throws NotFoundException, InvalidGameException {
-        log.info("gameplay: {}", request);
-        Game game = gameService.gamePlay(request);
-        simpMessagingTemplate.convertAndSend("/topic/game-progress/" + game.getGameId(), game);
-        return ResponseEntity.ok(game);
-    } */
 }

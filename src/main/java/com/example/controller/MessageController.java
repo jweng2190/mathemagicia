@@ -31,13 +31,14 @@ import com.example.dao.GameRepository;
 import com.example.dao.ProblemRepository;
 import com.example.dao.UserRepository;
 import com.example.dto.message.AnswerMessage;
+import com.example.dto.message.StatusMessage;
 import com.example.dto.message.EndMessage;
 import com.example.dto.message.GameIdPayload;
 import com.example.dto.message.GameMessage;
 import com.example.dto.message.JoinMessage;
 import com.example.dto.message.ReadyMessage;
 import com.example.dto.message.RematchMessage;
-import com.example.dto.message.StatusMessage;
+import com.example.dto.message.ClientStatusMessage;
 import com.example.model.Game;
 import com.example.model.GameStatus;
 import com.example.model.Problem;
@@ -115,16 +116,27 @@ public class MessageController {
     }
 
     @MessageMapping("/game.status")
-    public void handleGameStatus(@Payload StatusMessage statusMessage, Principal principal) {
+    public void handleGameStatus(@Payload ClientStatusMessage statusMessage, Principal principal, SimpMessageHeaderAccessor headerAccessor) {
         String username = principal.getName();
         String gameId = statusMessage.getGameId();
+        if(headerAccessor.getSessionAttributes() != null) {
+            headerAccessor.getSessionAttributes().computeIfAbsent("gameId", key -> gameId);
+            headerAccessor.getSessionAttributes().computeIfAbsent("type", key -> "status");
+        }
+
         System.out.println("Received status from user " + principal.getName() + ": " + statusMessage.getGameId());
         Game game = gameDao.getGameByGameId(gameId);
+        int numD1 = game.getNumDisconnect1();
+        int numD2 = game.getNumDisconnect2();
+
+        StatusMessage disconnectMessage = new StatusMessage(gameId, numD1, numD2, null, game.isPlayer1Disconnect(), game.isPlayer2Disconnect());
 
         if(game.getStatus() == GameStatus.DISCONNECTED) {
-            simpMessagingTemplate.convertAndSendToUser(username, "/status", "Disconnected");
+            disconnectMessage.setStatus("Disconnected");
+            simpMessagingTemplate.convertAndSendToUser(username, "/status", disconnectMessage);
         } else {
-            simpMessagingTemplate.convertAndSendToUser(username, "/status", "Connected");
+            disconnectMessage.setStatus("Connected");
+            simpMessagingTemplate.convertAndSendToUser(username, "/status", disconnectMessage);
         }
     }
 

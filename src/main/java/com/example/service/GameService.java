@@ -42,6 +42,9 @@ public class GameService {
         game.setPlayer1Joined(true);
         game.setStatus(NEW);
 
+        game.setPlayer1Disconnect(false);
+        game.setPlayer2Disconnect(false);
+
         List<Problem> problems = problemService.getRandomProblems(ProblemService.PROBLEM_SET_SIZE);
         game.setProblemSet(problems);
 

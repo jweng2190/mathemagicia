@@ -18,6 +18,7 @@ import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import com.example.dao.GameRepository;
 import com.example.dto.message.StatusMessage;
+import com.example.dto.message.ClientStatusMessage;
 import com.example.model.Game;
 import com.example.model.GameStatus;
 import com.example.storage.GameSession;
@@ -65,12 +66,13 @@ public class WebSocketEventListener {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
         if(headerAccessor.getSessionAttributes() != null) {
             String gameId = (String) headerAccessor.getSessionAttributes().get("gameId");
+            String type = (String) headerAccessor.getSessionAttributes().get("type");
 
-            if(gameId != null) {
+            if (type != null && gameId != null) {
                 Game game = gameDao.getGameByGameId(gameId);
                 GameStatus originalStatus = game.getStatus();
 
-                if(originalStatus.equals(GameStatus.READY2)) {
+                if (originalStatus.equals(GameStatus.READY2)) {
                     String username1 = game.getPlayer1Username();
                     String username2 = game.getPlayer2Username();
 
@@ -78,6 +80,7 @@ public class WebSocketEventListener {
                         int numDisconnect1 = game.getNumDisconnect1();
                         game.setNumDisconnect1(numDisconnect1 + 1);
                         game.setStatus(GameStatus.DISCONNECTED);
+                        game.setPlayer1Disconnect(true);
                         gameDao.save(game);
 
                         Timer timer = new Timer();
@@ -97,6 +100,7 @@ public class WebSocketEventListener {
                         int numDisconnect2 = game.getNumDisconnect2();
                         game.setNumDisconnect1(numDisconnect2 + 1);
                         game.setStatus(GameStatus.DISCONNECTED);
+                        game.setPlayer2Disconnect(true);
                         gameDao.save(game);
 
                         Timer timer = new Timer();
@@ -113,27 +117,15 @@ public class WebSocketEventListener {
                             }
                         }, 60000); // 60 seconds in milliseconds
                     }
-                    simpMessagingTemplate.convertAndSendToUser(username1, "/status", "Disconnected");
-                    simpMessagingTemplate.convertAndSendToUser(username2, "/status", "Disconnected");
+                    StatusMessage disconnectMessage = new StatusMessage(gameId, game.getNumDisconnect1(),
+                            game.getNumDisconnect2(), "Disconnected", game.isPlayer1Disconnect(),
+                            game.isPlayer2Disconnect());
+                    simpMessagingTemplate.convertAndSendToUser(username1, "/status", disconnectMessage);
+                    simpMessagingTemplate.convertAndSendToUser(username2, "/status", disconnectMessage);
                 }
             }
         }
 
         System.out.println("Disconnect- " + username);
-    }
-
-    private void runTimer(Game game, String username) {
-        Timer timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                // Check if the user has reconnected within 60 seconds
-                if (!(game.getStatus() == GameStatus.READY2)) {
-                    game.setStatus(GameStatus.FINISHED);
-                    gameDao.save(game);
-                    simpMessagingTemplate.convertAndSendToUser(username, "/status", "Ended by disconnect");
-                }
-            }
-        }, 60000); // 60 seconds in milliseconds
     }
 }

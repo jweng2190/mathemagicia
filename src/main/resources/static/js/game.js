@@ -13,10 +13,18 @@ getUsername().then((result) => {
     username = result;
 });
 
+
 //get the gameId
 var gameUrl = window.location.href;
 var gameIdIndex = gameUrl.lastIndexOf("/") + 1;
 var gameId = gameUrl.substring(gameIdIndex);
+
+let playerType;
+getPlayerType(gameId).then((result) => {
+    playerType = result;
+    console.log(playerType);
+});
+
 
 let currentProblem;
 let currentProblemId;
@@ -43,6 +51,12 @@ let player2Score = 0;
 let player1Joined = false;
 let player2Joined = false;
 
+let numD1 = 0;
+let numD2 = 0;
+getNumDisconnect(gameId).then((result) => {
+    numD1 = result[0];
+    numD2 = result[1];
+});
 
 const mins = 10;
 let countdown;
@@ -108,7 +122,9 @@ const messagesTypes = {
     }, */
     "game.joined": (message) => {
         if(player1Joined && player2Joined) {
-            readyButton.style.visibility = "visible";
+            if(numD1 === 0 && numD2 === 0) {
+                readyButton.style.visibility = "visible";
+            }
         }
         updateGame(message);
     },
@@ -140,11 +156,11 @@ const messagesTypes = {
 
 function connect() {
     const socketConnect = new SockJS("/connect");
-    console.log('WebSocket connection established');
+    console.log('Connecting to game');
 
     stompClient = Stomp.over(socketConnect);
     stompClient.connect({"gameId" : gameId}, function (frame) {
-        console.log("Connected" + frame);
+        console.log(frame);
         stompClient.subscribe('/topic/game.state', function (message) {
             var messageObject = JSON.parse(message.body);
             player1Joined = messageObject.player1Joined;
@@ -157,8 +173,32 @@ function connect() {
             console.log("Current Problem: " + objectToProblem(currentProblem));
             console.log("Current ProblemId: " + currentProblemId);
             console.log("Current ProblemIndex: " + currentProblemIndex);
+        });
+        
+        joinGame();
+    });
+}
 
-            //connectStatus();
+//modify logic for reconnect
+function reconnect() {
+    const socketConnect = new SockJS("/connect");
+    console.log('Reconnecting to game');
+
+    stompClient = Stomp.over(socketConnect);
+    stompClient.connect({"gameId" : gameId}, function (frame) {
+        console.log(frame);
+        stompClient.subscribe('/topic/game.state', function (message) {
+            var messageObject = JSON.parse(message.body);
+            player1Joined = messageObject.player1Joined;
+            player2Joined = messageObject.player2Joined;
+            handleMessage(messageObject);
+            problems = messageObject.problemSet;
+            numProblems = Object.keys(problems).length;
+            currentProblem = problems[0];
+            currentProblemId = problems[0].problemId;
+            console.log("Current Problem: " + objectToProblem(currentProblem));
+            console.log("Current ProblemId: " + currentProblemId);
+            console.log("Current ProblemIndex: " + currentProblemIndex);
         });
         
         joinGame();
@@ -171,12 +211,31 @@ function connectStatus() {
 
     stompClient.connect({"gameId" : gameId}, function (frame) {
         stompClient.subscribe('/user/' + username + "/status", function (message) {
-            var statusMsg = message.body;
+            var statusMsg = JSON.parse(message.body);
             console.log(statusMsg);
-            if(statusMsg === "Disconnected") {
-                alert("Your opponent has disconnected!");
-            } else if(statusMsg === "Connected") {
-                alert("Opponent connected!");
+            // do some handling of the message
+
+            if(statusMsg.status === "Ended by disconnect") {
+                disableAnswer();
+                alert("Game ended by disconnect");
+            }
+
+            numD1 = statusMsg.numD1;
+            numD2 = statusMsg.numD2;
+            if(playerType === "Player 1") {
+                let isDisconnect = statusMsg.player1Disconnect;
+                if(isDisconnect === true) {
+                    reconnect();
+                } else {
+                    connect();
+                }
+            } else if(playerType === "Player 2") {
+                let isDisconnect = statusMsg.player2Disconnect;
+                if(isDisconnect === true) {
+                    reconnect();
+                } else {
+                    connect();
+                }
             }
         });
         let message = {
@@ -184,7 +243,7 @@ function connectStatus() {
             playerUsername: username
         }
         stompClient.send("/app/game.status", {}, JSON.stringify(message));
-        connect();
+        //connect();
     });
 }
 
@@ -211,6 +270,26 @@ async function isCreatedByUser(gameId) {
     }
     const isCreated = await response.text();
     return (isCreated === "true");
+}
+
+async function getPlayerType(gameId) {
+    const response = await fetch("/game/type/" + gameId);
+    if (!response.ok) {
+        const message = `An error has occured: ${response.status}`;
+        throw new Error(message);
+    }
+    const playerType = await response.text();
+    return playerType;
+}
+
+async function getNumDisconnect(gameId) {
+    const response = await fetch("/game/disconnect_num/" + gameId);
+    if (!response.ok) {
+        const message = `An error has occured: ${response.status}`;
+        throw new Error(message);
+    }
+    const numDisconnect = await response.json();
+    return numDisconnect;
 }
 
 
@@ -240,7 +319,6 @@ function startGame() {
     startTimer();
     console.log("Game started!");
     readyButton.style.visibility = "hidden";
-    //checkDisconnect();
     checkAnswer();
 }
 
