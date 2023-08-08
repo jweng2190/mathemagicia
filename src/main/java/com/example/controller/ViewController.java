@@ -63,4 +63,9 @@ public class ViewController {
     public String testLatex() {
         return "test_latex";
     }
+
+    @GetMapping("/test_game")
+    public String testGame() {
+        return "test_game";
+    }
 }

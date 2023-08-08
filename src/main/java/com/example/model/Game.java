@@ -85,6 +85,9 @@ public class Game {
     @Column(name="player2_disconnect")
     private boolean player2Disconnect;
 
+    @Column(name="current_prob_index")
+    private int currentProbIndex;
+
 
     public Game() {
     }
@@ -259,5 +262,13 @@ public class Game {
 
     public void setPlayer2Disconnect(boolean player2Disconnect) {
         this.player2Disconnect = player2Disconnect;
+    }
+
+    public int getCurrentProbIndex() {
+        return this.currentProbIndex;
+    }
+
+    public void setCurrentProbIndex(int currentProbIndex) {
+        this.currentProbIndex = currentProbIndex;
     }
 }

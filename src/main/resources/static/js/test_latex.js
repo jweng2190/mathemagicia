@@ -18,6 +18,7 @@ function convertToLatex() {
     const userInputValue = userInput.value;
     const result = evaluateMathExpression(userInputValue);
     const latexCode = parseUserInputToLatex(userInputValue);
+    console.log(latexCode);
     if(result === 'Error') {
         document.getElementById('latex-output').innerText = result;
     } else {

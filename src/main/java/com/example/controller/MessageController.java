@@ -292,6 +292,7 @@ public class MessageController {
                 activeGame.setPlayer2Score(currentPlayerScore + 1);
             }
             //clearTimestamps();
+            activeGame.setCurrentProbIndex(activeGame.getCurrentProbIndex() + 1);
 
             gameDao.save(activeGame);
         }

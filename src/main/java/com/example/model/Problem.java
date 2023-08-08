@@ -12,16 +12,16 @@ public class Problem {
 
     private String contest;
 
-    @Column(name = "problem_description")
-    private String problemDescription;
-
-    @Lob
-    private byte[] image;
+    //link to image on aws
+    @Column(name="image")
+    private String image;
 
     private Integer difficulty;
 
     private String answer;
 
+    //link to image on aws
+    @Column(name="solution")
     private String solution;
 
 
@@ -41,19 +41,11 @@ public class Problem {
         this.contest = contest;
     }
 
-    public String getProblemDescription() {
-        return problemDescription;
-    }
-
-    public void setProblemDescription(String problemDescription) {
-        this.problemDescription = problemDescription;
-    }
-
-    public byte[] getImage() {
+    public String getImage() {
         return image;
     }
 
-    public void setImage(byte[] image) {
+    public void setImage(String image) {
         this.image = image;
     }
 
