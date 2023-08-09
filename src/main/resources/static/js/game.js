@@ -5,6 +5,7 @@
 }); */
 //firefox bug?? interrupted websocket
 
+import { convertToLatex } from "./test_game.js";
 
 const url = "http://localhost:8080";
 var stompClient = null;
@@ -24,7 +25,6 @@ getPlayerType(gameId).then((result) => {
     playerType = result;
     console.log(playerType);
 });
-
 
 let currentProblem;
 let currentProblemId;
@@ -51,6 +51,8 @@ let player2Score = 0;
 let player1Joined = false;
 let player2Joined = false;
 
+let playerAnswer = "";
+
 let numD1 = 0;
 let numD2 = 0;
 getNumDisconnect(gameId).then((result) => {
@@ -71,6 +73,33 @@ const gameContent = document.getElementsByClassName('game-page')[0];
 
 var myModal = new bootstrap.Modal(document.getElementById('modal-end'));
 
+playerInput.addEventListener('input', () => {
+    setTimeout(() => {
+        convertToLatex();
+    }, 1000);
+});
+
+let inputMode = 'regular';
+
+let regularButton = document.getElementById("regular_mode");
+let scientificButton = document.getElementById("sci_mode");
+
+regularButton.addEventListener("click", handleRegular);
+scientificButton.addEventListener("click", handleScientific);
+
+function handleRegular() {
+    scientificButton.style.backgroundColor = "var(--bs-border-color-translucent)";
+    inputMode = 'regular';
+    regularButton.style.backgroundColor = "";
+    console.log(inputMode);
+}
+
+function handleScientific() {
+    regularButton.style.backgroundColor = "var(--bs-border-color-translucent)";
+    inputMode = 'scientific';
+    scientificButton.style.backgroundColor = "";
+    console.log(inputMode);
+}
 
 function startTimer() {
     let timer = document.getElementById('timer_p');
@@ -122,9 +151,10 @@ const messagesTypes = {
     }, */
     "game.joined": (message) => {
         if(player1Joined && player2Joined) {
-            if(numD1 === 0 && numD2 === 0) {
+            /* if(numD1 === 0 && numD2 === 0) {
                 readyButton.style.visibility = "visible";
-            }
+            } */
+            startGame();
         }
         updateGame(message);
     },
@@ -311,14 +341,14 @@ function queueGame() {
 
 
 function updateGame(message) {
-    game = messageToGame(message);
+    let game = messageToGame(message);
     console.log(game);
 }
 
 function startGame() {
     startTimer();
     console.log("Game started!");
-    readyButton.style.visibility = "hidden";
+    //readyButton.style.visibility = "hidden";
     checkAnswer();
 }
 
@@ -336,7 +366,6 @@ var sendAnswer = function(event) {
     event.preventDefault();
     var playerAnswer = playerInput.value;
     playerInput.value = "";
-    //check
     if(stompClient !== null) {
         sendMessage({
             type: "game.answer",
@@ -377,13 +406,7 @@ function checkAnswer() {
         });
         answerForm.style.visibility = "visible";
         problemNumberBox.innerHTML = "Problem " + (currentProblemIndex + 1);
-        problemDescriptionBox.innerHTML = currentProblem.problemDescription;
-        if(currentProblem.image == null) {
-            problemImage.removeAttribute("src");
-            problemImage.style.flex = 0;
-        } else {
-            problemImage.src = 'data:image/jpeg;base64,' + currentProblem.image;
-        }
+        problemImage.src = currentProblem.image;
         answerForm.addEventListener("submit", sendAnswer);
     });
 }
@@ -398,15 +421,7 @@ function nextProblem() {
         currentProblemId = problems[currentProblemIndex].problemId;
 
         problemNumberBox.innerHTML = "Problem " + (currentProblemIndex + 1);
-        problemDescriptionBox.innerHTML = currentProblem.problemDescription;
-        if(currentProblem.image == null) {
-            problemImage.removeAttribute("src");
-            problemImage.style.flex = 0;
-        } else {
-            problemImage.src = 'data:image/jpeg;base64,' + currentProblem.image;
-            //show image if there is one
-            problemImage.style.flex = 25;
-        }
+        problemImage.src = currentProblem.image;
 
         console.log("Current Problem: " + objectToProblem(currentProblem));
         console.log("Current ProblemId: " + currentProblemId);

@@ -68,4 +68,9 @@ public class ViewController {
     public String testGame() {
         return "test_game";
     }
+
+    @GetMapping("/test_cd")
+    public String testCd() {
+        return "test_cd";
+    }
 }

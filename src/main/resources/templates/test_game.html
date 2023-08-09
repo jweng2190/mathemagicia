@@ -7,8 +7,8 @@
     <title>1v1 Live</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css">
-    <!-- <link rel="stylesheet" href="assets/css/Bootstrap-Chat.css">
-    <link rel="stylesheet" href="assets/css/Simple-Bootstrap-Chat.css"> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.1.0/math.min.js"></script>
 </head>
 
 <body class="d-flex flex-column d-flex" style="height: 673px;overflow-x: hidden;">
@@ -65,14 +65,14 @@
                     <img class="d-block" id="problem_image" style="margin: auto;max-width: 85%;max-height: 50%;height: auto;" src="https://mm-problem-images.s3.us-east-2.amazonaws.com/s94.png">
                     <div id="answer_div" class="d-flex flex-row justify-content-center align-items-center align-items-xl-center" style="height: 25%;width: 95%;flex: 25;margin-top: -6%;">
                         <div id="latex_div" style="width: 20%;display: flex;align-items: end;justify-content: end;">
-                            <p style="margin-bottom: 0px;margin-right: 15px;">Paragraph</p>
+                            <p id="latex-output" style="margin-bottom: 0px;margin-right: 15px;"></p>
                         </div>
                         <div id="input_div" style="width: 40%;">
                             <form style="/*width: 50%;*/margin: auto;">
                                 <div id="input_answer_div" class="d-flex"><input id="player_answer" class="form-control" type="text" placeholder="Enter Answer..." /><button id="answer_submit" class="btn btn-primary" type="button">Submit</button></div>
                             </form>
                         </div>
-                        <div id="rules_div" style="width: 20%;display: flex;align-items: center;justify-content: center;margin-left: 5%;"><a href="#" style="/*display: block;*/">Link</a></div>
+                        <div id="rules_div" style="width: 20%;display: flex;align-items: center;justify-content: center;margin-left: 5%;"><a href="#" style="/*display: block;*/">Formatting Rules</a></div>
                     </div>
                 </div>
                 <div class="col flex-row justify-content-xl-center" style="width: 25%;">
@@ -115,6 +115,7 @@
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/test_game.js"></script>
 </body>
 
 </html>

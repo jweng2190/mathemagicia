@@ -1,0 +1,42 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+.fade-in {
+    animation: fadeIn ease 0.5s;
+}
+
+.countdown-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+#countdown_text {
+    font-size: 100px;
+    opacity: 0;
+    transition: opacity 0.5s;
+    /* Set the text color to contrast with the image */
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.svg-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
