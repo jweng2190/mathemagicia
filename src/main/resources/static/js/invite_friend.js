@@ -101,8 +101,10 @@ function emailPlayer() {
         alert(msg);
     });
 
-    var gameId = sessionStorage.getItem("gameId");
-    window.location.href = "/game/" + gameId;
+    getGameId().then((text) => {
+        let gameId = text;
+        window.location.href = "/game/" + gameId;
+    });
 }
 
 function clearTable() {
@@ -129,6 +131,20 @@ async function postRequest(url = "", data = {}) {
 
 //debugging
 function skip() {
-    var gameId = sessionStorage.getItem("gameId");
-    window.location.href = "/game/" + gameId;
+    getGameId().then((text) => {
+        let gameId = text;
+        window.location.href = "/game/" + gameId;
+    });
+}
+
+async function getGameId() {
+    try {
+        const response = await fetch("/game/active");
+        if (!response.ok) {
+            throw new Error("Something went wrong.");
+        }
+        return response.text();
+    } catch (error) {
+        console.error('Error:', error);
+    }
 }

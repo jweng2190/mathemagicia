@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.dao.ProblemRepository;
 import com.example.model.Problem;
+import com.example.model.Game;
 
 import lombok.AllArgsConstructor;
 
@@ -19,8 +20,19 @@ public class ProblemService {
     private ProblemRepository problemDao;
     public static final int PROBLEM_SET_SIZE = 3;
 
-    public List<Problem> getRandomProblems(Integer numProblems) {
-        List<Problem> allProblems = problemDao.findAllMCProblems();
+    public List<Problem> getRandomProblems(Integer numProblems, Game game) {
+        String difficulty = game.getGameDifficulty();
+        List<Problem> allProblems;
+        if(difficulty.equals("easy")) {
+            allProblems = problemDao.findAllEasyProblems();
+        } else if(difficulty.equals("medium")) {
+            allProblems = problemDao.findAllMediumProblems();
+        } else if(difficulty.equals("hard")) {
+            allProblems = problemDao.findAllHardProblems();
+        } else {
+            allProblems = problemDao.findAllMediumProblems();
+        }
+        
         int length = allProblems.size();
         ArrayList<Integer> problemIndices = new ArrayList<Integer>();
         for(int i = 0; i < length; i++) {

@@ -4,9 +4,12 @@ import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.annotation.security.RolesAllowed;
+
 import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.dao.GameRepository;
@@ -41,20 +45,68 @@ public class GameController {
     private GameRepository gameDao;
     //private GameStorage gameStorage = GameStorage.getInstance();
 
-    @GetMapping("/create")
-    public ResponseEntity<String> createGame(Principal principal) throws InvalidGameException {
+    @PostMapping("/create")
+    public ResponseEntity<String> createGame(Principal principal,
+            @RequestParam("difficulty") String difficulty,
+            @RequestParam("time") String time) throws InvalidGameException {
         String username = principal.getName();
-        //User currentUser = userDao.getUserByUsername(username);
+        // User currentUser = userDao.getUserByUsername(username);
 
-        /* //check if user has already created a game
-        List<Game> creatorGames = gameService.getGamesByCreator(username);
-        if(creatorGames.size() >= 1) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        } */
-        //for testing purposes
+        /*
+         * //check if user has already created a game
+         * List<Game> creatorGames = gameService.getGamesByCreator(username);
+         * if(creatorGames.size() >= 1) {
+         * return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+         * }
+         */
+        // for testing purposes
 
         Game game = gameService.createGame(username);
-        return ResponseEntity.ok(game.getGameId());
+        game.setGameDifficulty(difficulty);
+        game.setTimeLimit(time);
+        gameDao.save(game);
+        gameService.setProblems(game);
+        String gameId = game.getGameId();
+        User user = userDao.getUserByUsername(username);
+        user.setActiveGameId(gameId);
+        userDao.save(user);
+        return ResponseEntity.ok(gameId);
+    }
+
+    @GetMapping("/active")
+    public ResponseEntity<String> getActiveGameId(Principal principal) {
+        String username = principal.getName();
+        User user = userDao.getUserByUsername(username);
+        if(username == null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        String activeGameId = user.getActiveGameId();
+        if(activeGameId == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.ok().body(activeGameId);
+    }
+
+    @PostMapping(path="/time_limit", consumes = MediaType.TEXT_PLAIN_VALUE)
+    @RolesAllowed({"USER", "ADMIN"})
+    public ResponseEntity<String> getTimeLimit(@RequestBody String gameId) {
+        Game game = gameDao.getGameByGameId(gameId);
+        if(game == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        String timeLimit = game.getTimeLimit();
+        int numMinutes;
+        if(timeLimit.equals("5:00")) {
+            numMinutes = 5;
+        } else if(timeLimit.equals("10:00")) {
+            numMinutes = 10;
+        } else if(timeLimit.equals("20:00")) {
+            numMinutes = 20;
+        } else {
+            numMinutes = 10;
+        }
+
+        return ResponseEntity.ok().body(String.valueOf(numMinutes));
     }
 
     @GetMapping("/type/{id}")

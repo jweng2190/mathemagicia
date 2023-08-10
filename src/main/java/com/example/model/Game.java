@@ -18,6 +18,12 @@ public class Game {
     @Column(name="game_id")
     private String gameId;
 
+    @Column(name="game_difficulty")
+    private String gameDifficulty;
+
+    @Column(name="time_limit")
+    private String timeLimit;
+
     @Column(name="player1_username")
     private String player1Username;
 
@@ -114,6 +120,22 @@ public class Game {
 
     public void setGameId(String gameId) {
         this.gameId = gameId;
+    }
+
+    public String getGameDifficulty() {
+        return this.gameDifficulty;
+    }
+
+    public void setGameDifficulty(String gameDifficulty) {
+        this.gameDifficulty = gameDifficulty;
+    }
+
+    public String getTimeLimit() {
+        return this.timeLimit;
+    }
+
+    public void setTimeLimit(String timeLimit) {
+        this.timeLimit = timeLimit;
     }
 
     /* public User getPlayer1() {

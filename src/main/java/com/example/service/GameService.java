@@ -45,13 +45,15 @@ public class GameService {
         game.setPlayer1Disconnect(false);
         game.setPlayer2Disconnect(false);
 
-        List<Problem> problems = problemService.getRandomProblems(ProblemService.PROBLEM_SET_SIZE);
-        game.setProblemSet(problems);
-
-        GameStorage.getInstance().setGame(game);
         gameDao.save(game);
 
         return game;
+    }
+
+    public void setProblems(Game game) {
+        List<Problem> problems = problemService.getRandomProblems(ProblemService.PROBLEM_SET_SIZE, game);
+        game.setProblemSet(problems);
+        gameDao.save(game);
     }
 
     public String getGameCodeByUsername(String player1Username) {

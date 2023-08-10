@@ -73,4 +73,10 @@ public class ViewController {
     public String testCd() {
         return "test_cd";
     }
+
+    @RolesAllowed({"USER"})
+    @GetMapping("/create_game")
+    public String testCg() {
+        return "create_game";
+    }
 }

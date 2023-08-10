@@ -34,11 +34,11 @@ public class ProblemController {
         return ResponseEntity.ok().body(contestProblems);
     }
 
-    @GetMapping("/problems/random/{number}")
+    /* @GetMapping("/problems/random/{number}")
     public ResponseEntity<List<Problem>> getRandomProblems(@PathVariable("number") Integer numProblems) {
         List<Problem> randProblems = problemService.getRandomProblems(numProblems);
         return ResponseEntity.ok().body(randProblems);
-    }
+    } */
 
     @GetMapping("/answer")
     public String getAnswer(@RequestParam(name="problemId") Integer problemId) {

@@ -69,7 +69,12 @@ getNumDisconnect(gameId).then((result) => {
     numD2 = result[1];
 });
 
-const mins = 10;
+//default value if not specified
+let mins = 10;
+getTimeLimit(gameId).then((timeString) => {
+    mins = parseInt(timeString);
+});
+
 let countdown;
 
 const leftWindow = document.getElementById('left-window');
@@ -159,6 +164,24 @@ async function createCountdown() {
 
         resolve([cdContainer, cdText]);
     });
+}
+
+async function getTimeLimit(gameId) {
+    try {
+        const response = await fetch("/game/time_limit", {
+            method: "POST",
+            headers: {
+            "Content-Type": "text/plain",
+            },
+            body: gameId
+        });
+        if (!response.ok) {
+            throw new Error("Something went wrong.");
+        }
+        return response.text();
+    } catch (error) {
+        console.error('Error:', error);
+    }
 }
 
 
