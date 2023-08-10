@@ -5,7 +5,17 @@
 }); */
 //firefox bug?? interrupted websocket
 
-import { convertToLatex } from "./test_game.js";
+/* const countdownElement = document.getElementById('countdown_text');
+const countdownContainer = document.getElementsByClassName('countdown-container')[0]; */
+let countdownElement;
+let countdownContainer;
+const loadingContainer = document.getElementsByClassName('loading-container')[0];
+const content = document.getElementsByClassName('content')[0];
+const backgroundDiv = document.getElementById('cd-bg-div');
+const texts = ['READY', '3', '2', '1', 'GO!'];
+const colors = ['rgb(0, 150, 255)', 'rgb(222, 49, 99)', 'rgb(255, 117, 24)', 'rgb(255, 191, 0)', 'rgb(15, 255, 80)']
+let index = 0;
+
 
 const url = "http://localhost:8080";
 var stompClient = null;
@@ -42,7 +52,6 @@ let player1ScoreField = document.getElementById("player1score_field");
 let player2ScoreField = document.getElementById("player2score_field");
 
 let problemNumberBox = document.getElementById("problem_number");
-let problemDescriptionBox = document.getElementById("problem_description");
 let problemImage = document.getElementById("problem_image");
 
 let player1Score = 0;
@@ -101,7 +110,59 @@ function handleScientific() {
     console.log(inputMode);
 }
 
-function startTimer() {
+function startCDTimer() {
+    countdownContainer.style.zIndex = '3';
+    countdownContainer.style.visibility = 'visible';
+    countdownElement.style.zIndex = '2';
+    countdownElement.style.visibility = 'visible';
+    setTimeout(fadeInAndOut, 1000);
+}
+
+function fadeInAndOut() {
+    countdownElement.style.opacity = '1';
+    countdownElement.innerHTML = texts[index];
+    countdownElement.style.color = colors[index];
+    setTimeout(() => {
+        countdownElement.style.opacity = '0';
+        index++;
+        if (index < texts.length) {
+            setTimeout(fadeInAndOut, 500);
+        }
+    }, 500);
+}
+
+function fadeOutBg() {
+    backgroundDiv.style.opacity = '0';
+    document.getElementsByClassName('content')[0].style.opacity = '1';
+    backgroundDiv.style.zIndex = '-2';
+    countdownContainer.style.zIndex = '-2';
+}
+
+async function createCountdown() {
+    return new Promise(resolve => {
+        let cdContainer = document.createElement('div');
+        cdContainer.className = 'countdown-container';
+        cdContainer.style.zIndex = '3';
+        cdContainer.style.position = 'absolute';
+        let cdElem = document.createElement('div');
+        cdElem.className = 'countdown';
+        cdElem.id = 'countdown';
+        let cdText = document.createElement('p');
+        cdText.id = 'countdown_text';
+        cdText.style.fontWeight = '500';
+        cdText.style.fontSize = '100px';
+        cdText.style.opacity = '0';
+        cdText.style.transition = 'opacity 0.5s';
+        cdElem.appendChild(cdText);
+        cdContainer.appendChild(cdElem);
+        document.getElementsByClassName('outer-container')[0].appendChild(cdContainer);
+
+        resolve([cdContainer, cdText]);
+    });
+}
+
+
+function startGameTimer() {
     let timer = document.getElementById('timer_p');
     timer.style.visibility = "visible";
 
@@ -345,11 +406,22 @@ function updateGame(message) {
     console.log(game);
 }
 
-function startGame() {
-    startTimer();
-    console.log("Game started!");
-    //readyButton.style.visibility = "hidden";
-    checkAnswer();
+async function startGame() {
+    loadingContainer.children[0].src = '';
+    loadingContainer.style.zIndex = '-3';
+    const result = await createCountdown();
+    countdownContainer = result[0];
+    countdownElement = result[1];
+
+    setTimeout(fadeOutBg, 6000);
+    startCDTimer();
+    setTimeout(() => {
+        //content.style.opacity = '1';
+        startGameTimer();
+        console.log("Game started!");
+        //readyButton.style.visibility = "hidden";
+        checkAnswer();
+    }, 6500);   
 }
 
 function checkDisconnect() {
