@@ -1,5 +1,6 @@
 package com.example.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -8,11 +9,24 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import com.example.dao.GameRepository;
+import com.example.dao.UserRepository;
+import com.example.model.Game;
+import com.example.model.User;
+
+import java.security.Principal;
+
 import javax.annotation.security.RolesAllowed;
 import javax.websocket.server.PathParam;
 
 @Controller
 public class ViewController {
+    @Autowired
+    private GameRepository gameDao;
+    @Autowired
+    private UserRepository userDao;
+
     @RolesAllowed({"USER"})
     @GetMapping("/view")
     public String renderProblems(@RequestParam(name="contest") String contest,
@@ -22,7 +36,16 @@ public class ViewController {
 
     @RolesAllowed({"USER"})
     @GetMapping("/game/{gameId}")
-    public String game(@PathVariable String gameId) {
+    public String game(Principal principal, @PathVariable String gameId) {
+        String username = principal.getName();
+        Game game = gameDao.getGameByGameId(gameId);
+        if(game.getPlayer1Username() != null && game.getPlayer2Username() != null) {
+            return "game_error";
+        }
+        User user = userDao.getUserByUsername(username);
+        user.setActiveGameId(gameId);
+        userDao.save(user);
+        
         return "game_template";
     }
 

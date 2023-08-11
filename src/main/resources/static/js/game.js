@@ -7,6 +7,9 @@
 
 /* const countdownElement = document.getElementById('countdown_text');
 const countdownContainer = document.getElementsByClassName('countdown-container')[0]; */
+import { parseUserInputToLatex } from "./test_latex.js";
+import { evaluateMathExpression } from "./test_latex.js";
+
 let countdownElement;
 let countdownContainer;
 const loadingContainer = document.getElementsByClassName('loading-container')[0];
@@ -113,6 +116,21 @@ function handleScientific() {
     inputMode = 'scientific';
     scientificButton.style.backgroundColor = "";
     console.log(inputMode);
+}
+
+function convertToLatex() {
+    //const userInput = document.getElementById('user-input')
+    const userInputValue = playerInput.value;
+    const result = evaluateMathExpression(userInputValue);
+    const latexCode = parseUserInputToLatex(userInputValue);
+    console.log(latexCode);
+    if(result === 'Error') {
+        document.getElementById('latex-output').innerText = result;
+    } else {
+        const formattedLatex = `\\(` + latexCode + `\\)`
+        document.getElementById('latex-output').innerText = formattedLatex;
+        MathJax.Hub.Queue(['Typeset', MathJax.Hub, 'latex-output']);
+    }
 }
 
 function startCDTimer() {
@@ -327,16 +345,37 @@ function connectStatus() {
         stompClient.subscribe('/user/' + username + "/status", function (message) {
             var statusMsg = JSON.parse(message.body);
             console.log(statusMsg);
-            // do some handling of the message
 
-            if(statusMsg.status === "Ended by disconnect") {
+            let status = statusMsg.status;
+            if(status === 'Disconnected') {
+                alert("Opponent disconnected. You win!");
+            }
+
+            //TODO:
+            //stop timer and show game over by disconnect modal
+            
+            /* if(statusMsg.playerDisconnect != null) {
+                console.log("Opponent disconnected. You win!");
+                endGame();
+            } */
+
+            // wrong code need fix
+
+            /* if(statusMsg.status === "Ended by disconnect") {
                 disableAnswer();
                 alert("Game ended by disconnect");
             }
 
             numD1 = statusMsg.numD1;
             numD2 = statusMsg.numD2;
-            if(playerType === "Player 1") {
+            let playerDisconnect = statusMsg.playerDisconnect;
+            console.log("Disconnected --- " + playerDisconnect);
+
+            if(playerDisconnect === username) {
+                reconnect();
+            } */
+
+            /* if(playerType === "Player 1") {
                 let isDisconnect = statusMsg.player1Disconnect;
                 if(isDisconnect === true) {
                     reconnect();
@@ -350,14 +389,14 @@ function connectStatus() {
                 } else {
                     connect();
                 }
-            }
+            } */
         });
         let message = {
             gameId: gameId,
             playerUsername: username
         }
         stompClient.send("/app/game.status", {}, JSON.stringify(message));
-        //connect();
+        connect();
     });
 }
 

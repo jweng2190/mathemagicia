@@ -5,8 +5,9 @@ public class StatusMessage {
     private int numD1;
     private int numD2;
     private String status;
-    private boolean player1Disconnect;
-    private boolean player2Disconnect;
+    /* private boolean player1Disconnect;
+    private boolean player2Disconnect; */
+    private String playerDisconnect;
 
     public StatusMessage(String gameId, int numD1, int numD2, String status) {
         this.gameId = gameId;
@@ -16,14 +17,12 @@ public class StatusMessage {
     }
 
 
-    public StatusMessage(String gameId, int numD1, int numD2, String status, boolean player1Disconnect,
-            boolean player2Disconnect) {
+    public StatusMessage(String gameId, int numD1, int numD2, String status, String playerDisconnect) {
         this.gameId = gameId;
         this.numD1 = numD1;
         this.numD2 = numD2;
         this.status = status;
-        this.player1Disconnect = player1Disconnect;
-        this.player2Disconnect = player2Disconnect;
+        this.playerDisconnect = playerDisconnect;
     }
 
 
@@ -52,7 +51,7 @@ public class StatusMessage {
         this.status = status;
     }
 
-    public boolean isPlayer1Disconnect() {
+    /* public boolean isPlayer1Disconnect() {
         return this.player1Disconnect;
     }
 
@@ -66,5 +65,13 @@ public class StatusMessage {
 
     public void setPlayer2Disconnect(boolean player2Disconnect) {
         this.player2Disconnect = player2Disconnect;
+    } */
+
+    public String getPlayerDisconnect() {
+        return this.playerDisconnect;
+    }
+
+    public void setPlayerDisconnect(String playerDisconnect) {
+        this.playerDisconnect = playerDisconnect;
     }
 }

@@ -17,10 +17,12 @@ import org.springframework.web.socket.messaging.SessionConnectEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import com.example.dao.GameRepository;
+import com.example.dao.UserRepository;
 import com.example.dto.message.StatusMessage;
 import com.example.dto.message.ClientStatusMessage;
 import com.example.model.Game;
 import com.example.model.GameStatus;
+import com.example.model.User;
 import com.example.storage.GameSession;
 import com.example.storage.UserSession;
 
@@ -31,6 +33,8 @@ public class WebSocketEventListener {
     private GameSession gameSession;
     @Autowired
     private GameRepository gameDao;
+    @Autowired
+    private UserRepository userDao;
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
     
@@ -72,11 +76,11 @@ public class WebSocketEventListener {
                 Game game = gameDao.getGameByGameId(gameId);
                 GameStatus originalStatus = game.getStatus();
 
-                if (originalStatus.equals(GameStatus.READY2)) {
+                if (originalStatus.equals(GameStatus.IN_PROGRESS)) {
                     String username1 = game.getPlayer1Username();
                     String username2 = game.getPlayer2Username();
 
-                    if (username.equals(username1)) {
+                    /* if (username.equals(username1)) {
                         int numDisconnect1 = game.getNumDisconnect1();
                         game.setNumDisconnect1(numDisconnect1 + 1);
                         game.setStatus(GameStatus.DISCONNECTED);
@@ -116,10 +120,23 @@ public class WebSocketEventListener {
                                 }
                             }
                         }, 60000); // 60 seconds in milliseconds
-                    }
+                    } */
+                    game.setStatus(GameStatus.DISCONNECTED);
+                    User player1 = userDao.getUserByUsername(username1);
+                    User player2 = userDao.getUserByUsername(username2);
+
+                    player1.setActiveGameId(null);
+                    player2.setActiveGameId(null);
+
+                    userDao.save(player1);
+                    userDao.save(player2);
+
+                    String winner = getWinner(game, username2);
+                    game.setWinner(winner);
+                    gameDao.save(game);
+                    
                     StatusMessage disconnectMessage = new StatusMessage(gameId, game.getNumDisconnect1(),
-                            game.getNumDisconnect2(), "Disconnected", game.isPlayer1Disconnect(),
-                            game.isPlayer2Disconnect());
+                            game.getNumDisconnect2(), "Disconnected", username);
                     simpMessagingTemplate.convertAndSendToUser(username1, "/status", disconnectMessage);
                     simpMessagingTemplate.convertAndSendToUser(username2, "/status", disconnectMessage);
                 }
@@ -127,5 +144,18 @@ public class WebSocketEventListener {
         }
 
         System.out.println("Disconnect- " + username);
+    }
+
+    public String getWinner(Game game, String username) {
+        String username1 = game.getPlayer1Username();
+        String username2 = game.getPlayer2Username();
+
+        if(username1.equals(username)) {
+            return username2;
+        } else if(username2.equals(username)) {
+            return username1;
+        } else {
+            return null;
+        }
     }
 }

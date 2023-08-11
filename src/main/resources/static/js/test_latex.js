@@ -28,7 +28,7 @@ function convertToLatex() {
     }
 }
 
-function parseUserInputToLatex(input) {
+export function parseUserInputToLatex(input) {
     if(inputMode === 'regular') {
         try {
             var {a, sign, b, c, d, hasPi} = extractValuesFromInput(input, inputMode);
@@ -90,7 +90,7 @@ function renderMath() {
 }
 
 // Function to evaluate the user's math input using Math.js
-function evaluateMathExpression(input) {
+export function evaluateMathExpression(input) {
     try {
         // Use the evaluate function from Math.js to parse and evaluate the expression
         const result = math.parse(input);

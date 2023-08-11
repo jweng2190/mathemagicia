@@ -1,6 +1,7 @@
 package com.example.model;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import javax.persistence.*;
@@ -93,6 +94,9 @@ public class Game {
 
     @Column(name="current_prob_index")
     private int currentProbIndex;
+
+    @Transient
+    private LocalTime timeRemaning;
 
 
     public Game() {
@@ -292,5 +296,13 @@ public class Game {
 
     public void setCurrentProbIndex(int currentProbIndex) {
         this.currentProbIndex = currentProbIndex;
+    }
+
+    public LocalTime getTimeRemaning() {
+        return this.timeRemaning;
+    }
+
+    public void setTimeRemaning(LocalTime timeRemaning) {
+        this.timeRemaning = timeRemaning;
     }
 }

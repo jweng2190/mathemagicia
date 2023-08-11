@@ -129,7 +129,14 @@ public class MessageController {
         int numD1 = game.getNumDisconnect1();
         int numD2 = game.getNumDisconnect2();
 
-        StatusMessage disconnectMessage = new StatusMessage(gameId, numD1, numD2, null, game.isPlayer1Disconnect(), game.isPlayer2Disconnect());
+        String playerDisconnect;
+        if(game.isPlayer1Disconnect()) {
+            playerDisconnect = game.getPlayer1Username();
+        } else {
+            playerDisconnect = game.getPlayer2Username();
+        }
+
+        StatusMessage disconnectMessage = new StatusMessage(gameId, numD1, numD2, null, playerDisconnect);
 
         if(game.getStatus() == GameStatus.DISCONNECTED) {
             disconnectMessage.setStatus("Disconnected");
