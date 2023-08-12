@@ -5,6 +5,7 @@ var table = document.getElementById("friend_table");
 
 let searchUsername = document.getElementById("search_username");
 let searchLevel = document.getElementById("search_level");
+const buttonDropdown = document.getElementById("options_dropdown");
 
 searchUsername.addEventListener("click", handleUsernameSearch);
 searchLevel.addEventListener("click", handleLevelSearch);
@@ -34,10 +35,11 @@ function processSearch() {
 
     clearTable();
 
-    let requestJson = {
+    let requestObj = {
         searchValue: inputValue,
         searchType: searchOption
     }
+    let requestJson = JSON.stringify(requestObj);
 
     postRequest("/search", requestJson, "json").then((data) => {
         console.log(data);
@@ -151,10 +153,12 @@ async function postRequest(url, data, type) {
 
 function handleUsernameSearch() {
     searchOption = "Username";
+    buttonDropdown.innerHTML = "Username";
 }
 
 function handleLevelSearch() {
     searchOption = "Level";
+    buttonDropdown.innerHTML = "Level";
 }
 
 

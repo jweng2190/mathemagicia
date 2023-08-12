@@ -66,7 +66,7 @@ public class UserController {
 
         String searchValue = payload.get("searchValue");
         List<String> emailList = new ArrayList<>();
-        if(type == "Default") {
+        if(type.equals("Default")) {
             String fName = searchValue.split(" ")[0].toLowerCase();
             String lName = searchValue.split(" ")[1].toLowerCase();
 
@@ -81,13 +81,20 @@ public class UserController {
                     }
                 }
             }
-        } else if(type == "Username") {
-            //TODO
-        } else if(type == "Level") {
+        } else if(type.equals("Username")) {
+            List<String> usernames = userDao.getAllUsernames();
+            for(String username: usernames) {
+                if(username.contains(searchValue)) {
+                    String email = userDao.getEmailByUsername(username);
+                    if(!emailList.contains(email)) {
+                        emailList.add(email);
+                    }
+                }
+            }
+        } else if(type.equals("Level")) {
             //TODO
         }
 
-        //List<String> emailList = userDao.getEmailsByFullName(fullName);
         ArrayList<List<String>> usernameAndEmailList = new ArrayList<List<String>>();
 
         for(int i = 0; i < emailList.size(); i++) {

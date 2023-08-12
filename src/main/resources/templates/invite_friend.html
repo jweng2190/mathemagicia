@@ -24,10 +24,12 @@
     <form class="d-block search-form" id="invite_form" style="width: 83%;margin: auto;margin-bottom: 20px;">
         <div class="input-group">
             <span class="input-group-text"><i class="fa fa-search"></i></span>
-            <div class="dropdown"><button class="btn btn-primary dropdown-toggle rounded-0" aria-expanded="false" data-bs-toggle="dropdown" type="button" style="/*background: rgb(86,113,255);*//*border-radius: 5px;*/">Options</button>
+            <span class="input-group-text">Search By:</span>
+            <div class="dropdown">
+                <button id="options_dropdown" class="btn btn-primary dropdown-toggle rounded-0" aria-expanded="false" data-bs-toggle="dropdown" type="button" style="/*background: rgb(86,113,255);*//*border-radius: 5px;*/">Options</button>
                 <div class="dropdown-menu">
-                    <a id="search_username" class="dropdown-item" href="#">Search By Username</a>
-                    <a id="search_level" class="dropdown-item" href="#">Search By Level</a>
+                    <a id="search_username" class="dropdown-item" href="#">Username</a>
+                    <a id="search_level" class="dropdown-item" href="#">Level</a>
                 </div>
             </div>
             <input class="form-control" type="text" id="search_box" placeholder="Find Players">
