@@ -3,6 +3,12 @@ var searchButton = document.getElementById("search_button");
 var form = document.getElementById("invite_form");
 var table = document.getElementById("friend_table");
 
+let searchUsername = document.getElementById("search_username");
+let searchLevel = document.getElementById("search_level");
+
+searchUsername.addEventListener("click", handleUsernameSearch);
+searchLevel.addEventListener("click", handleLevelSearch);
+
 //debugging convenience
 var skipButton = document.getElementById("skip");
 
@@ -11,6 +17,8 @@ var activeButtonId = null;
 searchButton.addEventListener("click", processSearch);
 
 var emailData = [];
+let searchOption = "Default";
+//default option is to search by name
 
 searchBox.addEventListener("keydown", function(event) {
     if (event.key === 'Enter') {
@@ -26,7 +34,12 @@ function processSearch() {
 
     clearTable();
 
-    postRequest("/search", inputValue).then((data) => {
+    let requestJson = {
+        searchValue: inputValue,
+        searchType: searchOption
+    }
+
+    postRequest("/search", requestJson, "json").then((data) => {
         console.log(data);
         emailData = data;
 
@@ -97,7 +110,7 @@ function enableButton(buttonId) {
 function emailPlayer() {
     console.log("Emailed Player");
     var email = table.rows[activeButtonId].cells[2].innerHTML;
-    postRequest("/email", email).then((msg) => {
+    postRequest("/email", email, "plain text").then((msg) => {
         alert(msg);
     });
 
@@ -113,14 +126,21 @@ function clearTable() {
     }
 }
 
-async function postRequest(url = "", data = {}) {
+async function postRequest(url, data, type) {
+    let contentType;
+    if(type === "plain text") {
+        contentType = "text/plain";
+    } else if(type === "json") {
+        contentType = "application/json";
+    }
+
     const response = await fetch(url, {
         method: "POST", // *GET, POST, PUT, DELETE, etc.
         mode: "cors", // no-cors, *cors, same-origin
         cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
         credentials: "same-origin", // include, *same-origin, omit
         headers: {
-            "Content-Type": "text/plain",
+            "Content-Type": contentType,
         },
         redirect: "follow", // manual, *follow, error
         referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
@@ -128,6 +148,15 @@ async function postRequest(url = "", data = {}) {
     });
     return response.json();
 }
+
+function handleUsernameSearch() {
+    searchOption = "Username";
+}
+
+function handleLevelSearch() {
+    searchOption = "Level";
+}
+
 
 //debugging
 function skip() {

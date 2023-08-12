@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>invite friend</title>
+    <title>Invite Players</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css"
           rel="stylesheet"
           integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx"
@@ -24,7 +24,13 @@
     <form class="d-block search-form" id="invite_form" style="width: 83%;margin: auto;margin-bottom: 20px;">
         <div class="input-group">
             <span class="input-group-text"><i class="fa fa-search"></i></span>
-            <input class="form-control" type="text" id="search_box" placeholder="Search for Players">
+            <div class="dropdown"><button class="btn btn-primary dropdown-toggle rounded-0" aria-expanded="false" data-bs-toggle="dropdown" type="button" style="/*background: rgb(86,113,255);*//*border-radius: 5px;*/">Options</button>
+                <div class="dropdown-menu">
+                    <a id="search_username" class="dropdown-item" href="#">Search By Username</a>
+                    <a id="search_level" class="dropdown-item" href="#">Search By Level</a>
+                </div>
+            </div>
+            <input class="form-control" type="text" id="search_box" placeholder="Find Players">
             <button class="btn btn-light" type="button" id="search_button">Search </button>
         </div>
     </form>

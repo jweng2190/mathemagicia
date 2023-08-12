@@ -38,6 +38,9 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query(value="SELECT score FROM user WHERE username = ?1", nativeQuery = true)
     int getScoreByUsername(String username);
 
+    @Query(value="SELECT LOWER(CONACT(first_name, \" \", last_name)) FROM user", nativeQuery = true)
+    List<String> getAllFullNames();
+
     @Transactional
     @Modifying
     //@Query(value="UPDATE user SET score=?1 WHERE username=?2", nativeQuery = true)

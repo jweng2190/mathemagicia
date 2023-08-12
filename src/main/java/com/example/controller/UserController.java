@@ -21,6 +21,7 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class UserController {
@@ -55,10 +56,38 @@ public class UserController {
     }
 
 
-    @PostMapping(path = "/search", consumes = MediaType.TEXT_PLAIN_VALUE)
+    @PostMapping(path = "/search", consumes = MediaType.APPLICATION_JSON_VALUE)
     @RolesAllowed({"USER"})
-    public ResponseEntity<ArrayList<List<String>>> searchUser(@RequestBody String fullName) {
-        List<String> emailList = userDao.getEmailsByFullName(fullName);
+    public ResponseEntity<ArrayList<List<String>>> searchUser(@RequestBody Map<String, String> payload) {
+        String type = payload.get("searchType");
+        if(type == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        String searchValue = payload.get("searchValue");
+        List<String> emailList = new ArrayList<>();
+        if(type == "Default") {
+            String fName = searchValue.split(" ")[0].toLowerCase();
+            String lName = searchValue.split(" ")[1].toLowerCase();
+
+            List<String> fullNames = userDao.getAllFullNames();
+            for(String fullName: fullNames) {
+                if(fullName.contains(fName) || fullName.contains(lName)) {
+                    List<String> emails = userDao.getEmailsByFullName(fullName);
+                    for(String email: emails) {
+                        if(!emailList.contains(email)) {
+                            emailList.add(email);
+                        }
+                    }
+                }
+            }
+        } else if(type == "Username") {
+            //TODO
+        } else if(type == "Level") {
+            //TODO
+        }
+
+        //List<String> emailList = userDao.getEmailsByFullName(fullName);
         ArrayList<List<String>> usernameAndEmailList = new ArrayList<List<String>>();
 
         for(int i = 0; i < emailList.size(); i++) {
