@@ -1,6 +1,7 @@
 package com.example.event;
 
 import java.security.Principal;
+import java.time.LocalDate;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -133,6 +134,7 @@ public class WebSocketEventListener {
 
                     String winner = getWinner(game, username2);
                     game.setWinner(winner);
+                    game.setGameDate(LocalDate.now());
                     gameDao.save(game);
                     
                     StatusMessage disconnectMessage = new StatusMessage(gameId, game.getNumDisconnect1(),

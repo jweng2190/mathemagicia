@@ -1,0 +1,80 @@
+/* INSTRUCTION and example for customize SOCCER HOCKEY or RUGBY scoreboard:
+Each element has one or more classes, so you can control one or more elements at the same time.
+On the left you can read every single element with his class */
+
+/*--- First step - FONTS: CSS involves embedding fonts at the beginning of the document. You can import and use webfont, for example here we imported a Google font (https://fonts.google.com/) ---*/
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+
+/* Every scoreboard has a unique container (SOCCER = containersoccer / BASKETBALL = containerbasket etc.. read them with your browser inspector). You can use them for override styles */
+
+/*this change font and background color of logo and result */
+.boxhomepoints,
+.space,
+.boxawaypoints,
+.sgrlogo:before {
+    background: #555;
+    color: #fff;
+}
+
+/*this change font of Team names */
+.boxhometeam,
+.boxawayteam,
+.boxhomepoints,
+.space,
+.boxawaypoints {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 1.4em;
+    font-weight: bold;
+    position: relative;
+}
+
+/*this insert team badges */
+.boxhometeam:before,
+.boxawayteam:before {
+    content: "";
+    position: absolute;
+    width: 7vw;
+    height: 8vw;
+}
+
+.boxhometeam {
+    justify-content: flex-end;
+    padding-right: 9vw;
+}
+
+.boxhometeam:before {
+    right: 1vw;
+    background: url(https://img.wh.sportingpulseinternational.com/11ad3163e8b7d3890dd91c477c36492bS1.png) no-repeat center;
+    background-size: 8vw;
+}
+
+.boxawayteam {
+    justify-content: flex-start;
+    padding-left: 9vw;
+}
+
+.boxawayteam:before {
+    left: 1vw;
+    background: url(https://img.wh.sportingpulseinternational.com/6fb85e2b98beeb1fd7e9ecdf54b318ecS1.png) no-repeat center;
+    background-size: 6vw;
+}
+
+.boxhomepoints,
+.boxhometeam {
+    border-left: solid 1vw #999;
+}
+
+.boxawaypoints,
+.boxawayteam {
+    border-right: solid 1vw #999;
+}
+
+/*-------------------------------------------------------------------
+---- UNDER: background color and a little spase from margins. PLEASE DO NOT CONSIDER THIS-*/
+body {
+    background: #666;
+}
+
+.containersoccer {
+    margin: 30px 0;
+}

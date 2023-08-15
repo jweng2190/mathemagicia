@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/problem_end.css">
     <link rel="stylesheet" href="/css/cd_ready.css">
+    <link rel="stylesheet" href="/css/game.css">
+    <link href='https://fonts.googleapis.com/css?family=Orbitron' rel='stylesheet' type='text/css'>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-MML-AM_CHTML"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.1.0/math.min.js"></script>
     <!-- <link rel="stylesheet" href="/css/chat_style.css"> -->
@@ -33,7 +35,8 @@
     </div>
 
     <div class="outer-container">
-    <div class="content body_container game-page" style="display: flex;height: 100vh;">
+    <div class="content body_container game-page">
+        <!--sidebar-->
         <div class="bg-body shadow d-flex flex-column flex-shrink-0 position-fixed top-0 bottom-0" style="/*width: 6%;*/flex: 0 0 6%;"><a class="text-center link-body-emphasis d-block p-3 text-decoration-none border-bottom" href="/" title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Icon-only"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-bootstrap-fill" style="font-size: 25px;">
                     <path d="M6.375 7.125V4.658h1.78c.973 0 1.542.457 1.542 1.237 0 .802-.604 1.23-1.764 1.23H6.375zm0 3.762h1.898c1.184 0 1.81-.48 1.81-1.377 0-.885-.65-1.348-1.886-1.348H6.375v2.725z"></path>
                     <path d="M4.002 0a4 4 0 0 0-4 4v8a4 4 0 0 0 4 4h8a4 4 0 0 0 4-4V4a4 4 0 0 0-4-4h-8zm1.06 12V3.545h3.399c1.587 0 2.543.809 2.543 2.11 0 .884-.65 1.675-1.483 1.816v.1c1.143.117 1.904.931 1.904 2.033 0 1.488-1.084 2.396-2.888 2.396H5.062z"></path>
@@ -65,27 +68,14 @@
         </div>
         <div class="right_container" style="flex: 1;display: flex;flex-direction: column;">
             <div class="container-fluid ms-auto" id="timer_container" style="height: 10%;padding-right: 0px;padding-left: 0px;border-bottom-width: 1.25px;border-bottom-style: solid;width: 100%;flex: 1;">
-                <p class="d-flex d-xxl-flex justify-content-center align-items-center" id="timer_p" style="visibility: hidden;height: 100%;width: 20%;text-align: center;vertical-align: middle;font-size: 25px;margin: auto;">00:00</p>
+                <strong class="d-flex d-xxl-flex justify-content-center align-items-center" id="timer_p" style="visibility: hidden;height: 100%;width: 20%;text-align: center;vertical-align: middle;font-size: 30px;margin: auto; color:rgb(50, 205, 50); font-family: 'digital-clock-font';">00:00</strong>
             </div>
+            <!--problem div-->
             <div class="container d-flex flex-row align-self-end" style="width: 94%;height: 90%;margin-right: 0px;margin-left: 0px;padding-right: 0px;padding-left: 0px;flex: 9;">
-                <!-- <div class="col-xl-5 d-flex flex-column" style="width: 75%;align-items: center;justify-content: center;">
-                    <h1 id="problem_number" class="d-flex justify-content-center align-items-center" style="text-align: center;font-size: 20px;font-weight: bold;flex: 10;"></h1>
-                    <p id="problem_description" style="margin-left: 20px;margin-right: 20px;text-align: center;max-width: 90%;flex: 20;overflow: auto;"></p>
-                    <img id="problem_image" class="d-block" style="margin: auto;max-width: 85%;max-height: 35%;flex: 25;height: auto;" />
-                    <div id="answer_div" class="input-group flex-row justify-content-center align-items-center align-items-xl-center" style="width: 95%;flex: 25;">
-                        <form id="answer_form" style="width: 50%;margin: auto; visibility: hidden;">
-                            <div id="input_answer_div" class="d-flex">
-                                <input id="player_answer" class="form-control" type="text" placeholder="Enter Answer..." />
-                                <button id="answer_submit" class="btn btn-primary" type="button">Submit</button>
-                            </div>
-                        </form>
-                    </div>
-                </div> -->
-
                 <div class="col-xl-5 d-flex flex-column" style="width: 75%;align-items: center;justify-content: center;">
-                    <h1 class="d-flex justify-content-center align-items-center" id="problem_number" style="text-align: center;/*height: 10%;*/font-size: 20px;font-weight: bold;flex: 10;">Heading</h1>
+                    <h1 class="d-flex justify-content-center align-items-center" id="problem_number" style="text-align: center;/*height: 10%;*/font-size: 20px;font-weight: bold;flex: 10;">Problem</h1>
                     <img class="d-block" id="problem_image" style="margin: auto;max-width: 85%;max-height: 50%;height: auto;">
-                    <div id="answer_div" class="d-flex flex-row justify-content-center align-items-center align-items-xl-center" style="height: 25%;width: 95%;flex: 25;margin-top: -6%;">
+                    <div id="answer_div" class="d-flex flex-row justify-content-center align-items-center align-items-xl-center" style="height: 25%;width: 95%;/* flex: 25;margin-top: -6%; */">
                         <div id="latex_div" style="width: 20%;display: flex;align-items: end;justify-content: end;">
                             <p id="latex-output" style="margin-bottom: 0px;margin-right: 15px;"></p>
                         </div>
@@ -98,7 +88,7 @@
                         </div>
                         <div id="rules_div" style="width: 20%;display: flex;align-items: center;justify-content: center;margin-left: 5%;"><a href="#" style="/*display: block;*/">Formatting Rules</a></div>
                     </div>
-                    <div style="width: 100%;display: flex;justify-content: center;align-items: center;/*margin-right: 50px;*/margin-top: -10%;">
+                    <div style="width: 100%;display: flex;justify-content: center;align-items: center;/*margin-right: 50px;*//* margin-top: -10%; */">
                         <button id="regular_mode" class="btn btn-primary" type="button" style="margin-right: 50px;">Regular</button>
                         <button id="sci_mode" class="btn btn-primary" type="button" style="background-color: var(--bs-border-color-translucent);">Scientific</button>
                     </div>

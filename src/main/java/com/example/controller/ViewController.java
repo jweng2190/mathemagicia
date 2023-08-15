@@ -97,6 +97,11 @@ public class ViewController {
         return "test_cd";
     }
 
+    @GetMapping("/test_sb")
+    public String testSb() {
+        return "test_sb";
+    }
+
     @RolesAllowed({"USER"})
     @GetMapping("/create_game")
     public String testCg() {
