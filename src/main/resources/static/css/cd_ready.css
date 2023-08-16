@@ -16,6 +16,9 @@
 .loading-container {
     z-index: 4;
     position: absolute;
+    top:50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 #countdown_text {

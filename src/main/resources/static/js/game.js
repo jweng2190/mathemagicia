@@ -167,6 +167,9 @@ async function createCountdown() {
         cdContainer.className = 'countdown-container';
         cdContainer.style.zIndex = '3';
         cdContainer.style.position = 'absolute';
+        cdContainer.style.top = "50%";
+        cdContainer.style.left = "50%";
+        cdContainer.style.transform = "translate(-50%, -50%)";
         let cdElem = document.createElement('div');
         cdElem.className = 'countdown';
         cdElem.id = 'countdown';
@@ -178,7 +181,8 @@ async function createCountdown() {
         cdText.style.transition = 'opacity 0.5s';
         cdElem.appendChild(cdText);
         cdContainer.appendChild(cdElem);
-        document.getElementsByClassName('outer-container')[0].appendChild(cdContainer);
+        let leftWindow = document.getElementById("left-window");
+        document.body.insertBefore(cdContainer, leftWindow);
 
         resolve([cdContainer, cdText]);
     });
