@@ -59,6 +59,12 @@ public class Game {
     @Column(name="player2_score")
     private Integer player2Score = 0;
 
+    @Column(name="player1_xp")
+    private Integer player1Xp = 0;
+
+    @Column(name="player2_xp")
+    private Integer player2Xp = 0;
+
     @Column(name="game_date", columnDefinition = "DATE")
     private LocalDate gameDate;
 
@@ -96,8 +102,7 @@ public class Game {
     private int currentProbIndex;
 
     @Transient
-    private LocalTime timeRemaning;
-
+    private LocalTime timeRemaining;
 
     public Game() {
     }
@@ -298,11 +303,27 @@ public class Game {
         this.currentProbIndex = currentProbIndex;
     }
 
-    public LocalTime getTimeRemaning() {
-        return this.timeRemaning;
+    public LocalTime getTimeRemaining() {
+        return this.timeRemaining;
     }
 
-    public void setTimeRemaning(LocalTime timeRemaning) {
-        this.timeRemaning = timeRemaning;
+    public void setTimeRemaining(LocalTime timeRemaining) {
+        this.timeRemaining = timeRemaining;
+    }
+
+    public Integer getPlayer1Xp() {
+        return this.player1Xp;
+    }
+
+    public void setPlayer1Xp(Integer player1Xp) {
+        this.player1Xp = player1Xp;
+    }
+
+    public Integer getPlayer2Xp() {
+        return this.player2Xp;
+    }
+
+    public void setPlayer2Xp(Integer player2Xp) {
+        this.player2Xp = player2Xp;
     }
 }

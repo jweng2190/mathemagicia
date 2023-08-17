@@ -43,7 +43,9 @@ import com.example.model.Game;
 import com.example.model.GameStatus;
 import com.example.model.Problem;
 import com.example.model.User;
+import com.example.service.DifficultyLevelService;
 import com.example.service.GameService;
+import com.example.service.XpLevelService;
 import com.example.storage.GameStorage;
 
 @Controller
@@ -62,6 +64,12 @@ public class MessageController {
 
     @Autowired
     private GameRepository gameDao;
+
+    @Autowired
+    private DifficultyLevelService difficultyLevelService;
+
+    @Autowired
+    private XpLevelService xpLevelService;
 
     private AtomicBoolean player1Finished = new AtomicBoolean(false);
     private AtomicBoolean player2Finished = new AtomicBoolean(false);
@@ -282,7 +290,6 @@ public class MessageController {
         String correctAnswer = problemDao.findAnswerByProblem(currentProblemId);
         String userAnswerTrimmed = userAnswer.trim();
 
-
         if(userAnswerTrimmed.equals(correctAnswer)) {
             long timestamp = answerMessage.getTimestamp();
             List<String> answerInfo = new ArrayList<String>();
@@ -291,12 +298,20 @@ public class MessageController {
             answerTimestamps.put(answerInfo, timestamp);
 
             String firstCorrectAnswer = findFirstCorrectAnswer(currentProblemId);
+            int problemDifficulty = problemDao.findDifficultyByProblemId(currentProblemId);
+
             if(firstCorrectAnswer.equals(player1Username)) {
                 int currentPlayerScore = activeGame.getPlayer1Score();
                 activeGame.setPlayer1Score(currentPlayerScore + 1);
+                int currentPlayerXp = activeGame.getPlayer1Xp();
+                int xpToAdd = difficultyLevelService.getXpForDifficultyLevel(problemDifficulty);
+                activeGame.setPlayer1Xp(currentPlayerXp + xpToAdd);
             } else if(firstCorrectAnswer.equals(player2Username)) {
                 int currentPlayerScore = activeGame.getPlayer2Score();
                 activeGame.setPlayer2Score(currentPlayerScore + 1);
+                int currentPlayerXp = activeGame.getPlayer2Xp();
+                int xpToAdd = difficultyLevelService.getXpForDifficultyLevel(problemDifficulty);;
+                activeGame.setPlayer2Xp(currentPlayerXp + xpToAdd);
             }
             //clearTimestamps();
             activeGame.setCurrentProbIndex(activeGame.getCurrentProbIndex() + 1);
@@ -368,24 +383,29 @@ public class MessageController {
         String player1 = activeGame.getPlayer1Username();
         String player2 = activeGame.getPlayer2Username();
 
-        int gameScore1 = activeGame.getPlayer1Score();
-        int gameScore2 = activeGame.getPlayer2Score();
+        //int gameScore1 = activeGame.getPlayer1Score();
+        //int gameScore2 = activeGame.getPlayer2Score();
+
+        int player1Xp = activeGame.getPlayer1Xp();
+        int player2Xp = activeGame.getPlayer2Xp();
 
         if(playerUsername.equals(player1)) {
             player1Finished.set(true);
-            int originalScore1 = userDao.getScoreByUsername(player1);
-            int updatedScore1 = gameScore1 + originalScore1;
-            userDao.setScoreByUsername(updatedScore1, player1);
+            int originalXp1 = userDao.getXpByUsername(player1);
+            int updatedXp1 = player1Xp + originalXp1;
             User player1User = userDao.getUserByUsername(player1);
+            player1User.setXp(updatedXp1);
+            userDao.save(player1User);
             saveGame(activeGame, player1User);
         }
 
         if(playerUsername.equals(player2)) {
             player2Finished.set(true);
-            int originalScore2 = userDao.getScoreByUsername(player2);
-            int updatedScore2 = gameScore2 + originalScore2;
-            userDao.setScoreByUsername(updatedScore2, player2);
+            int originalXp2 = userDao.getXpByUsername(player2);
+            int updatedXp2 = player2Xp + originalXp2;
             User player2User = userDao.getUserByUsername(player2);
+            player2User.setXp(updatedXp2);
+            userDao.save(player2User);
             saveGame(activeGame, player2User);
         }
 

@@ -1,7 +1,6 @@
 package com.example.model;
 
 import javax.persistence.*;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -32,7 +31,9 @@ public class User {
 
     private String email;
 
-    private Integer score = 0;
+    private Integer level = 1;
+
+    private Integer xp = 0;
 
     private Integer team;
 
@@ -148,12 +149,20 @@ public class User {
         this.email = email;
     }
 
-    public Integer getScore() {
-        return score;
+    public Integer getXp() {
+        return xp;
     }
 
-    public void setScore(Integer score) {
-        this.score = score;
+    public void setXp(Integer xp) {
+        this.xp = xp;
+    }
+
+    public Integer getLevel() {
+        return this.level;
+    }
+
+    public void setLevel(Integer level) {
+        this.level = level;
     }
 
     public Integer getTeam() {

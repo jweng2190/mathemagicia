@@ -1,0 +1,15 @@
+{
+    "difficultyLevels":
+    [
+        {"level": 1, "xpToAdd": 10},
+        {"level": 2, "xpToAdd": 10},
+        {"level": 3, "xpToAdd": 10},
+        {"level": 4, "xpToAdd": 20},
+        {"level": 5, "xpToAdd": 20},
+        {"level": 6, "xpToAdd": 20},
+        {"level": 7, "xpToAdd": 30},
+        {"level": 8, "xpToAdd": 30},
+        {"level": 9, "xpToAdd": 30},
+        {"level": 10, "xpToAdd": 30}
+    ]
+}

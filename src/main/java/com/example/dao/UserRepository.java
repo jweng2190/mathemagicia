@@ -35,8 +35,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query("SELECT u FROM User u WHERE u.verificationCode = ?1")
     public User findByVerificationCode(String code);
 
-    @Query(value="SELECT score FROM user WHERE username = ?1", nativeQuery = true)
-    int getScoreByUsername(String username);
+    @Query(value="SELECT xp FROM user WHERE username = ?1", nativeQuery = true)
+    int getXpByUsername(String username);
 
     @Query(value="SELECT LOWER(CONCAT(first_name, \" \", last_name)) FROM user", nativeQuery = true)
     List<String> getAllFullNames();
@@ -44,9 +44,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query(value="SELECT username FROM user", nativeQuery = true)
     List<String> getAllUsernames();
 
-    @Transactional
+    /* @Transactional
     @Modifying
-    //@Query(value="UPDATE user SET score=?1 WHERE username=?2", nativeQuery = true)
-    @Query("UPDATE User u SET u.score = :score WHERE u.username = :username")
-    void setScoreByUsername(int score, String username);
+    @Query("UPDATE User u SET u.xp = :xp WHERE u.username = :username")
+    void setScoreByUsername(int xp, String username); */
 }

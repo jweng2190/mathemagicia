@@ -13,6 +13,9 @@ public interface ProblemRepository extends JpaRepository<Problem, Integer> {
     @Query(value = "SELECT answer FROM problem WHERE problem_id=?1", nativeQuery = true)
     String findAnswerByProblem(Integer problemId);
 
+    @Query(value = "SELECT difficulty FROM problem WHERE problem_id=?1", nativeQuery = true)
+    Integer findDifficultyByProblemId(Integer problemId);
+
     @Query(value = "SELECT * FROM problem WHERE contest=\'mathcounts\'", nativeQuery = true)
     List<Problem> findAllMCProblems();
 
