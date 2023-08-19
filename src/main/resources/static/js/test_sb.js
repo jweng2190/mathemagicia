@@ -1,10 +1,6 @@
-let topBarUsername = document.getElementById("topbar_username");
 let topBarLevel = document.getElementById("user_level");
 let userXp = document.getElementById("user_xp");
 const xpBarWidth = 200;
-getUserInfo("Username").then((username) => {
-    topBarUsername.textContent = username; 
-});
 
 getUserInfo("Level").then((level) => {
     topBarLevel.textContent = level;

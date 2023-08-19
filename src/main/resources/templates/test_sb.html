@@ -1,22 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <link rel="stylesheet" href="/css/test_cb.css">
-    </head>
-    <body>
-        <section id="boxes">
-            <div class="container containersoccer">
-                <div class="sgrlogo" style="background: url(https://www.flexyscore.net/logofs.png) no-repeat center;"></div>
-                <div class="box boxtimer" id="timer">12:35</div>
-                <div class="box boxhometeam" id="team_1">West Team</div>
-                <div class="box boxhomepoints" id="points_1">3</div>
-                <div class="space">-</div>
-                <div class="box boxawaypoints" id="points_2">2</div>
-                <div class="box boxawayteam" id="team_2">East Team</div>
-                <div class="box boxmoment boxovertimeoff" id="ovt"><span><em id="overtime">T</em><strong
-                            id="moment">1</strong></span></div>
-            </div>
-        </section>
-    </body>
+<html data-bs-theme="light" lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>level</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css">
+</head>
+
+<body>
+    <div style="display: flex;width: 300px;">
+        <div style="justify-content: center;align-items: center;display: flex;">
+            <span style="text-align: center;z-index: 1;margin-bottom: 10px;font-weight: 700;color: #FFF;position: absolute;">3</span>
+            <img style="z-index: 0;width: 60px;height: auto;" src="/img/shield.png">
+        </div>
+        <div style="height: 30px;width: 100px;position: absolute;left: 45px;z-index: -1;top: 15px;background: linear-gradient(90deg, #00b2ff, #00f863);"></div>
+        <div style="height: 30px;background-color: #d7d7d7;width: 200px;position: absolute;left: 45px;z-index: -2;top: 15px;opacity: 1;"></div>
+        <div style="height: 28px;position: absolute;left: 45px;top: 18px;z-index: 2;margin-left: 60px;"><span style="text-align: end;font-weight: 700;color: white;">250</span></div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/test_sb.js"></script>
+</body>
 
 </html>
