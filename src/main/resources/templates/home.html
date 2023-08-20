@@ -48,11 +48,20 @@
                 <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle me-3" id="sidebarToggleTop" type="button"><i class="fas fa-bars"></i></button>
                     <div style="display: flex;width: 300px;">
                         <div style="justify-content: center;align-items: center;display: flex;z-index: 2;">
-                            <span id="user_level" style="text-align: center;z-index: 1;margin-bottom: 10px;font-weight: 700;color: #FFF;position: absolute;"></span>
-                            <img style="z-index: 0;width: 50px;height: auto;" src="/img/shield.png">
+                            <span id="user_level"
+                                style="text-align: center;z-index: 1;margin-bottom: 10px;font-weight: 700;color: #FFF;position: absolute;"></span>
+                            <img style="z-index: 0;width: 60px;height: auto;" src="/img/shield.png">
                         </div>
-                        <div id="user_xp" style="height: 28px;position: absolute;left: 45px;top: 21px;background: linear-gradient(90deg, #00b2ff, #00f863);z-index: 1;"></div>
-                        <div id="total_xp" style="height: 28px;background-color: #d7d7d7;width: 200px;position: absolute;left: 45px;top: 21px;z-index: 0;"></div>
+                        <div style="display: flex;position: relative;align-items: center;margin-left: -5%;">
+                            <div id="user_xp"
+                                style="height: 30px;width: 100px;z-index: 1;background: linear-gradient(90deg, #00b2ff, #00f863);"></div>
+                            <div id="total_xp"
+                                style="height: 30px;background-color: #d7d7d7;width: 200px;z-index: 0;opacity: 1;position: absolute;"></div>
+                            <div style="height: 30px;position: absolute;width: 200px;z-index: 3;">
+                                <span id="xp_points"
+                                    style="font-weight: 700;color: white;text-shadow: 0 0 2px #000;text-align: center;margin: auto;display: block;height: 100%;z-index: 3;"></span>
+                            </div>
+                        </div>
                     </div>
                     <ul class="navbar-nav flex-nowrap ms-auto">
                         <li class="nav-item dropdown d-sm-none no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false" data-bs-toggle="dropdown" href="#"><i class="fas fa-search"></i></a>
@@ -151,18 +160,6 @@
                 </div>
             </div>
             <section style="width: 94%;margin-left: 6%;">
-                <!-- <div data-bss-parallax-bg="true" style="height: 600px;background: url(&quot;/img/red_blue_versus.jpg&quot;) center / contain no-repeat;">
-                    <div class="container h-100">
-                        <div class="row h-100">
-                            <div class="col-md-6 text-center text-md-start d-flex d-sm-flex d-md-flex justify-content-center align-items-center justify-content-md-start align-items-md-center justify-content-xl-center">
-                                <div style="max-width: 350px;">
-                                    <h1 class="text-uppercase fw-bold">Biben dum<br>fringi dictum, augue purus</h1>
-                                    <p class="my-3">Tincidunt laoreet leo, adipiscing taciti tempor. Primis senectus sapien, risus donec ad fusce augue interdum.</p><a class="btn btn-primary btn-lg me-2" role="button" href="#">Button</a><a class="btn btn-outline-primary btn-lg" role="button" href="#">Button</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div> -->
                 <div data-bss-parallax-bg="true" style="height: 500px;background: url('/img/blue_red_clash_2.jpg') center / cover no-repeat; background-size: 1100px 500px;">
                     <div class="container h-100">
                         <div class="row h-100">
@@ -199,7 +196,7 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/js/bs-init.js"></script>
-    <script src="/js/home.js"></script>
+    <script src="/js/home.js" type="module"></script>
 </body>
 
 </html>

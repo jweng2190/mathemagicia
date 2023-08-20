@@ -1,9 +1,11 @@
 let topBarUsername = document.getElementById("topbar_username");
 let topBarLevel = document.getElementById("user_level");
 let userXp = document.getElementById("user_xp");
+let xpPoints = document.getElementById("xp_points");
 const xpBarWidth = 200;
+
 getUserInfo("Username").then((username) => {
-    topBarUsername.textContent = username; 
+    topBarUsername.textContent = username;
 });
 
 getUserInfo("Level").then((level) => {
@@ -13,10 +15,12 @@ getUserInfo("Level").then((level) => {
 getUserXp().then((xp) => {
     let currentXp = xp[0];
     let xpLevelUp = xp[1];
+    xpPoints.textContent = currentXp;
     let percentage = currentXp / xpLevelUp;
     let width = percentage * xpBarWidth;
     userXp.style.width = width + "px";
 });
+
 
 async function getUserInfo(type) {
     let response;
