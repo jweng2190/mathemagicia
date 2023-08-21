@@ -1,40 +1,69 @@
-let topBarLevel = document.getElementById("user_level");
-let userXp = document.getElementById("user_xp");
-const xpBarWidth = 200;
+let buttonShow = document.getElementById("button_show");
+let modal = new bootstrap.Modal(document.getElementById("modal-1"), {});
+const scoreCounter = document.getElementById('earned_xp');
+const targetScore = 100; // Set the target score
+const increment = 1;
+let animationStep = 0;
 
-getUserInfo("Level").then((level) => {
-    topBarLevel.textContent = level;
-});
-
-getUserXp().then((xp) => {
-    let currentXp = xp[0];
-    let xpLevelUp = xp[1];
-    let percentage = currentXp / xpLevelUp;
-    let width = percentage * xpBarWidth;
-    userXp.style.width = width + "px";
-});
-
-async function getUserInfo(type) {
-    let response;
-    if(type === "Username") {
-        response = await fetch("/username");
-    } else if(type === "Level") {
-        response = await fetch("/level");
+function animateStep() {
+    const divElement = document.getElementById('current_xp');
+    switch (animationStep) {
+        case 0:
+            divElement.style.width = '200px';
+            break;
+        case 1:
+            divElement.style.width = '0';
+            break;
+        case 2:
+            divElement.style.width = '100px';
+            break;
     }
-    if (!response.ok) {
-        const message = `An error has occured: ${response.status}`;
-        throw new Error(message);
-    }
-    const responseText = await response.text();
-    return responseText;
+    animationStep = (animationStep + 1) % 3; // Loop through animation steps
 }
 
-async function getUserXp() {
-    const response = await fetch("/xp");
-    if (!response.ok) {
-        const message = `An error has occured: ${response.status}`;
-        throw new Error(message);
-    }
-    const responseJson = await response.json();
-    return responseJson;
+function repeatAnimation() {
+    let numSteps = 0;
+    const interval = setInterval(() => {
+        animateStep();
+        numSteps++;
+        if(numSteps >= 3) {
+            clearInterval(interval);
+        }
+    }, 1250);
 }
+
+function animateScore() {
+    let currentScore = 0;
+
+    const interval = setInterval(() => {
+        currentScore += increment;
+        scoreCounter.textContent = "+" + currentScore;
+
+        if (currentScore >= targetScore) {
+            clearInterval(interval);
+            animateWidth();
+        }
+    }, 1000 / (targetScore / increment));
+}
+
+function animateWidth() {
+    const divElement = document.getElementById('current_xp');
+    const targetWidth = 190; // Set the desired final width
+    divElement.style.width = targetWidth + 'px'; // Update the width dynamically
+    setTimeout(() => {
+        startConfetti();
+        setTimeout(() => {
+            stopConfetti();
+        }, 5000);
+    }, 1000);
+}
+
+buttonShow.addEventListener("click", () => {
+    modal.show();
+    animateScore();
+});
+
+function closeModal() {
+    modal.hide();
+}
+
