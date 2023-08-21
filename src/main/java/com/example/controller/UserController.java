@@ -84,7 +84,7 @@ public class UserController {
 
     @PostMapping(path = "/search", consumes = MediaType.APPLICATION_JSON_VALUE)
     @RolesAllowed({"USER"})
-    public ResponseEntity<ArrayList<List<String>>> searchUser(@RequestBody Map<String, String> payload) {
+    public ResponseEntity<ArrayList<List<String>>> searchUser(@RequestBody Map<String, String> payload, Principal principal) {
         String type = payload.get("searchType");
         if(type == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -93,16 +93,17 @@ public class UserController {
         String searchValue = payload.get("searchValue");
         List<String> emailList = new ArrayList<>();
         if(type.equals("Default")) {
-            String fName = searchValue.split(" ")[0].toLowerCase();
-            String lName = searchValue.split(" ")[1].toLowerCase();
+            String[] splittedName = searchValue.split("\\s+");
 
             List<String> fullNames = userDao.getAllFullNames();
             for(String fullName: fullNames) {
-                if(fullName.contains(fName) || fullName.contains(lName)) {
-                    List<String> emails = userDao.getEmailsByFullName(fullName);
-                    for(String email: emails) {
-                        if(!emailList.contains(email)) {
-                            emailList.add(email);
+                for(String partName: splittedName) {
+                    if(fullName.contains(partName.toLowerCase())) {
+                        List<String> emails = userDao.getEmailsByFullName(fullName);
+                        for(String email: emails) {
+                            if(!emailList.contains(email)) {
+                                emailList.add(email);
+                            }
                         }
                     }
                 }
@@ -119,6 +120,18 @@ public class UserController {
             }
         } else if(type.equals("Level")) {
             //TODO
+            List<User> users = userDao.findAll();
+            int min = Integer.parseInt(searchValue.split(",")[0]);
+            int max = Integer.parseInt(searchValue.split(",")[1]);
+
+            for(User user: users) {
+                if(user.getLevel() >= min && user.getLevel() <= max) {
+                    String email = user.getEmail();
+                    if(!emailList.contains(email)) {
+                        emailList.add(email);
+                    }
+                }
+            }
         }
 
         ArrayList<List<String>> usernameAndEmailList = new ArrayList<List<String>>();
@@ -126,8 +139,10 @@ public class UserController {
         for(int i = 0; i < emailList.size(); i++) {
             String email = emailList.get(i);
             String username = userDao.getUsernameByEmail(email);
-
-            usernameAndEmailList.add(i, Arrays.asList(username, email));
+            //prevent user from inviting themselves
+            if(!username.equals(principal.getName())) {
+                usernameAndEmailList.add(Arrays.asList(username, email));
+            }
         }
 
         if(!emailList.isEmpty()) {

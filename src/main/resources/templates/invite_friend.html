@@ -11,6 +11,7 @@
           crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="/css/pretty_search_form.css">
+    <link rel="stylesheet" href="/css/invite_friend.css">
 </head>
 
 <body>
@@ -30,13 +31,47 @@
                 <div class="dropdown-menu">
                     <a id="search_username" class="dropdown-item" href="#">Username</a>
                     <a id="search_level" class="dropdown-item" href="#">Level</a>
+                    <a id="default" class="dropdown-item" href="#">Default</a>
                 </div>
             </div>
             <input class="form-control" type="text" id="search_box" placeholder="Find Players">
+            <div class="range_container">
+                <div class="sliders_control">
+                    <input id="fromSlider" type="range" value="5" min="1" max="25" />
+                    <input id="toSlider" type="range" value="15" min="1" max="25" />
+                </div>
+                <!-- <div class="form_control">
+                    <div class="form_control_container">
+                        <div class="form_control_container__time">Min</div>
+                        <input class="form_control_container__time__input" type="number" id="fromInput" value="5" min="1"
+                            max="25" />
+                    </div>
+                    <div class="form_control_container">
+                        <div class="form_control_container__time">Max</div>
+                        <input class="form_control_container__time__input" type="number" id="toInput" value="15" min="1"
+                            max="25" />
+                    </div>
+                </div> -->
+            </div>
             <button class="btn btn-light" type="button" id="search_button">Search </button>
         </div>
     </form>
-    <div class="table-responsive" style="width: 83%;margin: auto;">
+    <div id="level_numbers">
+        <div class="form_control_container">
+            <div class="form_control_container__time">Min</div>
+            <input class="form_control_container__time__input" type="number" id="fromInput" value="5" min="1"
+                max="25" />
+        </div>
+        <div class="form_control_container">
+            <div class="form_control_container__time">Max</div>
+            <input class="form_control_container__time__input" type="number" id="toInput" value="15" min="1"
+                max="25" />
+        </div>
+    </div>
+    <div id="error_search" style="display: none;align-items: center;justify-content: center; margin-top: 20px;">
+        <span style="color: #dc3545;font-weight: 600;">No players found with the given criteria! Please try again.</span>
+    </div>
+    <div class="table-responsive" style="width: 83%;margin: auto; margin-top: 20px;">
         <table class="table table-hover" id="friend_table" style="display:none">
             <thead>
                 <tr>
@@ -67,6 +102,7 @@
             integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa"
             crossorigin="anonymous"></script>
     <script src="/js/invite_friend.js"></script>
+    <script src="/js/level_search.js"></script>
 </body>
 
 </html>

@@ -1,14 +1,24 @@
-var searchBox = document.getElementById("search_box");
+let searchBox = document.getElementById("search_box");
 var searchButton = document.getElementById("search_button");
 var form = document.getElementById("invite_form");
 var table = document.getElementById("friend_table");
 
+let errorSearch = document.getElementById("error_search");
+
+let rangeContainer = document.getElementsByClassName("range_container")[0];
+let levelNumbers = document.getElementById("level_numbers");
+
+let inputMin = document.getElementById("fromInput");
+let inputMax = document.getElementById("toInput");
+
 let searchUsername = document.getElementById("search_username");
 let searchLevel = document.getElementById("search_level");
+let searchDefault = document.getElementById("default");
 const buttonDropdown = document.getElementById("options_dropdown");
 
 searchUsername.addEventListener("click", handleUsernameSearch);
 searchLevel.addEventListener("click", handleLevelSearch);
+searchDefault.addEventListener("click", handleDefaultSearch);
 
 //debugging convenience
 var skipButton = document.getElementById("skip");
@@ -30,8 +40,15 @@ searchBox.addEventListener("keydown", function(event) {
 
 
 function processSearch() {
-    var inputValue = searchBox.value;
+    let inputValue;
+    if(searchOption === "Default" || searchOption === "Username") {
+        inputValue = searchBox.value;
+    } else {
+        inputValue = inputMin.value + "," + inputMax.value;
+    }
+
     searchBox.value = '';
+    errorSearch.style.display = "none";
 
     clearTable();
 
@@ -46,6 +63,9 @@ function processSearch() {
         emailData = data;
 
         displaySearch(emailData);
+    }).catch((error) => {
+        console.log(error);
+        errorSearch.style.display = "flex";
     });
 }
 
@@ -152,13 +172,27 @@ async function postRequest(url, data, type) {
 }
 
 function handleUsernameSearch() {
+    searchBox.style.display = "block";
+    rangeContainer.style.display = "none";
+    levelNumbers.style.display = "none";
     searchOption = "Username";
     buttonDropdown.innerHTML = "Username";
 }
 
 function handleLevelSearch() {
+    searchBox.style.display = "none";
+    rangeContainer.style.display = "flex";
+    levelNumbers.style.display = "flex";
     searchOption = "Level";
     buttonDropdown.innerHTML = "Level";
+}
+
+function handleDefaultSearch() {
+    searchBox.style.display = "block";
+    rangeContainer.style.display = "none";
+    levelNumbers.style.display = "none";
+    searchOption = "Default";
+    buttonDropdown.innerHTML = "Options";
 }
 
 
