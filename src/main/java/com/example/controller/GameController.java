@@ -32,6 +32,7 @@ import com.example.storage.GameStorage;
 import com.exception.InvalidGameException;
 import com.exception.InvalidParamException;
 import com.exception.NotFoundException;
+import java.util.Map;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -107,6 +108,26 @@ public class GameController {
         }
 
         return ResponseEntity.ok().body(String.valueOf(numMinutes));
+    }
+
+    @PostMapping(path="/xp_earned", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RolesAllowed({"USER", "ADMIN"})
+    public ResponseEntity<Integer> getXpEarned(@RequestBody Map<String, String> playerInfo) {
+        String gameId = playerInfo.get("gameId");
+        String playerType = playerInfo.get("playerType");
+
+        if(gameId == null || playerType == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        Game game = gameDao.getGameByGameId(gameId);
+        if(playerType.equals("Player 1")) {
+            return ResponseEntity.ok().body(game.getPlayer1Xp());
+        } else if(playerType.equals("Player 2")) {
+            return ResponseEntity.ok().body(game.getPlayer2Xp());
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).build();
+        }
     }
 
     @GetMapping("/type/{id}")

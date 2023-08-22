@@ -11,7 +11,7 @@
 </head>
 
 <body>
-    <button id="button_show" data-toggle="modal" data-target="#modal-1">Show Modal</button>
+    <button id="button_show">Show Modal</button>
     <div class="modal fade" role="dialog" tabindex="-1" id="modal-1" aria-labelledby="modal-1" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -32,7 +32,10 @@
                         <p style="text-shadow: var(--bs-body-color);font-weight: 700;background: -webkit-linear-gradient(#52ff00, #ffffff);-webkit-background-clip: text;-webkit-text-fill-color: transparent;font-size: 21px;-webkit-text-stroke-width: 1.5px;-webkit-text-stroke-color: #12ae22;">XP</p>
                     </div>
                     <div style="display: flex;width: 300px;margin: auto;">
-                        <div style="justify-content: center;align-items: center;display: flex;z-index: 2;"><span style="text-align: center;z-index: 1;margin-bottom: 10px;font-weight: 700;color: #FFF;position: absolute;">3</span><img style="z-index: 0;width: 60px;height: auto;" src="/img/shield.png"></div>
+                        <div style="justify-content: center;align-items: center;display: flex;z-index: 2;">
+                            <span id="player_level" style="text-align: center;z-index: 1;margin-bottom: 10px;font-weight: 700;color: #FFF;position: absolute;">3</span>
+                            <img style="z-index: 0;width: 60px;height: auto;" src="/img/shield.png">
+                        </div>
                         <div style="display: flex;position: relative;align-items: center;margin-left: -5%;">
                             <div id="current_xp" style="height: 30px;width: 120px;z-index: 1;background: linear-gradient(90deg, #00b2ff, #00f863);"></div>
                             <div style="height: 30px;background-color: #d7d7d7;width: 200px;z-index: 0;opacity: 1;position: absolute;"></div>

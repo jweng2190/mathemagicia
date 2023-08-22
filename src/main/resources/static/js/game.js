@@ -618,12 +618,12 @@ function playScoreAnimation(player) {
 
 
 function showFinalScores() {
-    //var myModal = new bootstrap.Modal(document.getElementById('modal-end'));
+    let myModal = new bootstrap.Modal(document.getElementById('modal-end'));
     myModal.show();
 }
 
 function closeModal() {
-    //var myModal = new bootstrap.Modal(document.getElementById('modal-end'));
+    let myModal = new bootstrap.Modal(document.getElementById('modal-end'));
     myModal.hide();
 }
 
