@@ -3,10 +3,7 @@ let modal = new bootstrap.Modal(document.getElementById("modal-1"), {});
 const scoreCounter = document.getElementById('earned_xp');
 const targetScore = 100; // Set the target score
 let animationStep = 0;
-const listStats = [[3, 1450, 1500], [4, 100, 2000]];
-
-const stats = await getXpInfo("b0805641-d258-4233-aecc-e264357c7b1a", "Player 1");
-console.log(stats);
+const listStats = [[1, 480, 500], [2, 0, 1000], [20]];
 
 
 function animateStep(stats) {
@@ -16,6 +13,7 @@ function animateStep(stats) {
     const totalXp = stats[1][2];
     const newWidth = (newXp / totalXp) * 200;
     const divElement = document.getElementById('current_xp');
+
     switch (animationStep) {
         case 0:
             divElement.style.width = '200px';
@@ -46,7 +44,7 @@ function repeatAnimation(stats) {
     }, 1250);
 }
 
-export async function animateXp(gameId, playerType, stats) {
+async function animateXp(gameId, playerType, stats) {
     const targetScore = stats[2][0];
     const increment = 1;
     let currentScore = 0;
@@ -87,15 +85,15 @@ function congrats() {
     }, 1000);
 }
 
-/* buttonShow.addEventListener("click", () => {
+buttonShow.addEventListener("click", () => {
     modal.show();
     animateXp("b0805641-d258-4233-aecc-e264357c7b1a", "Player 1", listStats);
 });
- */
-/* function closeModal() {
+
+function closeModal() {
     modal.hide();
 }
- */
+
 async function getXpEarned(gameId, type) {
     const requestBody = {
         gameId: gameId,
@@ -119,7 +117,7 @@ async function getXpEarned(gameId, type) {
     return responseText;
 }
 
-export async function getXpInfo(gameId, type) {
+async function getXpInfo(gameId, type) {
     const requestBody = {
         gameId: gameId,
         playerType: type

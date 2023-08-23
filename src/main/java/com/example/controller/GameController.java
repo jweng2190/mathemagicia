@@ -1,6 +1,7 @@
 package com.example.controller;
 
 import java.security.Principal;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
@@ -110,6 +111,50 @@ public class GameController {
         return ResponseEntity.ok().body(String.valueOf(numMinutes));
     }
 
+    @PostMapping(path="/game_end", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RolesAllowed({"USER", "ADMIN"})
+    public ResponseEntity<String> endGame(@RequestBody Map<String, String> gameInfo) {
+        String gameId = gameInfo.get("gameId");
+        String playerUsername = gameInfo.get("playerUsername");
+
+        Game game = gameDao.getGameByGameId(gameId);
+        if(game.getWinner() == null) {
+            String winner = getWinner(game);
+            game.setWinner(winner);
+        }
+
+        if(game.getGameDate() == null) {
+            game.setGameDate(LocalDate.now());
+        }
+        gameDao.save(game);
+
+        String player1 = game.getPlayer1Username();
+        String player2 = game.getPlayer2Username();
+
+        int player1Xp = game.getPlayer1Xp();
+        int player2Xp = game.getPlayer2Xp();
+
+        if(playerUsername.equals(player1)) {
+            //int originalXp1 = userDao.getXpByUsername(player1);
+            //int updatedXp1 = player1Xp + originalXp1;
+            User player1User = userDao.getUserByUsername(player1);
+            //player1User.setXp(updatedXp1); */
+            //userDao.save(player1User);
+            saveGame(game, player1User);
+        }
+
+        if(playerUsername.equals(player2)) {
+            //int originalXp2 = userDao.getXpByUsername(player2);
+            //int updatedXp2 = player2Xp + originalXp2;
+            User player2User = userDao.getUserByUsername(player2);
+            //player2User.setXp(updatedXp2);
+            //userDao.save(player2User);
+            saveGame(game, player2User);
+        }
+
+        return ResponseEntity.ok().body("Game Ended");
+    }
+
     @PostMapping(path="/xp_earned", consumes = MediaType.APPLICATION_JSON_VALUE)
     @RolesAllowed({"USER", "ADMIN"})
     public ResponseEntity<Integer> getXpEarned(@RequestBody Map<String, String> playerInfo) {
@@ -161,5 +206,22 @@ public class GameController {
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
+    }
+
+    public String getWinner(Game game) {
+        if(game.getPlayer1Score() > game.getPlayer2Score()) {
+            return game.getPlayer1Username();
+        } else if (game.getPlayer1Score() < game.getPlayer2Score()) {
+            return game.getPlayer2Username();
+        } else {
+            return null;
+        }
+    }
+
+    private void saveGame(Game game, User user) {
+        List<Game> games = user.getGames();
+        //add most recent first
+        games.add(0, game);
+        userDao.save(user);
     }
 }

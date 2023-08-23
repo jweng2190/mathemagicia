@@ -620,12 +620,14 @@ function playScoreAnimation(player) {
 async function showFinalScores() {
     let modalEnd = new bootstrap.Modal(myModal);
     modalEnd.show();
-    const player1ScoreField = document.getElementById("player1score_field");
-    const player2ScoreField = document.getElementById("player2score_field");
 
-    player1ScoreField.textContent = player1Score;
-    player2ScoreField.textContent = player2Score;
-    getXpInfo(gameId, playerType).then((stats) => {
+    const finalScore1 = document.getElementById("final_score1");
+    const finalScore2 = document.getElementById("final_score2");
+
+    finalScore1.innerHTML = player1Score;
+    finalScore2.innerHTML = player2Score;
+
+    /* getXpInfo(gameId, playerType).then((stats) => {
         console.log(stats);
         //get current stats
         const level = document.getElementById("player_level");
@@ -639,7 +641,8 @@ async function showFinalScores() {
         xpBar.style.width = width + "px";
         //xp animation
         animateXp(gameId, playerType, stats);
-    });
+    }); */
+    animateXp(gameId, playerType);
 }
 
 function closeModal() {
@@ -650,7 +653,22 @@ function closeModal() {
 function endGame() {
     disableAnswer();
     stopTimer();
-    const socket = new SockJS('/end');
+    let gameEndData = {
+        gameId: gameId,
+        playerUsername: username
+    };
+    gameEndData = JSON.stringify(gameEndData);
+    postRequest("/game/game_end", gameEndData, "json").then((response) =>  {
+        if(response === "Game Ended") {
+            connectRematch();
+        } else {
+            throw new Error("Oops! Something went wrong.")
+        }
+    }).catch((error) => {
+        throw new Error(error);
+    });
+
+    /* const socket = new SockJS('/end');
     stompClient = Stomp.over(socket);
     stompClient.connect({"gameId": gameId}, function (frame) {
         console.log("Connected: " + frame);
@@ -662,7 +680,7 @@ function endGame() {
             }
         });
         sendScores();
-    });
+    }); */
 }
 
 function sendScores() {
@@ -699,8 +717,8 @@ function connectRematch() {
         console.log("Connected: " + frame);
         stompClient.subscribe(`/topic/game.rematch`, function (message) {
             handleRematchStatus(message.body);
-            executeOnce(showFinalScores);
         });
+        showFinalScores();
     });
 }
 
@@ -776,4 +794,27 @@ async function getUsername() {
     }
     const username = await response.text();
     return username;
+}
+
+async function postRequest(url, data, type) {
+    let contentType;
+    if(type === "plain text") {
+        contentType = "text/plain";
+    } else if(type === "json") {
+        contentType = "application/json";
+    }
+
+    const response = await fetch(url, {
+        method: "POST", // *GET, POST, PUT, DELETE, etc.
+        mode: "cors", // no-cors, *cors, same-origin
+        cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: "same-origin", // include, *same-origin, omit
+        headers: {
+            "Content-Type": contentType,
+        },
+        redirect: "follow", // manual, *follow, error
+        referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+        body: data, // body data type must match "Content-Type" header
+    });
+    return response.text();
 }

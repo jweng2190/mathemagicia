@@ -21,7 +21,23 @@ export async function getXpInfo(gameId, type) {
     return responseBody;
 }
 
-export async function animateXp(gameId, playerType, stats) {
+export async function animateXp(gameId, playerType) {
+    let stats;
+    try {
+        stats = await getXpInfo(gameId, playerType);
+    } catch(e) {
+        throw new Error(e);
+    }
+    const playerLevel = document.getElementById("player_level");
+    const xpValue = document.getElementById("xp_value");
+    const xpBar = document.getElementById("current_xp");
+    let currentXp = stats[0][1];
+    let xpLevelUp = stats[0][2];
+    playerLevel.textContent = stats[0][0];
+    xpValue.textContent = currentXp;
+    const width = (currentXp / xpLevelUp) * 200;
+    xpBar.style.width = width + "px";
+
     const targetScore = stats[2][0];
     const increment = 1;
     let currentScore = 0;
@@ -48,7 +64,7 @@ export async function animateXp(gameId, playerType, stats) {
 export function repeatAnimation(stats) {
     let numSteps = 0;
     const interval = setInterval(() => {
-        animateStep(stats);
+        animateStep(stats, numSteps);
         numSteps++;
         if(numSteps >= 3) {
             clearInterval(interval);
@@ -66,29 +82,32 @@ export function animateWidth(stats) {
     congrats();
 }
 
-export function animateStep(stats) {
+export function animateStep(stats, animationStep) {
     const playerLevel = document.getElementById('player_level');
     const newLevel = stats[1][0];
     const newXp = stats[1][1];
     const totalXp = stats[1][2];
     const newWidth = (newXp / totalXp) * 200;
     const divElement = document.getElementById('current_xp');
+
+    const xpValue = document.getElementById("xp_value");
+    
     switch (animationStep) {
         case 0:
             divElement.style.width = '200px';
             break;
         case 1:
-            playerLevel.style.animation = "score-animation 1.5s";
+            playerLevel.style.animation = "level-animation 1.5s";
             setTimeout(() => {
                 playerLevel.textContent = newLevel;
             }, 300); 
-            divElement.style.width = '0';
+            divElement.style.width = '0px';
             break;
         case 2:
             divElement.style.width = newWidth + "px";
+            xpValue.textContent = newXp;
             break;
     }
-    animationStep = (animationStep + 1) % 3; // Loop through animation steps
 }
 
 export function congrats() {
