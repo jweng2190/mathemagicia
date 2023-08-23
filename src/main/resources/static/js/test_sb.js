@@ -5,6 +5,10 @@ const targetScore = 100; // Set the target score
 let animationStep = 0;
 const listStats = [[3, 1450, 1500], [4, 100, 2000]];
 
+const stats = await getXpInfo("b0805641-d258-4233-aecc-e264357c7b1a", "Player 1");
+console.log(stats);
+
+
 function animateStep(stats) {
     const playerLevel = document.getElementById('player_level');
     const newLevel = stats[1][0];
@@ -42,9 +46,8 @@ function repeatAnimation(stats) {
     }, 1250);
 }
 
-async function animateScore(gameId, playerType, stats) {
-    let targetScore = await getXpEarned(gameId, playerType);
-    
+export async function animateXp(gameId, playerType, stats) {
+    const targetScore = stats[2][0];
     const increment = 1;
     let currentScore = 0;
 
@@ -84,15 +87,15 @@ function congrats() {
     }, 1000);
 }
 
-buttonShow.addEventListener("click", () => {
+/* buttonShow.addEventListener("click", () => {
     modal.show();
-    animateScore("b0805641-d258-4233-aecc-e264357c7b1a", "Player 1", listStats);
+    animateXp("b0805641-d258-4233-aecc-e264357c7b1a", "Player 1", listStats);
 });
-
-function closeModal() {
+ */
+/* function closeModal() {
     modal.hide();
 }
-
+ */
 async function getXpEarned(gameId, type) {
     const requestBody = {
         gameId: gameId,
@@ -114,5 +117,28 @@ async function getXpEarned(gameId, type) {
 
     const responseText = await response.text();
     return responseText;
+}
+
+export async function getXpInfo(gameId, type) {
+    const requestBody = {
+        gameId: gameId,
+        playerType: type
+    }
+    const requestJsonValue = JSON.stringify(requestBody);
+    const response = await fetch("/xp/level_up", {
+        method: "POST", // *GET, POST, PUT, DELETE, etc.
+        mode: "cors", // no-cors, *cors, same-origin
+        cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: "same-origin", // include, *same-origin, omit
+        headers: {
+            "Content-Type": "application/json",
+        },
+        redirect: "follow", // manual, *follow, error
+        referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+        body: requestJsonValue, // body data type must match "Content-Type" header
+    });
+
+    const responseBody = await response.json();
+    return responseBody;
 }
 

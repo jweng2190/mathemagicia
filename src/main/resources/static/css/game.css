@@ -2,3 +2,7 @@
     font-family:'digital-clock-font';
     src: url('/img/fonts/digital_clock.ttf');
 }
+
+#current_xp {
+    transition: width 1s ease;
+}

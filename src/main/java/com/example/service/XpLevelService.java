@@ -47,12 +47,14 @@ public class XpLevelService {
         while(totalXp >= xpLevel) {
             totalXp -= xpLevel;
             if(currentLevel == 25) {
-                return Arrays.asList(-1, 0);
+                return Arrays.asList(-1, 0, -1);
             }
             currentLevel++;
             xpLevel = getXpToLevelUp(currentLevel);
         }
 
-        return Arrays.asList(currentLevel, totalXp);
+        int xpThreshold = getXpToLevelUp(currentLevel);
+
+        return Arrays.asList(currentLevel, totalXp, xpThreshold);
     }
 }

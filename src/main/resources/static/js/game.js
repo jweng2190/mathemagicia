@@ -9,6 +9,7 @@
 const countdownContainer = document.getElementsByClassName('countdown-container')[0]; */
 import { parseUserInputToLatex } from "./test_latex.js";
 import { evaluateMathExpression } from "./test_latex.js";
+import { getXpInfo, animateXp, animateWidth, repeatAnimation, animateStep, congrats } from "./game_xp.js";
 
 let countdownElement;
 let countdownContainer;
@@ -88,7 +89,7 @@ const player2ScoreElement = document.getElementById('player2-score');
 
 const gameContent = document.getElementsByClassName('game-page')[0];
 
-var myModal = new bootstrap.Modal(document.getElementById('modal-end'));
+const myModal = document.getElementById("modal-end");
 
 playerInput.addEventListener('input', () => {
     setTimeout(() => {
@@ -535,11 +536,10 @@ function checkAnswer() {
             console.log("Player 1 Score: " + player1Score + "\nPlayer 2 Score: " + player2Score);
 
             if ((player1Score - originalScore1 > 0) || (player2Score - originalScore2 > 0)) {
-                showScores();
-                setTimeout(() => {
-
-                    nextProblem();
-                }, 5000);
+                //debugging, add back later
+                //showScores();
+                //setTimeout 5 seconds
+                nextProblem();
             }
         });
         answerForm.style.visibility = "visible";
@@ -617,14 +617,34 @@ function playScoreAnimation(player) {
 }
 
 
-function showFinalScores() {
-    let myModal = new bootstrap.Modal(document.getElementById('modal-end'));
-    myModal.show();
+async function showFinalScores() {
+    let modalEnd = new bootstrap.Modal(myModal);
+    modalEnd.show();
+    const player1ScoreField = document.getElementById("player1score_field");
+    const player2ScoreField = document.getElementById("player2score_field");
+
+    player1ScoreField.textContent = player1Score;
+    player2ScoreField.textContent = player2Score;
+    getXpInfo(gameId, playerType).then((stats) => {
+        console.log(stats);
+        //get current stats
+        const level = document.getElementById("player_level");
+        const xpValue = document.getElementById("xp_value");
+        const xpBar = document.getElementById("current_xp");
+        let currentXp = stats[0][1];
+        let xpLevelUp = stats[0][2];
+        level.textContent = stats[0][0];
+        xpValue.textContent = currentXp;
+        const width = (currentXp / xpLevelUp) * 200;
+        xpBar.style.width = width + "px";
+        //xp animation
+        animateXp(gameId, playerType, stats);
+    });
 }
 
 function closeModal() {
-    let myModal = new bootstrap.Modal(document.getElementById('modal-end'));
-    myModal.hide();
+    let modalEnd = new bootstrap.Modal(myModal);
+    modalEnd.show();
 }
 
 function endGame() {
@@ -679,6 +699,7 @@ function connectRematch() {
         console.log("Connected: " + frame);
         stompClient.subscribe(`/topic/game.rematch`, function (message) {
             handleRematchStatus(message.body);
+            executeOnce(showFinalScores);
         });
     });
 }
