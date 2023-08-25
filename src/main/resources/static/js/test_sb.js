@@ -88,8 +88,12 @@ function congrats() {
     document.body.appendChild(myCanvas);
 
     var myConfetti = confetti.create(myCanvas, {
+        particleCount: 100,
         resize: true,
-        gravity: 0.5
+        gravity: 0.5,
+        spread: 180,
+        ticks: 800,
+        scalar: 5
     });
     setTimeout(() => {
         myConfetti();
