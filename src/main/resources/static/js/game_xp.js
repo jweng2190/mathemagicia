@@ -68,7 +68,7 @@ export function repeatAnimation(stats) {
         numSteps++;
         if(numSteps >= 3) {
             clearInterval(interval);
-            congrats();
+            showConfetti();
         }
     }, 1250);
 }
@@ -79,7 +79,9 @@ export function animateWidth(stats) {
     const totalXp = stats[1][2];
     const targetWidth = (finalXp / totalXp) * 200; // Set the desired final width
     divElement.style.width = targetWidth + 'px'; // Update the width dynamically
-    congrats();
+    const xpValue = document.getElementById("xp_value");
+    xpValue.textContent = finalXp;
+    showConfetti();
 }
 
 export function animateStep(stats, animationStep) {
@@ -91,7 +93,7 @@ export function animateStep(stats, animationStep) {
     const divElement = document.getElementById('current_xp');
 
     const xpValue = document.getElementById("xp_value");
-    
+
     switch (animationStep) {
         case 0:
             divElement.style.width = '200px';
@@ -116,5 +118,23 @@ export function congrats() {
         setTimeout(() => {
             stopConfetti();
         }, 5000);
+    }, 1000);
+}
+
+function showConfetti() {
+    var myCanvas = document.createElement('canvas');
+    myCanvas.style.zIndex = "2";
+    myCanvas.style.position = "fixed";
+    myCanvas.style.height = "100vh";
+    myCanvas.style.width = "100vw";
+
+    document.body.appendChild(myCanvas);
+
+    var myConfetti = confetti.create(myCanvas, {
+        resize: true,
+        gravity: 0.5
+    });
+    setTimeout(() => {
+        myConfetti();
     }, 1000);
 }

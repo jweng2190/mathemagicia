@@ -57,6 +57,10 @@ public class XpController {
         List<Integer> oldXpInfo = Arrays.asList(prevLevel, prevXp, prevXpLevel);
         List<Integer> xpInfo = xpLevelService.levelUp(prevXp, prevLevel, xpAdd);
 
+        user.setLevel(xpInfo.get(0));
+        user.setXp(xpInfo.get(1));
+        userDao.save(user);
+        
         return ResponseEntity.ok().body(Arrays.asList(oldXpInfo, xpInfo, Arrays.asList(xpAdd)));
     }
 }

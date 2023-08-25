@@ -5,6 +5,8 @@ const targetScore = 100; // Set the target score
 let animationStep = 0;
 const listStats = [[1, 480, 500], [2, 0, 1000], [20]];
 
+congrats();
+
 
 function animateStep(stats) {
     const playerLevel = document.getElementById('player_level');
@@ -77,11 +79,20 @@ function animateWidth(stats) {
 }
 
 function congrats() {
+    var myCanvas = document.createElement('canvas');
+    myCanvas.style.zIndex = "2";
+    myCanvas.style.position = "fixed";
+    myCanvas.style.height = "100vh";
+    myCanvas.style.width = "100vw";
+
+    document.body.appendChild(myCanvas);
+
+    var myConfetti = confetti.create(myCanvas, {
+        resize: true,
+        gravity: 0.5
+    });
     setTimeout(() => {
-        startConfetti();
-        setTimeout(() => {
-            stopConfetti();
-        }, 5000);
+        myConfetti();
     }, 1000);
 }
 
