@@ -50,6 +50,13 @@ public class ViewController {
     }
 
     @RolesAllowed({"USER"})
+    @GetMapping("/computer/{computerLevel}")
+    public String computerGame(Principal principal, @PathVariable("computerLevel") int computerLevel) {
+        return "game_computer";
+    }
+
+
+    @RolesAllowed({"USER"})
     @GetMapping("/invite_friend")
     public String inviteFriend() {
         return "invite_friend";
@@ -76,6 +83,12 @@ public class ViewController {
     public String pastGames() {
         return "past_games";
     }
+
+    @GetMapping("play_computer")
+    public String playComputer() {
+        return "computer";
+    }
+
 
     @GetMapping("/test_end")
     public String testEnd() {
