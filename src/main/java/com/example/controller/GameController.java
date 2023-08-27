@@ -75,6 +75,35 @@ public class GameController {
         return ResponseEntity.ok(gameId);
     }
 
+    @PostMapping("/computer")
+    public ResponseEntity<String> createBotGame(Principal principal,
+            @RequestParam("difficulty") String difficulty,
+            @RequestParam("time") String time) throws InvalidGameException {
+        String username = principal.getName();
+        // User currentUser = userDao.getUserByUsername(username);
+
+        /*
+         * //check if user has already created a game
+         * List<Game> creatorGames = gameService.getGamesByCreator(username);
+         * if(creatorGames.size() >= 1) {
+         * return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+         * }
+         */
+        // for testing purposes
+
+        Game game = gameService.createGame(username);
+        game.setGameDifficulty(difficulty);
+        game.setTimeLimit(time);
+        gameDao.save(game);
+        gameService.setProblems(game);
+        String gameId = game.getGameId();
+        User user = userDao.getUserByUsername(username);
+        user.setActiveGameId(gameId);
+        userDao.save(user);
+        return ResponseEntity.ok(gameId);
+    }
+
+
     @GetMapping("/active")
     public ResponseEntity<String> getActiveGameId(Principal principal) {
         String username = principal.getName();
