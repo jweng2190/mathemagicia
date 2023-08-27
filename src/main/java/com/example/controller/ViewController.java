@@ -84,6 +84,7 @@ public class ViewController {
         return "past_games";
     }
 
+    @RolesAllowed({"USER"})
     @GetMapping("play_computer")
     public String playComputer() {
         return "computer";

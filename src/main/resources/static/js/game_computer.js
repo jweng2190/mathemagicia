@@ -1,0 +1,217 @@
+import { parseUserInputToLatex, evaluateMathExpression } from "./test_latex.js";
+
+let countdownElement;
+let countdownContainer;
+const loadingContainer = document.getElementsByClassName('loading-container')[0];
+const content = document.getElementsByClassName('content')[0];
+const backgroundDiv = document.getElementById('cd-bg-div');
+const texts = ['READY', '3', '2', '1', 'GO!'];
+const colors = ['rgb(0, 150, 255)', 'rgb(222, 49, 99)', 'rgb(255, 117, 24)', 'rgb(255, 191, 0)', 'rgb(15, 255, 80)']
+let index = 0;
+
+let username;
+getUsername().then((result) => {
+    username = result;
+    player1Name.innerHTML = username;
+});
+
+const gameId = sessionStorage.getItem("gameId");
+const computerLevel = sessionStorage.getItem("computerLevel");
+
+let answerForm = document.getElementById("answer_form");
+let playerInput = document.getElementById("player_answer");
+
+let player1ScoreField = document.getElementById("player1score_field");
+let player2ScoreField = document.getElementById("player2score_field");
+
+let player1Name = document.getElementById("player1_username");
+let player2Name = document.getElementById("player2_username");
+
+player2Name.innerHTML = "Bot Lvl " + computerLevel;
+
+let problemNumberBox = document.getElementById("problem_number");
+let problemImage = document.getElementById("problem_image");
+
+//default value if not specified
+let mins = 10;
+getTimeLimit(gameId).then((timeString) => {
+    mins = parseInt(timeString);
+});
+
+let inputMode = 'regular';
+
+let regularButton = document.getElementById("regular_mode");
+let scientificButton = document.getElementById("sci_mode");
+
+regularButton.addEventListener("click", handleRegular);
+scientificButton.addEventListener("click", handleScientific);
+
+let countdown;
+const gameContent = document.getElementsByClassName('game-page')[0];
+const myModal = document.getElementById("modal-end");
+
+playerInput.addEventListener('input', () => {
+    setTimeout(() => {
+        convertToLatex();
+    }, 1000);
+});
+
+function handleRegular() {
+    scientificButton.style.backgroundColor = "var(--bs-border-color-translucent)";
+    inputMode = 'regular';
+    regularButton.style.backgroundColor = "";
+    console.log(inputMode);
+}
+
+function handleScientific() {
+    regularButton.style.backgroundColor = "var(--bs-border-color-translucent)";
+    inputMode = 'scientific';
+    scientificButton.style.backgroundColor = "";
+    console.log(inputMode);
+}
+
+function startCDTimer() {
+    countdownContainer.style.zIndex = '3';
+    countdownContainer.style.visibility = 'visible';
+    countdownElement.style.zIndex = '2';
+    countdownElement.style.visibility = 'visible';
+    setTimeout(fadeInAndOut, 1000);
+}
+
+function fadeInAndOut() {
+    countdownElement.style.opacity = '1';
+    countdownElement.innerHTML = texts[index];
+    countdownElement.style.color = colors[index];
+    setTimeout(() => {
+        countdownElement.style.opacity = '0';
+        index++;
+        if (index < texts.length) {
+            setTimeout(fadeInAndOut, 500);
+        }
+    }, 500);
+}
+
+function fadeOutBg() {
+    backgroundDiv.style.opacity = '0';
+    document.getElementsByClassName('content')[0].style.opacity = '1';
+    backgroundDiv.style.zIndex = '-2';
+    countdownContainer.style.zIndex = '-2';
+}
+
+async function createCountdown() {
+    return new Promise(resolve => {
+        let cdContainer = document.createElement('div');
+        cdContainer.className = 'countdown-container';
+        cdContainer.style.zIndex = '3';
+        cdContainer.style.position = 'absolute';
+        cdContainer.style.top = "50%";
+        cdContainer.style.left = "50%";
+        cdContainer.style.transform = "translate(-50%, -50%)";
+        let cdElem = document.createElement('div');
+        cdElem.className = 'countdown';
+        cdElem.id = 'countdown';
+        let cdText = document.createElement('p');
+        cdText.id = 'countdown_text';
+        cdText.style.fontWeight = '500';
+        cdText.style.fontSize = '100px';
+        cdText.style.opacity = '0';
+        cdText.style.transition = 'opacity 0.5s';
+        cdElem.appendChild(cdText);
+        cdContainer.appendChild(cdElem);
+        let leftWindow = document.getElementById("left-window");
+        document.body.insertBefore(cdContainer, leftWindow);
+
+        resolve([cdContainer, cdText]);
+    });
+}
+
+function startGameTimer() {
+    let timer = document.getElementById('timer_p');
+    timer.style.visibility = "visible";
+
+    const now = new Date().getTime();
+    const deadline = mins * 60 * 1000 + now;
+
+    countdown = setInterval(() => {
+        var currentTime = new Date().getTime();
+        var distance = deadline - currentTime;
+        var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        if (minutes <= 0 && seconds <= 0) {
+            //stopTimer();
+            alert('Time is up!');
+            //endGame();
+        }
+
+        const formattedTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        document.getElementById('timer_p').innerHTML = formattedTime;
+    }, 500);
+}
+
+async function startGame() {
+    loadingContainer.children[0].src = '';
+    loadingContainer.style.zIndex = '-3';
+    const result = await createCountdown();
+    countdownContainer = result[0];
+    countdownElement = result[1];
+
+    setTimeout(fadeOutBg, 6000);
+    startCDTimer();
+    setTimeout(() => {
+        //content.style.opacity = '1';
+        startGameTimer();
+        console.log("Game started!");
+        //readyButton.style.visibility = "hidden";
+        //checkAnswer();
+    }, 6500);
+}
+
+function convertToLatex() {
+    //const userInput = document.getElementById('user-input')
+    const userInputValue = playerInput.value;
+    const result = evaluateMathExpression(userInputValue);
+    const latexCode = parseUserInputToLatex(userInputValue);
+    console.log(latexCode);
+    if(result === 'Error') {
+        document.getElementById('latex-output').innerText = result;
+    } else {
+        const formattedLatex = `\\(` + latexCode + `\\)`
+        document.getElementById('latex-output').innerText = formattedLatex;
+        MathJax.Hub.Queue(['Typeset', MathJax.Hub, 'latex-output']);
+    }
+}
+
+async function getTimeLimit(gameId) {
+    try {
+        const response = await fetch("/game/time_limit", {
+            method: "POST",
+            headers: {
+            "Content-Type": "text/plain",
+            },
+            body: gameId
+        });
+        if (!response.ok) {
+            throw new Error("Something went wrong.");
+        }
+        return response.text();
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+async function getUsername() {
+    const response = await fetch('/username');
+    if (!response.ok) {
+        const message = `An error has occured: ${response.status}`;
+        throw new Error(message);
+    }
+    const username = await response.text();
+    return username;
+}
+
+
+window.onload = function() {
+    setTimeout(() => {
+        startGame();
+    }, 2000);
+}

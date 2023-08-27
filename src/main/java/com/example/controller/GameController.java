@@ -76,9 +76,10 @@ public class GameController {
     }
 
     @PostMapping("/computer")
-    public ResponseEntity<String> createBotGame(Principal principal,
+    public ResponseEntity<List<Object>> createBotGame(Principal principal,
             @RequestParam("difficulty") String difficulty,
-            @RequestParam("time") String time) throws InvalidGameException {
+            @RequestParam("time") String time,
+            @RequestParam("computerLevel") int computerLevel) throws InvalidGameException {
         String username = principal.getName();
         // User currentUser = userDao.getUserByUsername(username);
 
@@ -100,7 +101,7 @@ public class GameController {
         User user = userDao.getUserByUsername(username);
         user.setActiveGameId(gameId);
         userDao.save(user);
-        return ResponseEntity.ok(gameId);
+        return ResponseEntity.ok(Arrays.asList(gameId, computerLevel));
     }
 
 

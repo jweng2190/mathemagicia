@@ -80,11 +80,12 @@
                                         <input type="text" style="display:none" id="time" name="time" value="10:00"/>
                                     </div>
                                     <div style="display: flex;">
-                                        <input id="diff" type="range" min="1" max="10" step="1" required value="5" style="margin: auto;" /><span id="diff_disp" style="margin-left: 10px;">5</span>
+                                        <input id="diff" name="computerLevel" type="range" min="1" max="10" step="1" required value="5" style="margin: auto;" /><span id="diff_disp" style="margin-left: 10px;">5</span>
                                     </div>
                                     <div class="mb-3">
                                         <button class="create btn btn-primary d-block w-100" type="submit" style="background: var(--bs-code-color); margin-top: 25px;">Create!</button>
                                     </div>
+                                    <p id="status" style="color: green"></p>
                                 </form>
                             </div>
                         </div>
