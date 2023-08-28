@@ -27,6 +27,7 @@ import com.example.dto.ConnectRequest;
 import com.example.model.Game;
 import com.example.model.GamePlay;
 import com.example.model.GameStatus;
+import com.example.model.Problem;
 import com.example.model.User;
 import com.example.service.GameService;
 import com.example.storage.GameStorage;
@@ -117,6 +118,17 @@ public class GameController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         return ResponseEntity.ok().body(activeGameId);
+    }
+
+    @PostMapping(path="/problem_list", consumes = MediaType.TEXT_PLAIN_VALUE)
+    @RolesAllowed({"USER", "ADMIN"})
+    public ResponseEntity<List<Problem>> getProblemList(@RequestBody String gameId) {
+        Game game = gameDao.getGameByGameId(gameId);
+        if(game == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        List<Problem> problems = game.getProblemSet();
+        return ResponseEntity.ok().body(problems);
     }
 
     @PostMapping(path="/time_limit", consumes = MediaType.TEXT_PLAIN_VALUE)

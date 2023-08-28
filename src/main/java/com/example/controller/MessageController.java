@@ -24,6 +24,7 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.socket.WebSocketSession;
 
@@ -422,6 +423,31 @@ public class MessageController {
             iterator.next();
             iterator.remove();
         }
+    }
+
+    @MessageMapping("/computer")
+    public void indivAnswer(@Payload AnswerMessage answerMsg, Principal principal) {
+        String gameId = answerMsg.getGameId();
+        int currentProblemId = answerMsg.getCurrentProblemId();
+        String username = principal.getName();
+
+        Game activeGame = gameDao.getGameByGameId(gameId);
+
+        String userAnswer = answerMsg.getAnswer();
+        String correctAnswer = problemDao.findAnswerByProblem(currentProblemId);
+        String userAnswerTrimmed = userAnswer.trim();
+        int currentPlayerScore = activeGame.getPlayer1Score();
+
+        if(userAnswerTrimmed.equals(correctAnswer)) {
+            int problemDifficulty = problemDao.findDifficultyByProblemId(currentProblemId);
+            activeGame.setPlayer1Score(currentPlayerScore + 1);
+            currentPlayerScore++;
+            int currentPlayerXp = activeGame.getPlayer1Xp();
+            int xpToAdd = difficultyLevelService.getXpForDifficultyLevel(problemDifficulty) / 2;
+            activeGame.setPlayer1Xp(currentPlayerXp + xpToAdd);
+        }
+
+        simpMessagingTemplate.convertAndSendToUser(username, "/bot", currentPlayerScore);
     }
     
 

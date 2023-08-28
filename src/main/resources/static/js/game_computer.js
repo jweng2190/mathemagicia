@@ -1,4 +1,5 @@
 import { parseUserInputToLatex, evaluateMathExpression } from "./test_latex.js";
+import { postRequest } from "./post_request.js";
 
 let countdownElement;
 let countdownContainer;
@@ -37,6 +38,13 @@ let mins = 10;
 getTimeLimit(gameId).then((timeString) => {
     mins = parseInt(timeString);
 });
+
+let problems;
+try {
+    problems = await postRequest("/problem_list", gameId, "plain text", "json");
+} catch(e) {
+    console.error(e);
+}
 
 let inputMode = 'regular';
 
@@ -162,8 +170,28 @@ async function startGame() {
         startGameTimer();
         console.log("Game started!");
         //readyButton.style.visibility = "hidden";
-        //checkAnswer();
+        connectAnswer();
     }, 6500);
+}
+
+function connectAnswer() {
+    const socketBot = new SockJS("/bot");
+    stompClient = Stomp.over(socketBot);
+    stompClient.connect({}, function (frame) {
+        console.log(frame);
+        stompClient.subscribe('/user/' + username + "/computer", function (message) {
+            var messageObject = JSON.parse(message.body);
+            problems = messageObject.problemSet;
+            numProblems = Object.keys(problems).length;
+            currentProblem = problems[0];
+            currentProblemId = problems[0].problemId;
+        });
+        let message = {
+            gameId: gameId,
+            playerUsername: username
+        }
+        stompClient.send("/app/game.status", {}, JSON.stringify(message));
+    });
 }
 
 function convertToLatex() {
