@@ -9,6 +9,10 @@ const backgroundDiv = document.getElementById('cd-bg-div');
 const texts = ['READY', '3', '2', '1', 'GO!'];
 const colors = ['rgb(0, 150, 255)', 'rgb(222, 49, 99)', 'rgb(255, 117, 24)', 'rgb(255, 191, 0)', 'rgb(15, 255, 80)']
 let index = 0;
+var stompClient;
+
+//IMPORTANT! MODIFY LATER
+const numProblems = 3;
 
 let username;
 getUsername().then((result) => {
@@ -21,6 +25,9 @@ const computerLevel = sessionStorage.getItem("computerLevel");
 
 let answerForm = document.getElementById("answer_form");
 let playerInput = document.getElementById("player_answer");
+
+let playerScore = 0;
+let botScore = 0;
 
 let player1ScoreField = document.getElementById("player1score_field");
 let player2ScoreField = document.getElementById("player2score_field");
@@ -40,8 +47,14 @@ getTimeLimit(gameId).then((timeString) => {
 });
 
 let problems;
+let currentProblemId;
+let currentProblemIndex = 0;
+let currentProblem;
 try {
-    problems = await postRequest("/problem_list", gameId, "plain text", "json");
+    problems = await postRequest("/game/problem_list", gameId, "plain text", "json");
+    console.log(problems);
+    currentProblemId = problems[currentProblemIndex].problemId;
+    currentProblem = problems[currentProblemIndex];
 } catch(e) {
     console.error(e);
 }
@@ -179,20 +192,53 @@ function connectAnswer() {
     stompClient = Stomp.over(socketBot);
     stompClient.connect({}, function (frame) {
         console.log(frame);
-        stompClient.subscribe('/user/' + username + "/computer", function (message) {
-            var messageObject = JSON.parse(message.body);
-            problems = messageObject.problemSet;
-            numProblems = Object.keys(problems).length;
-            currentProblem = problems[0];
-            currentProblemId = problems[0].problemId;
+        stompClient.subscribe('/user/' + username + "/bot", function (message) {
+            let score = JSON.parse(message.body);
+            if(score > playerScore) {
+                playerScore = score;
+                player1ScoreField.innerHTML = playerScore;
+                nextProblem();
+            }
         });
-        let message = {
-            gameId: gameId,
-            playerUsername: username
-        }
-        stompClient.send("/app/game.status", {}, JSON.stringify(message));
+
+        problemNumberBox.innerHTML = "Problem " + (currentProblemIndex + 1);
+        problemImage.src = currentProblem.image;
+        answerForm.addEventListener("submit", sendAnswer);
     });
 }
+
+var sendAnswer = function(event) {
+    event.preventDefault();
+    let playerAnswer = playerInput.value;
+    playerInput.value = "";
+    let message = {
+        gameId: gameId,
+        currentProblemId: currentProblemId,
+        answer: playerAnswer
+    }
+    stompClient.send("/app/computer", {}, JSON.stringify(message));
+}
+
+function nextProblem() {
+    //send game page back to front
+    //gameContent.style.zIndex = 1;
+
+    if (currentProblemIndex + 1 < numProblems) {
+        currentProblemIndex++;
+        currentProblem = problems[currentProblemIndex];
+        currentProblemId = problems[currentProblemIndex].problemId;
+
+        problemNumberBox.innerHTML = "Problem " + (currentProblemIndex + 1);
+        problemImage.src = currentProblem.image;
+    } else if (currentProblemIndex + 1 == numProblems) {
+        endGame();
+    }
+}
+
+function endGame() {
+    alert("Game Ended!");
+}
+
 
 function convertToLatex() {
     //const userInput = document.getElementById('user-input')
@@ -238,8 +284,6 @@ async function getUsername() {
 }
 
 
-window.onload = function() {
-    setTimeout(() => {
-        startGame();
-    }, 2000);
-}
+setTimeout(() => {
+    startGame();
+}, 2000);

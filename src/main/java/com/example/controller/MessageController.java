@@ -445,6 +445,7 @@ public class MessageController {
             int currentPlayerXp = activeGame.getPlayer1Xp();
             int xpToAdd = difficultyLevelService.getXpForDifficultyLevel(problemDifficulty) / 2;
             activeGame.setPlayer1Xp(currentPlayerXp + xpToAdd);
+            gameDao.save(activeGame);
         }
 
         simpMessagingTemplate.convertAndSendToUser(username, "/bot", currentPlayerScore);
