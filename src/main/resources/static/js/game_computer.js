@@ -59,6 +59,24 @@ try {
     console.error(e);
 }
 
+let botInfo;
+let botFinalScore;
+try {
+    let message = {
+        "gameId": gameId,
+        "computerLevel": computerLevel
+    };
+    message = JSON.stringify(message);
+    botInfo = await postRequest("/game/bot_stats", message, "json", "json");
+    
+    botFinalScore = botInfo.shift();
+    botInfo = botInfo[0];
+    console.log(botFinalScore);
+    console.log(botInfo);
+} catch(e) {
+    console.error(e);
+}
+
 let inputMode = 'regular';
 
 let regularButton = document.getElementById("regular_mode");
@@ -184,6 +202,7 @@ async function startGame() {
         console.log("Game started!");
         //readyButton.style.visibility = "hidden";
         connectAnswer();
+        animateBotScore();
     }, 6500);
 }
 
@@ -196,8 +215,16 @@ function connectAnswer() {
             let score = JSON.parse(message.body);
             if(score > playerScore) {
                 playerScore = score;
-                player1ScoreField.innerHTML = playerScore;
-                nextProblem();
+                player1ScoreField.classList.add('animated-score');
+                setTimeout(() => {
+                    player1ScoreField.innerHTML = playerScore;
+                    nextProblem();
+                }, 300);
+                setTimeout(() => {
+                    if(player1ScoreField.classList.contains("animated-score")) {
+                        player1ScoreField.classList.remove('animated-score');
+                    }
+                }, 1500);
             }
         });
 
@@ -253,6 +280,27 @@ function convertToLatex() {
         document.getElementById('latex-output').innerText = formattedLatex;
         MathJax.Hub.Queue(['Typeset', MathJax.Hub, 'latex-output']);
     }
+}
+
+function animateBotScore() {
+    for(let i = 0; i < botInfo.length; i++) {
+        doScoreAnim(i);
+    }
+}
+
+function doScoreAnim(i) {
+    let numMs = botInfo[i] * 1000;
+    setTimeout(() => {
+        botScore++;
+        setTimeout(() => {
+            player2ScoreField.innerHTML = botScore;
+        }, 300);
+        setTimeout(() => {
+            if(player2ScoreField.classList.contains("animated-score")) {
+                player2ScoreField.classList.remove('animated-score');
+            }
+        }, 1500);
+    }, numMs);
 }
 
 async function getTimeLimit(gameId) {

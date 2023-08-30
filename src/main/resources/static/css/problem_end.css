@@ -82,6 +82,10 @@
   }
 }
 
+.animated-score {
+  animation: score-animation 1.5s;
+}
+
 
 @keyframes score-animation {
   0% {

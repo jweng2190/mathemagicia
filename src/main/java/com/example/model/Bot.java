@@ -31,4 +31,11 @@ public class Bot {
         this.errors = errors;
     }
 
+    public int findTimeByDiff(int difficulty) {
+        return times.get(difficulty);
+    }
+
+    public int findErrorByDiff(int difficulty) {
+        return errors.get(difficulty);
+    }
 }

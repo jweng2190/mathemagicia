@@ -29,6 +29,7 @@ import com.example.model.GamePlay;
 import com.example.model.GameStatus;
 import com.example.model.Problem;
 import com.example.model.User;
+import com.example.service.BotService;
 import com.example.service.GameService;
 import com.example.storage.GameStorage;
 import com.exception.InvalidGameException;
@@ -44,6 +45,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/game")
 public class GameController {
     private final GameService gameService;
+    private final BotService botService;
     private UserRepository userDao;
     private GameRepository gameDao;
     //private GameStorage gameStorage = GameStorage.getInstance();
@@ -98,10 +100,16 @@ public class GameController {
         game.setTimeLimit(time);
         gameDao.save(game);
         gameService.setProblems(game);
+        List<Problem> problems = game.getProblemSet();
         String gameId = game.getGameId();
         User user = userDao.getUserByUsername(username);
         user.setActiveGameId(gameId);
         userDao.save(user);
+
+        int timeMins = parseTime(time);
+        List<Object> botInfo = botService.getBotTimes(computerLevel, timeMins, problems);
+        int botScore = (int) botInfo.get(0);
+        game.setPlayer2Score(botScore);
         return ResponseEntity.ok(Arrays.asList(gameId, computerLevel));
     }
 
@@ -129,6 +137,26 @@ public class GameController {
         }
         List<Problem> problems = game.getProblemSet();
         return ResponseEntity.ok().body(problems);
+    }
+
+    @PostMapping(path="/bot_stats", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RolesAllowed({"USER", "ADMIN"})
+    public ResponseEntity<List<Object>> getBotStats(@RequestBody Map<String, String> gameInfo) {
+        String gameId = gameInfo.get("gameId");
+        int computerLevel = Integer.parseInt(gameInfo.get("computerLevel"));
+
+        Game game = gameDao.getGameByGameId(gameId);
+        if(game == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        String timeLimit = game.getTimeLimit();
+        int mins = Integer.parseInt(timeLimit.split(":")[0]);
+        List<Problem> problems = game.getProblemSet();
+
+        List<Object> botInfo = botService.getBotTimes(computerLevel, mins, problems);
+        
+        return ResponseEntity.ok().body(botInfo);
     }
 
     @PostMapping(path="/time_limit", consumes = MediaType.TEXT_PLAIN_VALUE)
@@ -265,5 +293,10 @@ public class GameController {
         //add most recent first
         games.add(0, game);
         userDao.save(user);
+    }
+
+    public int parseTime(String time) {
+        //time is in mins
+        return Integer.parseInt(time.split(":")[0]);
     }
 }
