@@ -282,25 +282,27 @@ function convertToLatex() {
     }
 }
 
-function animateBotScore() {
+async function animateBotScore() {
     for(let i = 0; i < botInfo.length; i++) {
-        doScoreAnim(i);
+        await delay(botInfo[i] * 1000);
+        doScoreAnim();
     }
 }
 
-function doScoreAnim(i) {
-    let numMs = botInfo[i] * 1000;
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function doScoreAnim() {
+    botScore++;
     setTimeout(() => {
-        botScore++;
-        setTimeout(() => {
-            player2ScoreField.innerHTML = botScore;
-        }, 300);
-        setTimeout(() => {
-            if(player2ScoreField.classList.contains("animated-score")) {
-                player2ScoreField.classList.remove('animated-score');
-            }
-        }, 1500);
-    }, numMs);
+        player2ScoreField.innerHTML = botScore;
+    }, 300);
+    setTimeout(() => {
+        if(player2ScoreField.classList.contains("animated-score")) {
+            player2ScoreField.classList.remove('animated-score');
+        }
+    }, 1500);
 }
 
 async function getTimeLimit(gameId) {
