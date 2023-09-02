@@ -39,21 +39,13 @@ public class RegistrationController {
     @PostMapping("/process_register")
     public ModelAndView processRegister(@Validated User user, BindingResult result, HttpServletRequest request)
             throws UnsupportedEncodingException, MessagingException {
-        service.register(user, getSiteUrl(request));
-        /* int statusCode = (int) request.getAttribute("javax.servlet.error.status_code");
-        System.out.println("Registration Status: " + statusCode);
+        boolean isRegistered = service.register(user, getSiteUrl(request));
 
-        if(statusCode != 200) {
-            ModelAndView modelAndView = new ModelAndView();
-            modelAndView.setViewName("register_fail.html");
-            return modelAndView;
-        } */
-        if(result.hasErrors()) {
+        if(!isRegistered) {
             ModelAndView modelAndView = new ModelAndView();
             modelAndView.setViewName("register_fail.html");
             return modelAndView;
         }
-        userDao.save(user);
 
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("register_success.html");

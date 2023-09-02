@@ -88,8 +88,16 @@ public class UserService {
         mailSender.send(message);
     }
 
-    public void register(User user, String siteURL)
+    public boolean register(User user, String siteURL)
             throws UnsupportedEncodingException, MessagingException {
+        
+        String username = user.getUsername();
+        String email = user.getEmail();
+        //check for duplicate username or email
+        if(repo.getUserByUsername(username) != null || repo.getUserByEmail(email) != null) {
+            return false;
+        }
+
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
 
@@ -104,6 +112,7 @@ public class UserService {
         repo.save(user);
 
         sendVerificationEmail(user, siteURL);
+        return true;
     }
 
     private void sendVerificationEmail(User user, String siteURL)
