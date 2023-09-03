@@ -1,4 +1,4 @@
-import { parseUserInputToLatex, evaluateMathExpression } from "./test_latex.js";
+import { evaluateMathExpression } from "./test_latex.js";
 import { postRequest } from "./post_request.js";
 
 let countdownElement;
@@ -187,6 +187,11 @@ function startGameTimer() {
     }, 500);
 }
 
+function stopTimer() {
+    clearInterval(countdown); // Stop the timer
+    //updateTimer(); // Update the timer display
+}
+
 async function startGame() {
     loadingContainer.children[0].src = '';
     loadingContainer.style.zIndex = '-3';
@@ -263,6 +268,7 @@ function nextProblem() {
 }
 
 function endGame() {
+    stopTimer();
     alert("Game Ended!");
 }
 
@@ -271,15 +277,21 @@ function convertToLatex() {
     //const userInput = document.getElementById('user-input')
     const userInputValue = playerInput.value;
     const result = evaluateMathExpression(userInputValue);
-    const latexCode = parseUserInputToLatex(userInputValue);
-    console.log(latexCode);
     if(result === 'Error') {
         document.getElementById('latex-output').innerText = result;
     } else {
+        const latexCode = parseToLatex(userInputValue);
+        console.log(latexCode);
         const formattedLatex = `\\(` + latexCode + `\\)`
         document.getElementById('latex-output').innerText = formattedLatex;
         MathJax.Hub.Queue(['Typeset', MathJax.Hub, 'latex-output']);
     }
+}
+
+function parseToLatex(input) {
+    const nodeInput = math.parse(input);
+    const latexCode = nodeInput.toTex();
+    return latexCode;
 }
 
 async function animateBotScore() {
@@ -295,12 +307,18 @@ function delay(ms) {
 
 function doScoreAnim() {
     botScore++;
+
+    player2ScoreField.classList.add("animated-score");
     setTimeout(() => {
         player2ScoreField.innerHTML = botScore;
     }, 300);
     setTimeout(() => {
         if(player2ScoreField.classList.contains("animated-score")) {
             player2ScoreField.classList.remove('animated-score');
+        }
+
+        if(botScore === numProblems) {
+            endGame();
         }
     }, 1500);
 }

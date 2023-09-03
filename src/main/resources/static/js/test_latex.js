@@ -2,6 +2,9 @@ var inputMode = 'regular';
 
 var buttonRegular = document.getElementById('regular');
 var buttonScientific = document.getElementById('scientific');
+//var buttonLatex = document.getElementById("convert_latex");
+
+//buttonLatex.addEventListener("click", convertToLatex);
 
 function regularMode() {
     inputMode = 'regular';
@@ -17,15 +20,22 @@ function convertToLatex() {
     const userInput = document.getElementById('user-input')
     const userInputValue = userInput.value;
     const result = evaluateMathExpression(userInputValue);
-    const latexCode = parseUserInputToLatex(userInputValue);
-    console.log(latexCode);
+    //const latexCode = parseUserInputToLatex(userInputValue);
     if(result === 'Error') {
         document.getElementById('latex-output').innerText = result;
     } else {
+        const latexCode = parseToLatex(userInputValue);
+        console.log(latexCode);
         const formattedLatex = `\\(` + latexCode + `\\)`
         document.getElementById('latex-output').innerText = formattedLatex;
         MathJax.Hub.Queue(['Typeset', MathJax.Hub, 'latex-output']);
     }
+}
+
+function parseToLatex(input) {
+    const nodeInput = math.parse(input);
+    const latexCode = nodeInput.toTex();
+    return latexCode;
 }
 
 export function parseUserInputToLatex(input) {
