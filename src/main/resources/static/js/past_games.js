@@ -23,6 +23,9 @@ function populateTable(gameList) {
         var cellReview = row.insertCell(2);
         var cellDate = row.insertCell(3);
 
+        cellReview.style.verticalAlign = "middle";
+        cellDate.style.verticalAlign = "middle";
+
         stylePlayersCell(game, cellPlayers);
         styleResultCell(game, cellResult);
         styleReviewCell(game, cellReview);

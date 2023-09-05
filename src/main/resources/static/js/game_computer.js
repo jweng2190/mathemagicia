@@ -95,6 +95,9 @@ playerInput.addEventListener('input', () => {
     }, 1000);
 });
 
+//testing
+document.getElementById("disconnect").addEventListener("click", disconnect);
+
 function handleRegular() {
     scientificButton.style.backgroundColor = "var(--bs-border-color-translucent)";
     inputMode = 'regular';
@@ -237,6 +240,10 @@ function connectAnswer() {
         problemImage.src = currentProblem.image;
         answerForm.addEventListener("submit", sendAnswer);
     });
+}
+
+var disconnect = function() {
+    stompClient.disconnect();
 }
 
 var sendAnswer = function(event) {

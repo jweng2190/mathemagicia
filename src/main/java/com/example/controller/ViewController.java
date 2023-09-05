@@ -50,6 +50,12 @@ public class ViewController {
     }
 
     @RolesAllowed({"USER"})
+    @GetMapping("/review/{gameId}")
+    public String reviewGame(Principal principal, @PathVariable String gameId) {
+        return "review_template";
+    }
+
+    @RolesAllowed({"USER"})
     @GetMapping("/computer/{computerLevel}")
     public String computerGame(Principal principal, @PathVariable("computerLevel") int computerLevel) {
         return "game_computer";
@@ -79,13 +85,13 @@ public class ViewController {
         return "redirect:/home";
     }
 
-    @GetMapping("past_games")
+    @GetMapping("/past_games")
     public String pastGames() {
         return "past_games";
     }
 
     @RolesAllowed({"USER"})
-    @GetMapping("play_computer")
+    @GetMapping("/play_computer")
     public String playComputer() {
         return "computer";
     }
