@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.annotation.security.RolesAllowed;
+
 @RestController
 public class ProblemController {
     @Autowired

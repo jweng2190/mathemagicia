@@ -26,9 +26,11 @@ function populateTable(gameList) {
         cellReview.style.verticalAlign = "middle";
         cellDate.style.verticalAlign = "middle";
 
+        let gameId = game.gameId;
+
         stylePlayersCell(game, cellPlayers);
         styleResultCell(game, cellResult);
-        styleReviewCell(game, cellReview);
+        styleReviewCell(gameId, cellReview);
         styleDateCell(game, cellDate);
     }
 }
@@ -127,10 +129,10 @@ function styleResultCell(game, cell) {
     cell.append(div2);
 }
 
-function styleReviewCell(game, cell) {
+function styleReviewCell(gameId, cell) {
     var linkReview = document.createElement("a");
     linkReview.innerHTML = "Details";
-    linkReview.href = "#";
+    linkReview.href = "/review/" + gameId;
     //nothing right now
 
     cell.append(linkReview);
