@@ -1,6 +1,7 @@
 import { postRequest } from "./post_request.js";
 
 const template = document.getElementById('table-component');
+const breakTempl = document.getElementById('break');
 
 let gameUrl = window.location.href;
 let gameIdIndex = gameUrl.lastIndexOf("/") + 1;
@@ -23,6 +24,7 @@ for(let i = 0; i < problems.length; i++) {
 
     const cloneProblem = document.importNode(template.content, true);
     const cloneSolution = document.importNode(template.content, true);
+    const cloneBreak = document.importNode(breakTempl.content, true);
 
     cloneProblem.querySelector('img').src = problemUrl;
     cloneProblem.querySelector('th').textContent = "Problem";
@@ -31,4 +33,9 @@ for(let i = 0; i < problems.length; i++) {
 
     contentDiv.appendChild(cloneProblem);
     contentDiv.appendChild(cloneSolution);
+    if(i === problems.length - 1) {
+        const divider = document.querySelector('hr');
+        cloneBreak.removeChild(divider);
+    }
+    contentDiv.appendChild(cloneBreak);
 }
