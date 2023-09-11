@@ -34,6 +34,8 @@ public class UserController {
 
     @Autowired
     private XpLevelService xpLevelService;
+    
+    public static final int MAX_GAMES = 50;
 
     @GetMapping("/users")
     @RolesAllowed({"ADMIN"})
@@ -78,7 +80,13 @@ public class UserController {
         String username = principal.getName();
         User user = userDao.getUserByUsername(username);
         List<Game> allGames = user.getGames();
-        return ResponseEntity.ok().body(allGames);
+        int numGames = allGames.size();
+
+        if(numGames < MAX_GAMES) {
+            return ResponseEntity.ok().body(allGames);
+        } else {
+            return ResponseEntity.ok().body(allGames.subList(0, MAX_GAMES));
+        }
     }
 
 

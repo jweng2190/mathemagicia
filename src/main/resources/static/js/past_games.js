@@ -1,10 +1,34 @@
 var gameList = [];
 var table = document.getElementById("past_games");
+const templNoGames = document.getElementById("no_games");
+const mainDiv = document.querySelector('div');
+const pageDisp = document.getElementById("currentPage")
+
+// Constants for pagination
+const itemsPerPage = 10;
+var totalPages;
+let currentPage = 1;
+
+document.getElementById("nextPage").addEventListener("click", () => {
+    if (currentPage < totalPages) {
+        currentPage++;
+        populateTable(currentPage);
+    }
+});
+
+document.getElementById("prevPage").addEventListener("click", () => {
+    if (currentPage > 1) {
+        currentPage--;
+        populateTable(currentPage);
+    }
+});
 
 getGames().then((data) => {
     gameList = data;
+    totalPages = Math.ceil(gameList.length / itemsPerPage);
+    pageDisp.textContent = "Page 1\/" + totalPages;
     console.log(gameList);
-    populateTable(gameList);
+    populateTable(currentPage);
 });
 
 async function getGames() {
@@ -13,26 +37,38 @@ async function getGames() {
     return listGames;
 }
 
-function populateTable(gameList) {
-    for(var i = 0; i < 5; i++) {
-        var game = gameList[i];
-        var row = table.insertRow(i + 1);
-        row.id = (i+1).toString(10);
-        var cellPlayers = row.insertCell(0);
-        var cellResult = row.insertCell(1);
-        var cellReview = row.insertCell(2);
-        var cellDate = row.insertCell(3);
-
-        cellReview.style.verticalAlign = "middle";
-        cellDate.style.verticalAlign = "middle";
-
-        let gameId = game.gameId;
-
-        stylePlayersCell(game, cellPlayers);
-        styleResultCell(game, cellResult);
-        styleReviewCell(gameId, cellReview);
-        styleDateCell(game, cellDate);
+function populateTable(page) {
+    if(gameList.length == 0) {
+        const noGames = document.importNode(templNoGames.content, true);
+        mainDiv.appendChild(noGames);
     }
+
+    table.innerHTML = "";
+    const startIndex = (page - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+
+    for(let i = startIndex; i < endIndex && i < gameList.length; i++) {
+        if(gameList[i] != null) {
+            var game = gameList[i];
+            var row = table.insertRow();
+            row.id = (i+1).toString(10);
+            var cellPlayers = row.insertCell();
+            var cellResult = row.insertCell();
+            var cellReview = row.insertCell();
+            var cellDate = row.insertCell();
+
+            cellReview.style.verticalAlign = "middle";
+            cellDate.style.verticalAlign = "middle";
+
+            let gameId = game.gameId;
+
+            stylePlayersCell(game, cellPlayers);
+            styleResultCell(game, cellResult);
+            styleReviewCell(gameId, cellReview);
+            styleDateCell(game, cellDate);
+        }
+    }
+    pageDisp.textContent = `Page ${currentPage}/` + totalPages;
 }
 
 function stylePlayersCell(game, cell) {
@@ -141,7 +177,7 @@ function styleReviewCell(gameId, cell) {
 function styleDateCell(game, cell) {
     //TODO
     var date = game.gameDate;
-    console.log(date);
+    //console.log(date);
     var month = date[1];
     var day = date[2];
     var year = date[0];
