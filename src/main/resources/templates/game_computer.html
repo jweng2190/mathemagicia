@@ -60,6 +60,24 @@
         </div>
     </div>
 
+    <div class="modal fade" role="dialog" tabindex="-1" id="modal-answer" aria-labelledby="modal-answer" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title"><span style="color: rgb(50, 153, 255);">Answer Formatting</span></h4><button class="btn-close" type="button" aria-label="Close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>All fractions must be expressed in simplest form and using forward slash notation, e.g., 3/7, 101/19, 1/5, etc.</p>
+                    <p>Any radicals must be in simplest radical form, and use the sqrt() notation, e.g., sqrt(3), 1 + 2sqrt(5), 5sqrt(5)/3, etc.</p>
+                    <p>Pi can be simply entered as &quot;pi&quot;. For example,  15pi, (4-pi)/5, 3sqrt(2) + pi, 3/pi, etc.</p>
+                    <p>For answers with decimals, scientific mode must be used. Examples of acceptable decimal answers include: 0.5, 2.89, 23.3, etc.</p>
+                    <p>If an answer requires scientific notation, enter answers such as 6.895 * 10^3, 2.3 * 10^-2, 4 * 10^5, etc. while in scientifc mode.</p>
+                    <p>If the answer is a date, write out the full name of the month, e.g., October 30, January 21</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!--div class="outer-container"-->
     <div class="content body_container game-page">
         <!--sidebar-->
@@ -174,15 +192,17 @@
                             </div>
                         </form>
                     </div>
-                    <div id="rules_div" style="width: 20%;display: flex;align-items: center;justify-content: center;margin-left: 5%;"><a href="#" style="/*display: block;*/">Formatting Rules</a></div>
+                    <div id="rules_div" style="width: 20%;display: flex;align-items: center;justify-content: center;margin-left: 5%;">
+                        <img id="correct" style="width: 25px;height: 25px;border: none;" src="/img/dummy.png"/>
+                    </div>
                 </div>
                 <div style="width: 100%;display: flex;justify-content: center;align-items: center;margin: auto;/*margin-right: 50px;*/margin-top: 5%;padding-bottom: 4%;">
                     <button id="regular_mode" class="btn btn-primary" type="button" style="margin-right: 50px;">Regular</button>
                     <button id="sci_mode" class="btn btn-primary" type="button" style="background-color: var(--bs-border-color-translucent);">Scientific</button>
+                    <a id="modal_link" href="#" style="margin-left: 40px;">Formatting Rules</a>
                 </div>
             </div>
         </div>
-        <button id="disconnect">Disconnect</button>
         <!--end problem container-->
     </div>
     <div class="loading-container" style="display:flex; align-items:center; justify-content: center;">

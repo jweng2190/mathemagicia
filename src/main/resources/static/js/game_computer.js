@@ -87,7 +87,12 @@ scientificButton.addEventListener("click", handleScientific);
 
 let countdown;
 const gameContent = document.getElementsByClassName('game-page')[0];
+let modalLink = document.getElementById("modal_link");
+//modals
 const myModal = document.getElementById("modal-end");
+const modalAnswer = document.getElementById('modal-answer');
+
+const correctImage = document.getElementById("correct");
 
 playerInput.addEventListener('input', () => {
     setTimeout(() => {
@@ -95,8 +100,11 @@ playerInput.addEventListener('input', () => {
     }, 1000);
 });
 
-//testing
-document.getElementById("disconnect").addEventListener("click", disconnect);
+modalLink.addEventListener("click", () => {
+    let modalA = new bootstrap.Modal(modalAnswer);
+    modalA.show();
+});
+
 
 function handleRegular() {
     scientificButton.style.backgroundColor = "var(--bs-border-color-translucent)";
@@ -222,17 +230,21 @@ function connectAnswer() {
         stompClient.subscribe('/user/' + username + "/bot", function (message) {
             let score = JSON.parse(message.body);
             if(score > playerScore) {
+                correctImage.src = "/img/correct.png";
                 playerScore = score;
                 player1ScoreField.classList.add('animated-score');
                 setTimeout(() => {
                     player1ScoreField.innerHTML = playerScore;
                     nextProblem();
+                    correctImage.src = "/img/dummy.png";
                 }, 300);
                 setTimeout(() => {
                     if(player1ScoreField.classList.contains("animated-score")) {
                         player1ScoreField.classList.remove('animated-score');
                     }
                 }, 1500);
+            } else {
+                correctImage.src = "/img/incorrect.png";
             }
         });
 
