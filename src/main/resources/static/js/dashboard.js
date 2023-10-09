@@ -1,4 +1,4 @@
-let topBarUsername = document.getElementById("topbar_username");
+/* let topBarUsername = document.getElementById("topbar_username");
 let topBarLevel = document.getElementById("user_level");
 let userXp = document.getElementById("user_xp");
 let xpPoints = document.getElementById("xp_points");
@@ -49,15 +49,6 @@ async function getUserXp() {
     return responseJson;
 }
 
-function createGame() {
-    window.location.href = "/create_game";
-}
-
-function joinGame() {
-    var gameId = gameIdInput.value;
-    window.location.href = "/game/" + gameId;
-}
-
 async function getUsername() {
     const response = await fetch(url + '/username');
     if (!response.ok) {
@@ -66,4 +57,17 @@ async function getUsername() {
     }
     const username = await response.text();
     return username;
+} */
+
+import { setUpBar } from "./home.js";
+
+setUpBar();
+
+function createGame() {
+    window.location.href = "/create_game";
+}
+
+function joinGame() {
+    var gameId = gameIdInput.value;
+    window.location.href = "/game/" + gameId;
 }

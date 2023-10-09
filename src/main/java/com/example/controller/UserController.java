@@ -4,9 +4,9 @@ import com.example.dao.UserRepository;
 import com.example.model.Game;
 import com.example.model.User;
 import com.example.service.EmailService;
+import com.example.service.UserService;
 import com.example.service.XpLevelService;
 
-import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -34,6 +34,9 @@ public class UserController {
 
     @Autowired
     private XpLevelService xpLevelService;
+
+    @Autowired
+    private UserService userService;
     
     public static final int MAX_GAMES = 50;
 
@@ -56,9 +59,8 @@ public class UserController {
     public int currentUserLevel(HttpServletRequest request) {
         Principal principal = request.getUserPrincipal();
         String username = principal.getName();
-        User currentUser = userDao.getUserByUsername(username);
-        int level = currentUser.getLevel();
-        return level;
+
+        return userService.getLevel(username);
     }
 
     @GetMapping("/xp")
@@ -66,7 +68,7 @@ public class UserController {
     public ResponseEntity<List<Integer>> currentUserXp(HttpServletRequest request) {
         Principal principal = request.getUserPrincipal();
         String username = principal.getName();
-        User currentUser = userDao.getUserByUsername(username);
+        User currentUser = userService.getUser(username);
         int xp = currentUser.getXp();
         int level = currentUser.getLevel();
         int xpLevelUp = xpLevelService.getXpToLevelUp(level);

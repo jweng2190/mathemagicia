@@ -13,6 +13,7 @@ import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -33,6 +34,7 @@ public class XpLevelService {
         }
     }
 
+    @Cacheable(value = "xpLevelCache", key = "#levelValue")
     public int getXpToLevelUp(int levelValue) {
         Optional<XpLevel> matchingLevel = xpLevels.stream()
                 .filter(level -> level.getLevel() == levelValue)

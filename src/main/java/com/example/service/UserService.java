@@ -8,6 +8,7 @@ import com.exception.CustomerNotFoundException;
 
 import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -158,5 +159,17 @@ public class UserService {
             return true;
         }
 
+    }
+
+    @Cacheable(value = "levelCache", key = "#username")
+    public int getLevel(String username) {
+        User user = repo.getUserByUsername(username);
+        return user.getLevel();
+    }
+
+    @Cacheable(value = "usernameCache", key= "#username")
+    public User getUser(String username) {
+        User user = repo.getUserByUsername(username);
+        return user;
     }
 }
