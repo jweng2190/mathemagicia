@@ -61,7 +61,14 @@ async function getUsername() {
 
 import { setUpBar } from "./home.js";
 
+const cgButton = document.getElementById("cg_button");
+const jgButton = document.getElementById("jg_button");
+
+cgButton.addEventListener("click", createGame);
+jgButton.addEventListener("click", joinGame);
+
 setUpBar();
+
 
 function createGame() {
     window.location.href = "/create_game";

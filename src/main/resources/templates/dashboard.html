@@ -8,13 +8,14 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
     <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="icon" type="image/x-icon" href="/img/logos/logo_4.png">
 </head>
 
 <body style="overflow-x: hidden;">
-    <div class="bg-body shadow d-flex flex-column flex-shrink-0 position-fixed top-0 bottom-0" style="flex: 0 0 94%;"><a class="text-center link-body-emphasis d-block p-3 text-decoration-none border-bottom" href="/" title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Icon-only"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-bootstrap-fill" style="font-size: 25px;">
-                <path d="M6.375 7.125V4.658h1.78c.973 0 1.542.457 1.542 1.237 0 .802-.604 1.23-1.764 1.23H6.375zm0 3.762h1.898c1.184 0 1.81-.48 1.81-1.377 0-.885-.65-1.348-1.886-1.348H6.375v2.725z"></path>
-                <path d="M4.002 0a4 4 0 0 0-4 4v8a4 4 0 0 0 4 4h8a4 4 0 0 0 4-4V4a4 4 0 0 0-4-4h-8zm1.06 12V3.545h3.399c1.587 0 2.543.809 2.543 2.11 0 .884-.65 1.675-1.483 1.816v.1c1.143.117 1.904.931 1.904 2.033 0 1.488-1.084 2.396-2.888 2.396H5.062z"></path>
-            </svg><span class="visually-hidden">Icon-only</span></a>
+    <div class="bg-body shadow d-flex flex-column flex-shrink-0 position-fixed top-0 bottom-0" style="flex: 0 0 94%;">
+        <a class="text-center link-body-emphasis d-block p-3 text-decoration-none border-bottom" href="/" title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Icon-only">
+            <img style="width: 35px;height: 35px;" src="/img/logos/logo_4.png" />
+        </a>
         <ul class="nav nav-pills flex-column text-center nav-flush mb-auto">
             <li class="nav-item"><a class="nav-link py-3 border-bottom rounded-0" id="home" href="/home" aria-current="page"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-house-door" style="width: 30px;height: 30px;">
                         <path d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146ZM2.5 14V7.707l5.5-5.5 5.5 5.5V14H10v-4a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5v4H2.5Z"></path>
@@ -148,12 +149,12 @@
     <div style="display: flex;align-items: center;justify-content: center;margin-top: 54px;">
         <div id="create_game" style="width: 25%;border-radius: 12px;/*border-color: var(--bs-emphasis-color);*/border: 2px solid #808080;margin-right: 26px;margin-left: 27px;background: linear-gradient(#2863fb, #9ebeed);height: 350px;"><img class="d-block" style="margin: auto;width: 100px;margin-top: 48px;display: block;/*padding-bottom: 26px;*/" src="/img/create_game.png">
             <p class="text-center" style="margin-bottom: 43px;margin-top: 55px;"><strong>Create 1v1 Game</strong></p>
-            <button class="btn btn-primary" type="button" style="margin: auto;display: block;margin-bottom: 19px;" onclick="createGame()">Create!</button>
+            <button class="btn btn-primary" id="cg_button" type="button" style="margin: auto;display: block;margin-bottom: 19px;">Create!</button>
         </div>
         <div id="join_game" style="width: 25%;margin-right: 26px;border: 2px solid #808080;border-radius: 12px;background: linear-gradient(#d55eff, #f7c8fb);height: 350px;"><img class="d-block" style="margin: auto;display: block;margin-top: 24px;width: 150px;" src="/img/join_game.png">
             <p class="text-center" style="margin-bottom: 43px;margin-top: 30px;"><strong>Join 1v1 Game</strong></p>
             <div style="width: 60%;margin: auto;display: flex;flex-direction: row;height: 38px;"><input type="text" id="game_id_input" style="width: 75%;margin: auto;background: var(--bs-border-color-translucent);height: 38px;">
-                <div class="grow" onclick="joinGame()">
+                <div class="grow" id="jg_button">
                     <a href="#">
                         <img style="height: 38px;width: auto;" src="/img/arrow.png">
                     </a>
