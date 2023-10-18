@@ -64,7 +64,6 @@ function processSearch() {
 
         displaySearch(emailData);
     }).catch((error) => {
-        console.log(error);
         errorSearch.style.display = "flex";
     });
 }

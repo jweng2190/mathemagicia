@@ -9,6 +9,8 @@ import com.exception.CustomerNotFoundException;
 import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -18,7 +20,11 @@ import org.springframework.stereotype.Service;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Service
@@ -172,4 +178,68 @@ public class UserService {
         User user = repo.getUserByUsername(username);
         return user;
     }
+
+    //TODO
+    /* @Cacheable(value = "searchCache", key= "#payload")
+    public ArrayList<List<String>> getEmailListBySearch(Map<String, String> payload) {
+        String type = payload.get("searchType");
+        if(type == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        String searchValue = payload.get("searchValue");
+        List<String> emailList = new ArrayList<>();
+        if(type.equals("Default")) {
+            String[] splittedName = searchValue.split("\\s+");
+
+            List<String> fullNames = repo.getAllFullNames();
+            for(String fullName: fullNames) {
+                for(String partName: splittedName) {
+                    if(fullName.contains(partName.toLowerCase())) {
+                        List<String> emails = repo.getEmailsByFullName(fullName);
+                        for(String email: emails) {
+                            if(!emailList.contains(email)) {
+                                emailList.add(email);
+                            }
+                        }
+                    }
+                }
+            }
+        } else if(type.equals("Username")) {
+            List<String> usernames = repo.getAllUsernames();
+            for(String username: usernames) {
+                if(username.contains(searchValue)) {
+                    String email = repo.getEmailByUsername(username);
+                    if(!emailList.contains(email)) {
+                        emailList.add(email);
+                    }
+                }
+            }
+        } else if(type.equals("Level")) {
+            //TODO
+            List<User> users = repo.findAll();
+            int min = Integer.parseInt(searchValue.split(",")[0]);
+            int max = Integer.parseInt(searchValue.split(",")[1]);
+
+            for(User user: users) {
+                if(user.getLevel() >= min && user.getLevel() <= max) {
+                    String email = user.getEmail();
+                    if(!emailList.contains(email)) {
+                        emailList.add(email);
+                    }
+                }
+            }
+        }
+
+        ArrayList<List<String>> usernameAndEmailList = new ArrayList<List<String>>();
+
+        for(int i = 0; i < emailList.size(); i++) {
+            String email = emailList.get(i);
+            String username = repo.getUsernameByEmail(email);
+            //prevent user from inviting themselves
+            if(!username.equals(principal.getName())) {
+                usernameAndEmailList.add(Arrays.asList(username, email));
+            }
+        }
+    } */
 }

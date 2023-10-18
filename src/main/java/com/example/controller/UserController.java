@@ -155,7 +155,7 @@ public class UserController {
             }
         }
 
-        if(!emailList.isEmpty()) {
+        if(!usernameAndEmailList.isEmpty()) {
             return ResponseEntity.ok().body(usernameAndEmailList);
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

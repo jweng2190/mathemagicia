@@ -8,6 +8,16 @@ const pageDisp = document.getElementById("currentPage")
 const itemsPerPage = 10;
 var totalPages;
 let currentPage = 1;
+let gameJSON;
+
+getGames().then((data) => {
+    gameList = data;
+    totalPages = Math.ceil(gameList.length / itemsPerPage);
+    pageDisp.textContent = "Page 1\/" + totalPages;
+    console.log(gameList);
+    populateTable(currentPage);
+});
+
 
 document.getElementById("nextPage").addEventListener("click", () => {
     if (currentPage < totalPages) {
@@ -21,14 +31,6 @@ document.getElementById("prevPage").addEventListener("click", () => {
         currentPage--;
         populateTable(currentPage);
     }
-});
-
-getGames().then((data) => {
-    gameList = data;
-    totalPages = Math.ceil(gameList.length / itemsPerPage);
-    pageDisp.textContent = "Page 1\/" + totalPages;
-    console.log(gameList);
-    populateTable(currentPage);
 });
 
 async function getGames() {
