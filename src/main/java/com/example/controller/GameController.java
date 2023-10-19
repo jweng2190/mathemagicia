@@ -128,6 +128,17 @@ public class GameController {
         return ResponseEntity.ok().body(activeGameId);
     }
 
+    @GetMapping("players")
+    public ResponseEntity<List<String>> getPlayersById(@RequestParam("gameId") String gameId) {
+        Game game = gameService.getGameById(gameId);
+        List<String> players = Arrays.asList(game.getPlayer1Username(), game.getPlayer2Username());
+        if(players.size() == 2) {
+            return ResponseEntity.ok(players);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
     @PostMapping(path="/problem_list", consumes = MediaType.TEXT_PLAIN_VALUE)
     @RolesAllowed({"USER", "ADMIN"})
     public ResponseEntity<List<Problem>> getProblemList(@RequestBody String gameId) {

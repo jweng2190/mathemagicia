@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.example.dao.GameRepository;
@@ -94,7 +95,7 @@ public class GameService {
         return gameListByUser;
     }
 
-    public Game getGameById(String gameId) {
+    /* public Game getGameById(String gameId) {
         Map<String, Game> allGames = GameStorage.getInstance().getGames();
         for(String key : allGames.keySet()) {
             Game game = allGames.get(key);
@@ -103,6 +104,12 @@ public class GameService {
             }
         }
         return null;
+    } */
+
+    @Cacheable(value = "gameCache", key = "#gameId")
+    public Game getGameById(String gameId) {
+        Game game = gameDao.getGameByGameId(gameId);
+        return game;
     }
 
     /* public Game connectToGame(User player2, String gameId) throws InvalidParamException, InvalidGameException {

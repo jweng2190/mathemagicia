@@ -89,6 +89,11 @@ const player2ScoreElement = document.getElementById('player2-score');
 const gameContent = document.getElementsByClassName('game-page')[0];
 
 const myModal = document.getElementById("modal-end");
+const player1Badge = document.getElementById("player1_badge");
+const player2Badge = document.getElementById("player2_badge");
+
+let player1;
+let player2;
 
 playerInput.addEventListener('input', () => {
     setTimeout(() => {
@@ -186,6 +191,18 @@ async function createCountdown() {
 
         resolve([cdContainer, cdText]);
     });
+}
+
+async function getPlayerData() {
+    const response = await fetch("/game/players?gameId=" + gameId);
+    if(response.ok) {
+        let data = response.json();
+        console.log("Player 1 Username: " + data[0]);
+        console.log("Player 2 Username: " + data[1]);
+    } else {
+        //handle expection
+        throw new Error("An error occurred. Unable to fetch player information.")
+    }
 }
 
 async function getTimeLimit(gameId) {
@@ -475,6 +492,7 @@ function updateGame(message) {
 async function startGame() {
     loadingContainer.children[0].src = '';
     loadingContainer.style.zIndex = '-3';
+    getPlayerData();
     const result = await createCountdown();
     countdownContainer = result[0];
     countdownElement = result[1];
