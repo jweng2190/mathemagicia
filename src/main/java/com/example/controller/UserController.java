@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.security.RolesAllowed;
 import javax.mail.MessagingException;
@@ -56,10 +57,15 @@ public class UserController {
 
     @GetMapping("/level")
     @RolesAllowed({"USER", "ADMIN"})
-    public int currentUserLevel(HttpServletRequest request) {
-        Principal principal = request.getUserPrincipal();
-        String username = principal.getName();
+    public int currentUserLevel(@RequestParam("username") String username) {
+        return userService.getLevel(username);
+    }
 
+    @GetMapping("/user_level")
+    @RolesAllowed({"USER", "ADMIN"})
+    public int currentUserLevel(HttpServletRequest httpServletRequest) {
+        Principal principal = httpServletRequest.getUserPrincipal();
+        String username = principal.getName();
         return userService.getLevel(username);
     }
 

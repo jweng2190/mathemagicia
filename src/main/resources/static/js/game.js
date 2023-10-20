@@ -17,7 +17,9 @@ const loadingContainer = document.getElementsByClassName('loading-container')[0]
 const content = document.getElementsByClassName('content')[0];
 const backgroundDiv = document.getElementById('cd-bg-div');
 const texts = ['READY', '3', '2', '1', 'GO!'];
-const colors = ['rgb(0, 150, 255)', 'rgb(222, 49, 99)', 'rgb(255, 117, 24)', 'rgb(255, 191, 0)', 'rgb(15, 255, 80)']
+const colors = ['rgb(0, 150, 255)', 'rgb(222, 49, 99)', 'rgb(255, 117, 24)', 'rgb(255, 191, 0)', 'rgb(15, 255, 80)'];
+const badgeUrl = "https://mm-level-badges.s3.us-east-2.amazonaws.com";
+
 let index = 0;
 
 const url = "http://localhost:8080";
@@ -196,9 +198,10 @@ async function createCountdown() {
 async function getPlayerData() {
     const response = await fetch("/game/players?gameId=" + gameId);
     if(response.ok) {
-        let data = response.json();
-        console.log("Player 1 Username: " + data[0]);
-        console.log("Player 2 Username: " + data[1]);
+        const data = await response.json();
+        /* console.log("Player 1 Username: " + data[0]);
+        console.log("Player 2 Username: " + data[1]); */
+        return data;
     } else {
         //handle expection
         throw new Error("An error occurred. Unable to fetch player information.")
@@ -492,7 +495,29 @@ function updateGame(message) {
 async function startGame() {
     loadingContainer.children[0].src = '';
     loadingContainer.style.zIndex = '-3';
-    getPlayerData();
+    
+    try {
+        let data = await getPlayerData();
+        player1 = data[0];
+        player2 = data[1];
+    } catch(err) {
+        throw new Error(err);
+    }
+
+    try{
+        let b1Response = await fetch("/level?username=" + player1);
+        let b2Response = await fetch("/level?username=" + player2);
+
+        let b1Lvl = await b1Response.json();
+        let b2Lvl = await b2Response.json();
+
+        player1Badge.src = badgeUrl + "/b" + b1Lvl + ".png";
+        player2Badge.src = badgeUrl + "/b" + b2Lvl + ".png";
+    } catch(err) {
+        console.log(err);
+    }
+    
+
     const result = await createCountdown();
     countdownContainer = result[0];
     countdownElement = result[1];

@@ -69,7 +69,7 @@ async function getUserInfo(type) {
     if(type === "Username") {
         response = await fetch("/username");
     } else if(type === "Level") {
-        response = await fetch("/level");
+        response = await fetch("/user_level");
     }
     if (!response.ok) {
         const message = `An error has occured: ${response.status}`;
