@@ -91,6 +91,7 @@ let modalLink = document.getElementById("modal_link");
 //modals
 const myModal = document.getElementById("modal-end");
 const modalAnswer = document.getElementById('modal-answer');
+const amClose = document.getElementById("am-close");
 
 const correctImage = document.getElementById("correct");
 
@@ -103,6 +104,11 @@ playerInput.addEventListener('input', () => {
 modalLink.addEventListener("click", () => {
     let modalA = new bootstrap.Modal(modalAnswer);
     modalA.show();
+});
+
+amClose.addEventListener("click", () => {
+    let modalA = new bootstrap.Modal(modalAnswer);
+    modalA.hide();
 });
 
 

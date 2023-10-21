@@ -89,8 +89,11 @@ const player1ScoreElement = document.getElementById('player1-score');
 const player2ScoreElement = document.getElementById('player2-score'); 
 
 const gameContent = document.getElementsByClassName('game-page')[0];
+let modalLink = document.getElementById("modal_link");
 
 const myModal = document.getElementById("modal-end");
+const amClose = document.getElementById("am-close");
+const modalAnswer = document.getElementById('modal-answer');
 const player1Badge = document.getElementById("player1_badge");
 const player2Badge = document.getElementById("player2_badge");
 
@@ -101,6 +104,16 @@ playerInput.addEventListener('input', () => {
     setTimeout(() => {
         convertToLatex();
     }, 1000);
+});
+
+modalLink.addEventListener("click", () => {
+    let modalA = new bootstrap.Modal(modalAnswer);
+    modalA.show();
+});
+
+amClose.addEventListener("click", () => {
+    let modalA = new bootstrap.Modal(modalAnswer);
+    modalA.hide();
 });
 
 let inputMode = 'regular';

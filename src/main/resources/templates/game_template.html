@@ -60,6 +60,25 @@
         </div>
     </div>
 
+    <div class="modal fade" role="dialog" tabindex="-1" id="modal-answer" aria-labelledby="modal-answer" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title"><span style="color: rgb(50, 153, 255);">Answer Formatting</span></h4>
+                    <button id="am-close" class="btn-close" type="button" aria-label="Close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>All fractions must be expressed in simplest form and using forward slash notation, e.g., 3/7, 101/19, 1/5, etc.</p>
+                    <p>Any radicals must be in simplest radical form, and use the sqrt() notation, e.g., sqrt(3), 1 + 2sqrt(5), 5sqrt(5)/3, etc.</p>
+                    <p>Pi can be simply entered as &quot;pi&quot;. For example,  15pi, (4-pi)/5, 3sqrt(2) + pi, 3/pi, etc.</p>
+                    <p>For answers with decimals, scientific mode must be used. Examples of acceptable decimal answers include: 0.5, 2.89, 23.3, etc.</p>
+                    <p>If an answer requires scientific notation, enter answers such as 6.895 * 10^3, 2.3 * 10^-2, 4 * 10^5, etc. while in scientifc mode.</p>
+                    <p>If the answer is a date, write out the full name of the month, e.g., October 30, January 21</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!--div class="outer-container"-->
     <div class="content body_container game-page">
         <!--sidebar-->
@@ -92,51 +111,7 @@
                 </div>
             </div>
         </div>
-        <!-- <div class="right_container" style="flex: 1;display: flex;flex-direction: column;">
-            <div class="container-fluid ms-auto" id="timer_container" style="height: 75px;padding-right: 0px;padding-left: 0px;border-bottom-width: 1.25px;border-bottom-style: solid;width: 100%;">
-                <strong class="d-flex d-xxl-flex justify-content-center align-items-center" id="timer_p" style="visibility: hidden;height: 100%;width: 20%;text-align: center;vertical-align: middle;font-size: 30px;margin: auto; color:rgb(50, 205, 50); font-family: 'digital-clock-font';">00:00</strong>
-            </div>
-            <div id="scoreboard" style="display: flex;align-items: center;justify-content: center;height: 75px;">
-                <div style="display: flex;align-items: center;justify-content: center;background: deepskyblue;">
-                    <div style="background-color: #6d6d6d;width: 10px;height: 75px;"></div>
-                    <p style="margin-top: 10px;margin-left: 15px;width: 200px;text-align: center;font-size: 30px;text-overflow: ellipsis;overflow: hidden;color: white;">jdoe</p><img style="width: 50px;height: auto;margin-left: 15px;margin-right: 15px;" src="assets/img/test_b1.png">
-                    <div style="background-color: #6d6d6d;width: 10px;height: 75px;"></div>
-                </div>
-                <div style="display: flex;background-color: #a3a3a3;height: 75px;align-items: center;justify-content: center;">
-                    <p style="font-family: 'Bebas Neue';margin-right: 10px;font-size: 40px;margin-left: 20px;margin-top: 10px;color: deepskyblue;outline-color: black;text-shadow: 2px 2px 0px #000000;">3</p>
-                    <p style="font-family: 'Bebas Neue';font-size: 40px;margin-top: 10px;">-</p>
-                    <p style="font-family: 'Bebas Neue';margin-left: 10px;font-size: 40px;margin-right: 20px;margin-top: 10px;text-shadow: 2px 2px 0px #000000;color: #ff5555;">2</p>
-                </div>
-                <div style="display: flex;align-items: center;justify-content: center;background-color: #ff5555;">
-                    <div style="width: 10px;height: 75px;background-color: #6d6d6d;"></div><img style="width: 50px;height: auto;margin-left: 15px;margin-right: 15px;" src="assets/img/test_b2.png">
-                    <p style="margin-top: 10px;margin-right: 15px;width: 200px;text-align: center;font-size: 30px;text-overflow: ellipsis;overflow: hidden;">jdoe2</p>
-                    <div style="background-color: #6d6d6d;width: 10px;height: 75px;"></div>
-                </div>
-            </div>
-            <div class="container d-flex flex-row align-self-end" style="width: 94%;height: 90%;margin-right: 0px;margin-left: 0px;padding-right: 0px;padding-left: 0px;">
-                <div class="col-xl-5 d-flex flex-column" style="align-items: center;justify-content: center;">
-                    <h1 class="d-flex justify-content-center align-items-center" id="problem_number" style="text-align: center;/*height: 10%;*/font-size: 20px;font-weight: bold;flex: 10;">Problem</h1>
-                    <img class="d-block" id="problem_image" style="margin: auto;max-width: 85%;max-height: 50%;height: auto;">
-                    <div id="answer_div" class="d-flex flex-row justify-content-center align-items-center align-items-xl-center" style="height: 25%;width: 95%;/* flex: 25;margin-top: -6%; */">
-                        <div id="latex_div" style="width: 20%;display: flex;align-items: end;justify-content: end;">
-                            <p id="latex-output" style="margin-bottom: 0px;margin-right: 15px;"></p>
-                        </div>
-                        <div id="input_div" style="width: 40%;">
-                            <form id="answer_form" style="/*width: 50%;*/margin: auto;">
-                                <div id="input_answer_div" class="d-flex">
-                                    <input id="player_answer" class="form-control" type="text" placeholder="Enter Answer..." />
-                                    <button id="answer_submit" class="btn btn-primary" type="button">Submit</button></div>
-                            </form>
-                        </div>
-                        <div id="rules_div" style="width: 20%;display: flex;align-items: center;justify-content: center;margin-left: 5%;"><a href="#" style="/*display: block;*/">Formatting Rules</a></div>
-                    </div>
-                    <div style="width: 100%;display: flex;justify-content: center;align-items: center;/*margin-right: 50px;*//* margin-top: -10%; */">
-                        <button id="regular_mode" class="btn btn-primary" type="button" style="margin-right: 50px;">Regular</button>
-                        <button id="sci_mode" class="btn btn-primary" type="button" style="background-color: var(--bs-border-color-translucent);">Scientific</button>
-                    </div>
-                </div>
-            </div>
-        </div> -->
+
         <div style="flex: 1;display: flex;flex-direction: column;">
             <div class="container-fluid ms-auto" id="timer_container" style="padding-right: 0px;padding-left: 0px;border-bottom-width: 1.25px;border-bottom-style: solid;width: 100%;height: 75px;">
                 <strong class="d-flex d-xxl-flex justify-content-center align-items-center" id="timer_p" style="visibility: hidden;height: 100%;width: 20%;text-align: center;vertical-align: middle;font-size: 30px;margin: auto; color:rgb(50, 205, 50); font-family: 'digital-clock-font';">00:00</strong>
@@ -174,7 +149,9 @@
                             </div>
                         </form>
                     </div>
-                    <div id="rules_div" style="width: 20%;display: flex;align-items: center;justify-content: center;margin-left: 5%;"><a href="#" style="/*display: block;*/">Formatting Rules</a></div>
+                    <div id="rules_div" style="width: 20%;display: flex;align-items: center;justify-content: center;margin-left: 5%;">
+                        <a id="modal_link" href="#" style="/*display: block;*/">Formatting Rules</a>
+                    </div>
                 </div>
                 <div style="width: 100%;display: flex;justify-content: center;align-items: center;margin: auto;/*margin-right: 50px;*/margin-top: 5%;padding-bottom: 4%;">
                     <button id="regular_mode" class="btn btn-primary" type="button" style="margin-right: 50px;">Regular</button>
