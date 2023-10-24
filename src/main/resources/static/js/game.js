@@ -22,7 +22,7 @@ const badgeUrl = "https://mm-level-badges.s3.us-east-2.amazonaws.com";
 
 let index = 0;
 
-const url = "http://localhost:8080";
+//const url = "http://localhost:8080";
 var stompClient = null;
 var username;
 getUsername().then((result) => {
@@ -842,7 +842,7 @@ window.onload = function() {
 }
 
 async function getUsername() {
-    const response = await fetch(url + '/username');
+    const response = await fetch('/username');
     if (!response.ok) {
         const message = `An error has occured: ${response.status}`;
         throw new Error(message);
@@ -851,6 +851,8 @@ async function getUsername() {
     return username;
 }
 
+
+//figure out bug
 async function postRequest(url, data, type) {
     let contentType;
     if(type === "plain text") {
