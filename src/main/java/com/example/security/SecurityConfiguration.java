@@ -46,7 +46,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable()
+        http.csrf().disable().headers().frameOptions().sameOrigin().and()
                 .authorizeRequests().antMatchers(   "/connect", "/ready", "/answer", "/end", "/register", "/login").permitAll()
                 .and().formLogin().loginPage("/login").defaultSuccessUrl("/home")
                 .and().logout().logoutSuccessUrl("/").deleteCookies("JSESSIONID")
