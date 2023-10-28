@@ -22,7 +22,14 @@ const badgeUrl = "https://mm-level-badges.s3.us-east-2.amazonaws.com";
 
 let index = 0;
 
-//const url = "http://localhost:8080";
+var loc = window.location, base_uri;
+if (loc.protocol === "https:") {
+    base_uri = "wss:";
+} else {
+    base_uri = "ws:";
+}
+base_uri += "//" + loc.host;
+
 var stompClient = null;
 var username;
 getUsername().then((result) => {
@@ -324,7 +331,7 @@ const messagesTypes = {
 
 
 function connect() {
-    const socketConnect = new SockJS("/connect");
+    const socketConnect = new WebSocket(base_uri + "/connect", 'v10.stomp');
     console.log('Connecting to game');
 
     stompClient = Stomp.over(socketConnect);
@@ -350,7 +357,7 @@ function connect() {
 
 //modify logic for reconnect
 function reconnect() {
-    const socketConnect = new SockJS("/connect");
+    const socketConnect = new WebSocket(base_uri + "/connect", 'v10.stomp');
     console.log('Reconnecting to game');
 
     stompClient = Stomp.over(socketConnect);
@@ -375,7 +382,7 @@ function reconnect() {
 }
 
 function connectStatus() {
-    const socketStatus = new SockJS("/status");
+    const socketStatus = new WebSocket(base_uri + "/status", 'v10.stomp');
     stompClient = Stomp.over(socketStatus);
 
     stompClient.connect({"gameId" : gameId}, function (frame) {
@@ -439,7 +446,7 @@ function connectStatus() {
 
 function readyUp() {
     readyButton.innerHTML = "Waiting for opponent...";
-    const socketReady = new SockJS("/ready");
+    const socketReady = new WebSocket(base_uri + "/ready", 'v10.stomp');
     stompClient = Stomp.over(socketReady);
     stompClient.connect({"gameId": gameId}, function (frame) {
         console.log("Connected: " + frame);
@@ -573,7 +580,7 @@ var sendAnswer = function(event) {
 }
 
 function checkAnswer() {
-    const socket = new SockJS('/answer');
+    const socket = new WebSocket(base_uri + '/answer', 'v10.stomp');
     stompClient = Stomp.over(socket);
     stompClient.connect({"gameId": gameId}, function (frame) {
         console.log("Connected: " + frame);
@@ -723,8 +730,8 @@ function endGame() {
         throw new Error(error);
     });
 
-    /* const socket = new SockJS('/end');
-    stompClient = Stomp.over(socket);
+    /* const socket = new WebSocket('/end');
+    stompClient = Stomp.client(socket);
     stompClient.connect({"gameId": gameId}, function (frame) {
         console.log("Connected: " + frame);
         stompClient.subscribe(`/topic/game.end`, function (message) {
@@ -766,7 +773,7 @@ function returnHome() {
 }
 
 function connectRematch() {
-    const socketRematch = new SockJS('/rematch');
+    const socketRematch = new WebSocket(base_uri + '/rematch', 'v10.stomp');
     stompClient = Stomp.over(socketRematch);
     stompClient.connect({"gameId": gameId}, function (frame) {
         console.log("Connected: " + frame);

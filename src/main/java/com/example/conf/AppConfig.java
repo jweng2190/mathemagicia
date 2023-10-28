@@ -24,6 +24,10 @@ public class AppConfig implements WebMvcConfigurer {
     @Value("${spring.datasource.password}")
     private String password;
 
+    private static final String[] CLASSPATH_RESOURCE_LOCATIONS = {
+        "classpath:/META-INF/resources/", "classpath:/resources/",
+        "classpath:/static/", "classpath:/public/" };
+
     @Bean
     public DataSource dataSource() {
         DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
@@ -35,7 +39,9 @@ public class AppConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler( "/js/**", "/css/**", "/img/**", "/gif/**")
-                .addResourceLocations("classpath:/static/js/", "classpath:/static/css/", "classpath:/static/img/", "classpath:/static/gif/");
+        /* registry.addResourceHandler( "/js/**", "/css/**", "/img/**", "/gif/**")
+                .addResourceLocations("classpath:/static/js/", "classpath:/static/css/", "classpath:/static/img/", "classpath:/static/gif/"); */
+            registry.addResourceHandler("/**")
+            .addResourceLocations(CLASSPATH_RESOURCE_LOCATIONS);
     }
 }
