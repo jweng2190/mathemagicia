@@ -98,9 +98,12 @@ const player2ScoreElement = document.getElementById('player2-score');
 const gameContent = document.getElementsByClassName('game-page')[0];
 let modalLink = document.getElementById("modal_link");
 
-const myModal = document.getElementById("modal-end");
-const amClose = document.getElementById("am-close");
 const modalAnswer = document.getElementById('modal-answer');
+const modalEnd = document.getElementById('modal-end');
+//buttons for modal
+const endClose = document.getElementById("end-close");
+const amClose = document.getElementById("am-close");
+
 const player1Badge = document.getElementById("player1_badge");
 const player2Badge = document.getElementById("player2_badge");
 
@@ -121,6 +124,11 @@ modalLink.addEventListener("click", () => {
 amClose.addEventListener("click", () => {
     let modalA = new bootstrap.Modal(modalAnswer);
     modalA.hide();
+});
+
+endClose.addEventListener("click", () => {
+    let modalE = new bootstrap.Modal();
+    modalE.hide();
 });
 
 let inputMode = 'regular';
@@ -278,7 +286,7 @@ function stopTimer() {
 
 
 const sendMessage = (message) => {
-    stompClient.send(`/app/${message.type}`, {}, JSON.stringify(message));
+    stompClient.send(`/ws/${message.type}`, {}, JSON.stringify(message));
 }
 
 const handleMessage = (message) => {
@@ -439,7 +447,7 @@ function connectStatus() {
             gameId: gameId,
             playerUsername: username
         }
-        stompClient.send("/app/game.status", {}, JSON.stringify(message));
+        stompClient.send("/ws/game.status", {}, JSON.stringify(message));
         connect();
     });
 }
@@ -555,7 +563,7 @@ async function startGame() {
 
 function checkDisconnect() {
     stompClient.connect({}, function () {
-        stompClient.send("/app/setGameId", {}, JSON.stringify({ gameId: gameId }));
+        stompClient.send("/ws/setGameId", {}, JSON.stringify({ gameId: gameId }));
     }, function (error) {
         throw new Error(error);
     });
@@ -580,7 +588,7 @@ var sendAnswer = function(event) {
 }
 
 function checkAnswer() {
-    const socket = new WebSocket(base_uri + '/answer', 'v10.stomp');
+    const socket = new WebSocket(base_uri + '/game_answer', 'v10.stomp');
     stompClient = Stomp.over(socket);
     stompClient.connect({"gameId": gameId}, function (frame) {
         console.log("Connected: " + frame);
@@ -680,8 +688,8 @@ function playScoreAnimation(player) {
 
 
 async function showFinalScores() {
-    let modalEnd = new bootstrap.Modal(myModal);
-    modalEnd.show();
+    let modal = new bootstrap.Modal(modalEnd);
+    modal.show();
 
     const finalScore1 = document.getElementById("final_score1");
     const finalScore2 = document.getElementById("final_score2");
@@ -707,10 +715,6 @@ async function showFinalScores() {
     animateXp(gameId, playerType);
 }
 
-function closeModal() {
-    let modalEnd = new bootstrap.Modal(myModal);
-    modalEnd.show();
-}
 
 function endGame() {
     disableAnswer();

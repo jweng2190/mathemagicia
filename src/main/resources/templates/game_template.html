@@ -14,16 +14,17 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Bebas+Neue&amp;display=swap">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-MML-AM_CHTML"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.1.0/math.min.js"></script>
+    <link rel="icon" type="image/x-icon" href="/img/logos/logo_4.png">
     <!-- <link rel="stylesheet" href="/css/chat_style.css"> -->
 </head>
 
 <body class="d-flex flex-column d-flex" style="overflow-x:hidden">
-    <div class="modal fade" role="dialog" tabindex="-1" id="modal-end" aria-labelledby="modal-end" aria-hidden="true">
+    <div id='modal-end' class="modal fade" role="dialog" tabindex="-1" aria-labelledby="modal-end" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header" style="clip-path: ellipse(65% 77% at 50% 22%);background-color: #ffac1c;">
                     <h4 class="modal-title" style="transform: translate(170%);text-shadow: 0 .1rem 0 rgba(0,0,0,.4);color: #fff;font-weight: 700;">You Won!</h4>
-                    <button class="btn-close" type="button" aria-label="Close" data-bs-dismiss="modal" onclick="closeModal()"></button>
+                    <button id="end-close" class="btn-close" type="button" aria-label="Close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <p style="text-align: center;font-weight: 500;font-size: 18px;margin-bottom: 0px;">Final Score:</p>
@@ -60,7 +61,7 @@
         </div>
     </div>
 
-    <div class="modal fade" role="dialog" tabindex="-1" id="modal-answer" aria-labelledby="modal-answer" aria-hidden="true">
+    <div id="modal-answer" class="modal fade" role="dialog" tabindex="-1" aria-labelledby="modal-answer" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -82,7 +83,10 @@
     <!--div class="outer-container"-->
     <div class="content body_container game-page">
         <!--sidebar-->
-        <div class="bg-body shadow d-flex flex-column flex-shrink-0 position-fixed top-0 bottom-0" style="/*width: 6%;*/flex: 0 0 6%;"><a class="text-center link-body-emphasis d-block p-3 text-decoration-none border-bottom" href="/" title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Icon-only"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-bootstrap-fill" style="font-size: 25px;">
+        <div class="bg-body shadow d-flex flex-column flex-shrink-0 position-fixed top-0 bottom-0" style="/*width: 6%;*/flex: 0 0 6%;">
+            <a class="text-center link-body-emphasis d-block p-3 text-decoration-none border-bottom" href="/" title="" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-original-title="Icon-only">
+                <img style="width: 35px;height: 35px;" src="/img/logos/logo_4.png" />
+            </a>
                     <path d="M6.375 7.125V4.658h1.78c.973 0 1.542.457 1.542 1.237 0 .802-.604 1.23-1.764 1.23H6.375zm0 3.762h1.898c1.184 0 1.81-.48 1.81-1.377 0-.885-.65-1.348-1.886-1.348H6.375v2.725z"></path>
                     <path d="M4.002 0a4 4 0 0 0-4 4v8a4 4 0 0 0 4 4h8a4 4 0 0 0 4-4V4a4 4 0 0 0-4-4h-8zm1.06 12V3.545h3.399c1.587 0 2.543.809 2.543 2.11 0 .884-.65 1.675-1.483 1.816v.1c1.143.117 1.904.931 1.904 2.033 0 1.488-1.084 2.396-2.888 2.396H5.062z"></path>
                 </svg><span class="visually-hidden">Icon-only</span></a>

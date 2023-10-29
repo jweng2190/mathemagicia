@@ -13,14 +13,16 @@ import org.springframework.web.socket.server.support.DefaultHandshakeHandler;
 public class WebsocketConfiguration implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/connect", "/ready", "/answer", "/end", "/chat", "/rematch", "/status", "/bot")
+        registry.addEndpoint("/connect", "/ready", "/game_answer", "/end", "/chat", "/rematch", "/status", "/bot")
         //.setHandshakeHandler(new DefaultHandshakeHandler(new TomcatRequestUpgradeStrategy()))
-        .setAllowedOriginPatterns("*").withSockJS();
+        .setAllowedOriginPatterns("*");
+        registry.addEndpoint("/connect", "/ready", "/game_answer", "/end", "/chat", "/rematch", "/status", "/bot")
+                .setAllowedOriginPatterns("*").withSockJS();
     }
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         registry.enableSimpleBroker("/queue", "/topic", "/user");
-        registry.setApplicationDestinationPrefixes("/app");
+        registry.setApplicationDestinationPrefixes("/ws");
     }
 }
