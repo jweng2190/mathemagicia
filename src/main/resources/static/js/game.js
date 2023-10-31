@@ -74,12 +74,12 @@ let player2Joined = false;
 
 let playerAnswer = "";
 
-let numD1 = 0;
+/* let numD1 = 0;
 let numD2 = 0;
 getNumDisconnect(gameId).then((result) => {
     numD1 = result[0];
     numD2 = result[1];
-});
+}); */
 
 //default value if not specified
 let mins = 10;
@@ -127,7 +127,7 @@ amClose.addEventListener("click", () => {
 });
 
 endClose.addEventListener("click", () => {
-    let modalE = new bootstrap.Modal();
+    let modalE = new bootstrap.Modal(modalEnd);
     modalE.hide();
 });
 
@@ -363,8 +363,7 @@ function connect() {
     });
 }
 
-//modify logic for reconnect
-function reconnect() {
+/* function reconnect() {
     const socketConnect = new WebSocket(base_uri + "/connect", 'v10.stomp');
     console.log('Reconnecting to game');
 
@@ -387,7 +386,7 @@ function reconnect() {
         
         joinGame();
     });
-}
+} */
 
 function connectStatus() {
     const socketStatus = new WebSocket(base_uri + "/status", 'v10.stomp');
@@ -402,46 +401,6 @@ function connectStatus() {
             if(status === 'Disconnected') {
                 alert("Opponent disconnected. You win!");
             }
-
-            //TODO:
-            //stop timer and show game over by disconnect modal
-            
-            /* if(statusMsg.playerDisconnect != null) {
-                console.log("Opponent disconnected. You win!");
-                endGame();
-            } */
-
-            // wrong code need fix
-
-            /* if(statusMsg.status === "Ended by disconnect") {
-                disableAnswer();
-                alert("Game ended by disconnect");
-            }
-
-            numD1 = statusMsg.numD1;
-            numD2 = statusMsg.numD2;
-            let playerDisconnect = statusMsg.playerDisconnect;
-            console.log("Disconnected --- " + playerDisconnect);
-
-            if(playerDisconnect === username) {
-                reconnect();
-            } */
-
-            /* if(playerType === "Player 1") {
-                let isDisconnect = statusMsg.player1Disconnect;
-                if(isDisconnect === true) {
-                    reconnect();
-                } else {
-                    connect();
-                }
-            } else if(playerType === "Player 2") {
-                let isDisconnect = statusMsg.player2Disconnect;
-                if(isDisconnect === true) {
-                    reconnect();
-                } else {
-                    connect();
-                }
-            } */
         });
         let message = {
             gameId: gameId,
@@ -452,7 +411,7 @@ function connectStatus() {
     });
 }
 
-function readyUp() {
+/* function readyUp() {
     readyButton.innerHTML = "Waiting for opponent...";
     const socketReady = new WebSocket(base_uri + "/ready", 'v10.stomp');
     stompClient = Stomp.over(socketReady);
@@ -465,17 +424,7 @@ function readyUp() {
         queueGame();
     });
 }
-
-//not used
-async function isCreatedByUser(gameId) {  
-    const response = await fetch("/game/created/" + gameId);
-    if (!response.ok) {
-        const message = `An error has occured: ${response.status}`;
-        throw new Error(message);
-    }
-    const isCreated = await response.text();
-    return (isCreated === "true");
-}
+ */
 
 async function getPlayerType(gameId) {
     const response = await fetch("/game/type/" + gameId);
@@ -487,7 +436,7 @@ async function getPlayerType(gameId) {
     return playerType;
 }
 
-async function getNumDisconnect(gameId) {
+/* async function getNumDisconnect(gameId) {
     const response = await fetch("/game/disconnect_num/" + gameId);
     if (!response.ok) {
         const message = `An error has occured: ${response.status}`;
@@ -495,7 +444,7 @@ async function getNumDisconnect(gameId) {
     }
     const numDisconnect = await response.json();
     return numDisconnect;
-}
+} */
 
 
 function joinGame() {
@@ -506,13 +455,13 @@ function joinGame() {
     });
 }
 
-function queueGame() {
+/* function queueGame() {
     sendMessage({
         type: "game.ready",
         playerUsername: username,
         gameId: gameId
     });
-}
+} */
 
 
 function updateGame(message) {
@@ -561,15 +510,14 @@ async function startGame() {
     }, 6500);   
 }
 
-function checkDisconnect() {
+/* function checkDisconnect() {
     stompClient.connect({}, function () {
         stompClient.send("/ws/setGameId", {}, JSON.stringify({ gameId: gameId }));
     }, function (error) {
         throw new Error(error);
     });
 }
-
-//submitButton.addEventListener("submit", sendAnswer());
+ */
 
 var sendAnswer = function(event) {
     event.preventDefault();
@@ -606,7 +554,7 @@ function checkAnswer() {
             console.log("Player 1 Score: " + player1Score + "\nPlayer 2 Score: " + player2Score);
 
             if ((player1Score - originalScore1 > 0) || (player2Score - originalScore2 > 0)) {
-                //debugging, add back later
+                //add back later
                 //showScores();
                 //setTimeout 5 seconds
                 nextProblem();
