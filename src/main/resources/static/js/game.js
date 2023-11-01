@@ -98,6 +98,8 @@ const player2ScoreElement = document.getElementById('player2-score');
 const gameContent = document.getElementsByClassName('game-page')[0];
 let modalLink = document.getElementById("modal_link");
 
+const rematchButton = document.getElementById('rematch');
+
 const modalAnswer = document.getElementById('modal-answer');
 const modalEnd = document.getElementById('modal-end');
 //buttons for modal
@@ -130,6 +132,8 @@ endClose.addEventListener("click", () => {
     let modalE = new bootstrap.Modal(modalEnd);
     modalE.hide();
 });
+
+rematchButton.addEventListener("click", rematch);
 
 let inputMode = 'regular';
 
@@ -749,9 +753,9 @@ function handleGameStatus(message) {
 }
 
 function handleRematchStatus(message) {
-    parsedMessage = JSON.parse(message);
-    rematchStatus = parsedMessage[0];
-    newGameId = parsedMessage[1];
+    let parsedMessage = JSON.parse(message);
+    let rematchStatus = parsedMessage[0];
+    let newGameId = parsedMessage[1];
 
     if(rematchStatus === "REMATCH2") {
         console.log("REMATCH SUCCESS");
