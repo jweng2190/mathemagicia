@@ -649,21 +649,6 @@ async function showFinalScores() {
     finalScore1.innerHTML = player1Score;
     finalScore2.innerHTML = player2Score;
 
-    /* getXpInfo(gameId, playerType).then((stats) => {
-        console.log(stats);
-        //get current stats
-        const level = document.getElementById("player_level");
-        const xpValue = document.getElementById("xp_value");
-        const xpBar = document.getElementById("current_xp");
-        let currentXp = stats[0][1];
-        let xpLevelUp = stats[0][2];
-        level.textContent = stats[0][0];
-        xpValue.textContent = currentXp;
-        const width = (currentXp / xpLevelUp) * 200;
-        xpBar.style.width = width + "px";
-        //xp animation
-        animateXp(gameId, playerType, stats);
-    }); */
     animateXp(gameId, playerType);
 }
 
@@ -684,28 +669,6 @@ function endGame() {
         }
     }).catch((error) => {
         throw new Error(error);
-    });
-
-    /* const socket = new WebSocket('/end');
-    stompClient = Stomp.client(socket);
-    stompClient.connect({"gameId": gameId}, function (frame) {
-        console.log("Connected: " + frame);
-        stompClient.subscribe(`/topic/game.end`, function (message) {
-            var isDone = (message.body === 'true');
-            if(isDone === true) {
-                connectRematch();
-                showFinalScores();
-            }
-        });
-        sendScores();
-    }); */
-}
-
-function sendScores() {
-    sendMessage({
-        type: "game.end",
-        gameId: gameId,
-        playerUsername: username
     });
 }
 
@@ -733,7 +696,7 @@ function connectRematch() {
     stompClient = Stomp.over(socketRematch);
     stompClient.connect({"gameId": gameId}, function (frame) {
         console.log("Connected: " + frame);
-        stompClient.subscribe(`/topic/game.rematch`, function (message) {
+        stompClient.subscribe('/user/' + username + '/rematch', function (message) {
             handleRematchStatus(message.body);
         });
         showFinalScores();

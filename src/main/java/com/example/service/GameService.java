@@ -34,7 +34,7 @@ public class GameService {
     @Autowired
     private GameRepository gameDao;
 
-    public Game createGame(String playerUsername) {
+    public Game createGame(String playerUsername, String diff, String time) {
         Game game = new Game();
         //set id
         game.setGameId(UUID.randomUUID().toString());
@@ -45,6 +45,11 @@ public class GameService {
 
         game.setPlayer1Disconnect(false);
         game.setPlayer2Disconnect(false);
+
+        game.setGameDifficulty(diff);
+        game.setTimeLimit(time);
+
+        setProblems(game);
 
         gameDao.save(game);
 

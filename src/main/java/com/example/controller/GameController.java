@@ -66,11 +66,8 @@ public class GameController {
          */
         // for testing purposes
 
-        Game game = gameService.createGame(username);
-        game.setGameDifficulty(difficulty);
-        game.setTimeLimit(time);
+        Game game = gameService.createGame(username, difficulty, time);
         gameDao.save(game);
-        gameService.setProblems(game);
         String gameId = game.getGameId();
         User user = userDao.getUserByUsername(username);
         user.setActiveGameId(gameId);
@@ -95,9 +92,7 @@ public class GameController {
          */
         // for testing purposes
 
-        Game game = gameService.createGame(username);
-        game.setGameDifficulty(difficulty);
-        game.setTimeLimit(time);
+        Game game = gameService.createGame(username, difficulty, time);
         gameDao.save(game);
         gameService.setProblems(game);
         List<Problem> problems = game.getProblemSet();

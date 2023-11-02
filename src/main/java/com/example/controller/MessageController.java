@@ -179,27 +179,25 @@ public class MessageController {
 
 
     @MessageMapping("/game.rematch")
-    @SendTo("/topic/game.rematch")
-    public List<String> rematch(@Payload RematchMessage rematchMessage, SimpMessageHeaderAccessor headerAccessor) {
+    public void rematch(@Payload RematchMessage rematchMessage) {
         String playerUsername = rematchMessage.getPlayerUsername();
         boolean isAccepted = rematchMessage.isAccepted();
         long currentTime = rematchMessage.getCurrentTime();
         String gameId = rematchMessage.getGameId();
-
-        if(headerAccessor.getSessionAttributes() != null) {
-            headerAccessor.getSessionAttributes().computeIfAbsent("gameId", key -> gameId);
-        }
         
         Game activeGame = gameDao.getGameByGameId(gameId);
+        String player1Username = activeGame.getPlayer1Username();
+        String player2Username = activeGame.getPlayer2Username();
 
-        if(activeGame.getPlayer1Username().equals(playerUsername)) {
+        if(player1Username.equals(playerUsername)) {
             if(isAccepted) {
                 activeGame.setPlayer1Rematch(true);
                 //player1Rematch.set(true);
                 rematchTimestamps.put("Player 1", currentTime);
                 if(!activeGame.isPlayer2Rematch()) {
                     gameDao.save(activeGame);
-                    return Arrays.asList("REMATCH1", "");
+                    simpMessagingTemplate.convertAndSendToUser(player1Username, "/rematch", Arrays.asList("REMATCH1", ""));
+                    simpMessagingTemplate.convertAndSendToUser(player2Username, "/rematch", Arrays.asList("REMATCH1", ""));
                 }
             } else {
                 activeGame.setPlayer1Rematch(false);
@@ -217,7 +215,8 @@ public class MessageController {
                 rematchTimestamps.put("Player 2", currentTime);
                 if(!activeGame.isPlayer1Rematch()) {
                     gameDao.save(activeGame);
-                    return Arrays.asList("REMATCH1", "");
+                    simpMessagingTemplate.convertAndSendToUser(player1Username, "/rematch", Arrays.asList("REMATCH1", ""));
+                    simpMessagingTemplate.convertAndSendToUser(player2Username, "/rematch", Arrays.asList("REMATCH1", ""));
                 }
             } else {
                 activeGame.setPlayer2Rematch(false);
@@ -234,26 +233,19 @@ public class MessageController {
             String rematchFirst = findFirstRematch();
             String newGameId;
             if(rematchFirst.equals("Player 1")) {
-                Game rematchGame = gameService.createGame(activeGame.getPlayer1Username());
+                Game rematchGame = gameService.createGame(activeGame.getPlayer1Username(),
+                activeGame.getGameDifficulty(), activeGame.getTimeLimit());
                 newGameId = rematchGame.getGameId();
             } else {
-                Game rematchGame = gameService.createGame(activeGame.getPlayer2Username());
+                Game rematchGame = gameService.createGame(activeGame.getPlayer2Username(),
+                activeGame.getGameDifficulty(), activeGame.getTimeLimit());
                 newGameId = rematchGame.getGameId();
             }
-            return Arrays.asList("REMATCH2", newGameId);
+
+            simpMessagingTemplate.convertAndSendToUser(player1Username, "/rematch", Arrays.asList("REMATCH2", newGameId));
+            simpMessagingTemplate.convertAndSendToUser(player2Username, "/rematch", Arrays.asList("REMATCH2", newGameId));
         }
-
-        return Arrays.asList("", "");
     }
-
-
-    /* @MessageMapping("/setGameId")
-    public void setGameId(@Payload GameIdPayload payload) {
-        String gameId = payload.getGameId();
-        SimpMessageHeaderAccessor headerAccessor = SimpMessageHeaderAccessor.create(SimpMessageType.MESSAGE);
-        WebSocketSession session = (WebSocketSession) headerAccessor.getSessionAttributes().get("session");
-        session.getAttributes().put("gameId", gameId);
-    } */
 
 
     @MessageMapping("/game.answer")
