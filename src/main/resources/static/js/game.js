@@ -69,8 +69,7 @@ let problemImage = document.getElementById("problem_image");
 let player1Score = 0;
 let player2Score = 0;
 
-let player1Joined = false;
-let player2Joined = false;
+var status;
 
 let playerAnswer = "";
 
@@ -308,10 +307,7 @@ const messagesTypes = {
         else showWinner(message.winner);
     }, */
     "game.joined": (message) => {
-        if(player1Joined && player2Joined) {
-            /* if(numD1 === 0 && numD2 === 0) {
-                readyButton.style.visibility = "visible";
-            } */
+        if(status == "IN_PROGRESS") {
             startGame();
         }
         updateGame(message);
@@ -347,12 +343,11 @@ function connect() {
     console.log('Connecting to game');
 
     stompClient = Stomp.over(socketConnect);
-    stompClient.connect({"gameId" : gameId}, function (frame) {
+    stompClient.connect({}, function (frame) {
         console.log(frame);
-        stompClient.subscribe('/topic/game.state', function (message) {
+        stompClient.subscribe('/user/' + username + "/connect", function (message) {
             var messageObject = JSON.parse(message.body);
-            player1Joined = messageObject.player1Joined;
-            player2Joined = messageObject.player2Joined;
+            status = messageObject.status;
             handleMessage(messageObject);
             problems = messageObject.problemSet;
             numProblems = Object.keys(problems).length;
@@ -376,8 +371,6 @@ function connect() {
         console.log(frame);
         stompClient.subscribe('/topic/game.state', function (message) {
             var messageObject = JSON.parse(message.body);
-            player1Joined = messageObject.player1Joined;
-            player2Joined = messageObject.player2Joined;
             handleMessage(messageObject);
             problems = messageObject.problemSet;
             numProblems = Object.keys(problems).length;
@@ -396,7 +389,7 @@ function connectStatus() {
     const socketStatus = new WebSocket(base_uri + "/status", 'v10.stomp');
     stompClient = Stomp.over(socketStatus);
 
-    stompClient.connect({"gameId" : gameId}, function (frame) {
+    stompClient.connect({}, function (frame) {
         stompClient.subscribe('/user/' + username + "/status", function (message) {
             var statusMsg = JSON.parse(message.body);
             console.log(statusMsg);
@@ -542,7 +535,7 @@ var sendAnswer = function(event) {
 function checkAnswer() {
     const socket = new WebSocket(base_uri + '/game_answer', 'v10.stomp');
     stompClient = Stomp.over(socket);
-    stompClient.connect({"gameId": gameId}, function (frame) {
+    stompClient.connect({}, function (frame) {
         console.log("Connected: " + frame);
         stompClient.subscribe(`/topic/game.answer`, function (message) {
             var message = JSON.parse(message.body);
@@ -694,7 +687,7 @@ function returnHome() {
 function connectRematch() {
     const socketRematch = new WebSocket(base_uri + '/rematch', 'v10.stomp');
     stompClient = Stomp.over(socketRematch);
-    stompClient.connect({"gameId": gameId}, function (frame) {
+    stompClient.connect({}, function (frame) {
         console.log("Connected: " + frame);
         stompClient.subscribe('/user/' + username + '/rematch', function (message) {
             handleRematchStatus(message.body);
@@ -743,8 +736,6 @@ function messageToGame(message) {
         player2: message.player2,
         player1Score: message.score1,
         player2Score: message.score2,
-        player1Joined: message.player1Joined,
-        player2Joined: message.player2Joined,
         gameStatus: message.gameStatus,
         problemSet: message.problemSet,
         winner: message.winner

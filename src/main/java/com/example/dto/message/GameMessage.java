@@ -9,13 +9,10 @@ import com.example.model.User;
 public class GameMessage {
     private String type;
     private String gameId;
-    private User player1;
-    private User player2;
-    private User winner;
     private int score1;
     private int score2;
-    private boolean player1Joined;
-    private boolean player2Joined;
+    /* private boolean player1Joined;
+    private boolean player2Joined; */
     private GameStatus status;
     private String content;
     private List<Problem> problemSet;
@@ -24,17 +21,12 @@ public class GameMessage {
     public GameMessage() {
     }
 
-    public GameMessage(String type, String gameId, User player1, User player2, User winner, int score1, int score2,
-            boolean player1Joined, boolean player2Joined, GameStatus status, String content, List<Problem> problemSet) {
+    public GameMessage(String type, String gameId, int score1, int score2,
+         GameStatus status, String content, List<Problem> problemSet) {
         this.type = type;
         this.gameId = gameId;
-        this.player1 = player1;
-        this.player2 = player2;
-        this.winner = winner;
         this.score1 = score1;
         this.score2 = score2;
-        this.player1Joined = player1Joined;
-        this.player2Joined = player2Joined;
         this.status = status;
         this.content = content;
         this.problemSet = problemSet;
@@ -56,7 +48,7 @@ public class GameMessage {
         this.gameId = gameId;
     }
 
-    public User getPlayer1() {
+    /* public User getPlayer1() {
         return player1;
     }
 
@@ -78,7 +70,7 @@ public class GameMessage {
 
     public void setWinner(User winner) {
         this.winner = winner;
-    }
+    } */
 
     public int getScore1() {
         return score1;
@@ -120,7 +112,7 @@ public class GameMessage {
         this.problemSet = problemSet;
     }
 
-    public boolean isPlayer1Joined() {
+    /* public boolean isPlayer1Joined() {
         return this.player1Joined;
     }
 
@@ -134,5 +126,5 @@ public class GameMessage {
 
     public void setPlayer2Joined(boolean player2Joined) {
         this.player2Joined = player2Joined;
-    }
+    } */
 }

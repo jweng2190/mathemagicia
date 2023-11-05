@@ -67,48 +67,35 @@ public class MessageController {
 
 
     @MessageMapping("/game.join")
-    @SendTo("/topic/game.state")
-    public Object joinGame(@Payload JoinMessage message, SimpMessageHeaderAccessor headerAccessor) {
+    public void joinGame(@Payload JoinMessage message) {
         String playerUsername = message.getPlayerUsername();
         String gameId = message.getGameId();
-
-        if(headerAccessor.getSessionAttributes() != null) {
-            headerAccessor.getSessionAttributes().computeIfAbsent("gameId", key -> gameId);
-        }
 
         Game gameToJoin = gameDao.getGameByGameId(gameId);
         if (gameToJoin == null) {
             GameMessage errorMessage = new GameMessage();
             errorMessage.setType("error");
             errorMessage.setContent("Error: Unable to enter the game. The game is already full or an internal error has occurred.");
-            return errorMessage;
-        }
-        if(playerUsername.equals(gameToJoin.getPlayer1Username())) {
-            GameMessage gameMessage = gameToMessage(gameToJoin);
-            gameMessage.setType("game.joined");
-            return gameMessage;
+            sendToUsers(gameToJoin, "/connect", errorMessage);
         } else {
-            if (gameToJoin.getPlayer1Username() != null && gameToJoin.getPlayer2Username() == null) {
-                User player2 = userDao.getUserByUsername(playerUsername);
-                gameToJoin.setPlayer2Username(player2.getUsername());
+            if(playerUsername.equals(gameToJoin.getPlayer1Username())) {
+                gameToJoin.setPlayer1Joined(true);
+            } else {
+                gameToJoin.setPlayer2Username(playerUsername);
                 gameToJoin.setPlayer2Joined(true);
+            }
+
+            if(gameToJoin.isPlayer1Joined() && gameToJoin.isPlayer2Joined()) {
                 gameToJoin.setStatus(GameStatus.IN_PROGRESS);
-            }
-
-            if(!gameToJoin.isPlayer1Ready()) {
-                gameToJoin.setPlayer1Ready(false);
-            }
-
-            if(!gameToJoin.isPlayer2Ready()) {
-                gameToJoin.setPlayer2Ready(false);
             }
 
             gameDao.save(gameToJoin);
 
             GameMessage gameMessage = gameToMessage(gameToJoin);
             gameMessage.setType("game.joined");
-            return gameMessage;
-        }   
+            
+            sendToUsers(gameToJoin, "/connect", gameMessage);
+        }  
     }
 
     @MessageMapping("/game.status")
@@ -141,40 +128,6 @@ public class MessageController {
             disconnectMessage.setStatus("Connected");
             simpMessagingTemplate.convertAndSendToUser(username, "/status", disconnectMessage);
         }
-    }
-
-
-    @MessageMapping("/game.ready")
-    @SendTo("/topic/game.ready")
-    public Game queueGame(@Payload ReadyMessage readyMessage, SimpMessageHeaderAccessor headerAccessor) {
-        User readyUser = userDao.getUserByUsername(readyMessage.getPlayerUsername());
-        String gameId = readyMessage.getGameId();
-        Game currentGame = gameDao.getGameByGameId(gameId);
-
-        if(headerAccessor.getSessionAttributes() != null) {
-            headerAccessor.getSessionAttributes().computeIfAbsent("gameId", key -> gameId);
-        }
-        
-        if(currentGame.getPlayer1Username().equals(readyUser.getUsername())) {
-            currentGame.setPlayer1Ready(true);
-        }
-        if(currentGame.getPlayer2Username().equals(readyUser.getUsername())) {
-            currentGame.setPlayer2Ready(true);
-        }
-
-        if(currentGame.isPlayer1Ready() && !currentGame.isPlayer2Ready()) {
-            currentGame.setStatus(GameStatus.READY1);
-        }
-        if(currentGame.isPlayer2Ready() && !currentGame.isPlayer1Ready()) {
-            currentGame.setStatus(GameStatus.READY1);
-        }
-        if(currentGame.isPlayer1Ready() && currentGame.isPlayer2Ready()) {
-            currentGame.setStatus(GameStatus.READY2);
-        }
-
-        gameDao.save(currentGame);
-
-        return currentGame;
     }
 
 
@@ -429,6 +382,18 @@ public class MessageController {
 
         simpMessagingTemplate.convertAndSendToUser(username, "/bot", currentPlayerScore);
     }
+
+    private void sendToUsers(Game game, String dest, Object msg) {
+        String player1 = game.getPlayer1Username();
+        String player2 = game.getPlayer2Username();
+
+        if(player1 != null) {
+            simpMessagingTemplate.convertAndSendToUser(player1, dest, msg);
+        }
+        if(player2 != null) {
+            simpMessagingTemplate.convertAndSendToUser(player2, dest, msg);
+        }
+    }
     
 
     private GameMessage gameToMessage(Game game) {
@@ -436,8 +401,8 @@ public class MessageController {
         message.setGameId(game.getGameId());
         //message.setPlayer1(game.getPlayer1());
         //message.setPlayer2(game.getPlayer2());
-        message.setPlayer1Joined(game.isPlayer1Joined());
-        message.setPlayer2Joined(game.isPlayer2Joined());
+        //message.setPlayer1Joined(game.isPlayer1Joined());
+        //message.setPlayer2Joined(game.isPlayer2Joined());
         message.setGameStatus(game.getStatus());
         message.setProblemSet(game.getProblemSet());
         //message.setWinner(game.getWinnerUser());
