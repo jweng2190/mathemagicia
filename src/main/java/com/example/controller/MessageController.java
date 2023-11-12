@@ -99,13 +99,9 @@ public class MessageController {
     }
 
     @MessageMapping("/game.status")
-    public void handleGameStatus(@Payload ClientStatusMessage statusMessage, Principal principal, SimpMessageHeaderAccessor headerAccessor) {
+    public void handleGameStatus(@Payload ClientStatusMessage statusMessage, Principal principal) {
         String username = principal.getName();
         String gameId = statusMessage.getGameId();
-        if(headerAccessor.getSessionAttributes() != null) {
-            headerAccessor.getSessionAttributes().computeIfAbsent("gameId", key -> gameId);
-            headerAccessor.getSessionAttributes().computeIfAbsent("type", key -> "status");
-        }
 
         System.out.println("Received status from user " + principal.getName() + ": " + statusMessage.getGameId());
         Game game = gameDao.getGameByGameId(gameId);
@@ -202,14 +198,9 @@ public class MessageController {
 
 
     @MessageMapping("/game.answer")
-    @SendTo("/topic/game.answer")
-    public Object checkAnswer(@Payload AnswerMessage answerMessage, SimpMessageHeaderAccessor headerAccessor) {
+    public void checkAnswer(@Payload AnswerMessage answerMessage) {
         String activeGameId = answerMessage.getGameId();
         Game activeGame = gameDao.getGameByGameId(activeGameId);
-
-        if(headerAccessor.getSessionAttributes() != null) {
-            headerAccessor.getSessionAttributes().computeIfAbsent("gameId", key -> activeGameId);
-        }
 
         //get both usernames
         String player1Username = activeGame.getPlayer1Username();
@@ -253,7 +244,9 @@ public class MessageController {
         }
 
         GameMessage gameMessage = gameToMessage(activeGame);
-        return gameMessage;
+
+        simpMessagingTemplate.convertAndSendToUser(player1Username, "/answer", gameMessage);
+        simpMessagingTemplate.convertAndSendToUser(player2Username, "/answer", gameMessage);
     }
 
     private static String findFirstCorrectAnswer(int currentProblemId) {

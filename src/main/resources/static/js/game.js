@@ -71,8 +71,6 @@ let player2Score = 0;
 
 var status;
 
-let playerAnswer = "";
-
 /* let numD1 = 0;
 let numD2 = 0;
 getNumDisconnect(gameId).then((result) => {
@@ -346,7 +344,7 @@ function connect() {
     stompClient.connect({}, function (frame) {
         console.log(frame);
         stompClient.subscribe('/user/' + username + "/connect", function (message) {
-            var messageObject = JSON.parse(message.body);
+            let messageObject = JSON.parse(message.body);
             status = messageObject.status;
             handleMessage(messageObject);
             problems = messageObject.problemSet;
@@ -518,7 +516,7 @@ async function startGame() {
 
 var sendAnswer = function(event) {
     event.preventDefault();
-    var playerAnswer = playerInput.value;
+    let playerAnswer = playerInput.value;
     playerInput.value = "";
     if(stompClient !== null) {
         sendMessage({
@@ -537,13 +535,13 @@ function checkAnswer() {
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
         console.log("Connected: " + frame);
-        stompClient.subscribe(`/topic/game.answer`, function (message) {
-            var message = JSON.parse(message.body);
+        stompClient.subscribe('/user/' + username + '/answer', function (message) {
+            let msg = JSON.parse(message.body);
 
             var originalScore1 = player1Score;
             var originalScore2 = player2Score;
-            player1Score = message.score1;
-            player2Score = message.score2;
+            player1Score = msg.score1;
+            player2Score = msg.score2;
 
             player1ScoreField.innerHTML = player1Score;
             player2ScoreField.innerHTML = player2Score;
@@ -698,8 +696,8 @@ function connectRematch() {
 
 
 function handleGameStatus(message) {
-    messageObject = JSON.parse(message);
-    messageStatus = messageObject.status;
+    let messageObject = JSON.parse(message);
+    let messageStatus = messageObject.status;
     if(messageStatus === "READY2") {
         readyButton.innerHTML = "READY!";
         setTimeout(startGame(), 2000);
