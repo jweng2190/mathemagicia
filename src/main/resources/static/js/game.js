@@ -42,10 +42,9 @@ var gameUrl = window.location.href;
 var gameIdIndex = gameUrl.lastIndexOf("/") + 1;
 var gameId = gameUrl.substring(gameIdIndex);
 
-let playerType;
+const playerType = {};
 getPlayerType(gameId).then((result) => {
-    playerType = result;
-    console.log(playerType);
+    Object.assign(playerType, result);
 });
 
 let currentProblem;
@@ -305,7 +304,7 @@ const messagesTypes = {
         else showWinner(message.winner);
     }, */
     "game.joined": (message) => {
-        if(status == "IN_PROGRESS") {
+        if(status === "IN_PROGRESS") {
             startGame();
         }
         updateGame(message);
@@ -345,8 +344,9 @@ function connect() {
         console.log(frame);
         stompClient.subscribe('/user/' + username + "/connect", function (message) {
             let messageObject = JSON.parse(message.body);
-            status = messageObject.status;
-            handleMessage(messageObject);
+            status = messageObject.gameStatus;
+            //handleMessage(messageObject);
+
             problems = messageObject.problemSet;
             numProblems = Object.keys(problems).length;
             currentProblem = problems[0];
@@ -354,6 +354,10 @@ function connect() {
             console.log("Current Problem: " + objectToProblem(currentProblem));
             console.log("Current ProblemId: " + currentProblemId);
             console.log("Current ProblemIndex: " + currentProblemIndex);
+
+            if(status === "IN_PROGRESS") {
+                startGame();
+            }
         });
         
         joinGame();
@@ -427,7 +431,7 @@ async function getPlayerType(gameId) {
         const message = `An error has occured: ${response.status}`;
         throw new Error(message);
     }
-    const playerType = await response.text();
+    const playerType = await response.json();
     return playerType;
 }
 
@@ -548,12 +552,20 @@ function checkAnswer() {
 
             console.log("Player 1 Score: " + player1Score + "\nPlayer 2 Score: " + player2Score);
 
-            if ((player1Score - originalScore1 > 0) || (player2Score - originalScore2 > 0)) {
+            if(player1Score > originalScore1 && playerType === 1) {
+                nextProblem();
+            }
+
+            if(player2Score > originalScore2 && playerType == 2) {
+                nextProblem();
+            }
+
+            /* if ((player1Score - originalScore1 > 0) || (player2Score - originalScore2 > 0)) {
                 //add back later
                 //showScores();
                 //setTimeout 5 seconds
                 nextProblem();
-            }
+            } */
         });
         answerForm.style.visibility = "visible";
         problemNumberBox.innerHTML = "Problem " + (currentProblemIndex + 1);

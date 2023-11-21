@@ -98,8 +98,11 @@ public class Game {
     @Column(name="player2_disconnect")
     private boolean player2Disconnect;
 
-    @Column(name="current_prob_index")
-    private int currentProbIndex;
+    @Column(name="index1")
+    private int index1;
+
+    @Column(name="index2")
+    private int index2;
 
     @Transient
     private LocalTime timeRemaining;
@@ -295,12 +298,20 @@ public class Game {
         this.player2Disconnect = player2Disconnect;
     }
 
-    public int getCurrentProbIndex() {
-        return this.currentProbIndex;
+    public int getIndex1() {
+        return this.index1;
     }
 
-    public void setCurrentProbIndex(int currentProbIndex) {
-        this.currentProbIndex = currentProbIndex;
+    public void setIndex1(int index1) {
+        this.index1 = index1;
+    }
+
+    public int getIndex2() {
+        return this.index2;
+    }
+
+    public void setIndex2(int index2) {
+        this.index2 = index2;
     }
 
     public LocalTime getTimeRemaining() {

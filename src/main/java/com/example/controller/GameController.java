@@ -252,20 +252,20 @@ public class GameController {
     }
 
     @GetMapping("/type/{id}")
-    public ResponseEntity<String> getPlayerType(@PathVariable("id") String gameId, Principal principal) {
+    public ResponseEntity<Integer> getPlayerType(@PathVariable("id") String gameId, Principal principal) {
         Game game = gameDao.getGameByGameId(gameId);
         String username = principal.getName();
         if(game.getPlayer1Username().equals(username)) {
-            return ResponseEntity.ok().body("Player 1");
+            return ResponseEntity.ok().body(1);
         } else if(game.getPlayer2Username() == null) {
             if(game.getStatus() == GameStatus.NEW) {
-                return ResponseEntity.ok().body("Player 2");
+                return ResponseEntity.ok().body(2);
             } else {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
             }
         } else if(game.getPlayer2Username() != null) {
             if(game.getPlayer2Username().equals(username)) {
-                return ResponseEntity.ok().body("Player 2");
+                return ResponseEntity.ok().body(2);
             } else {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }

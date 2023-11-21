@@ -215,30 +215,30 @@ public class MessageController {
         String userAnswerTrimmed = userAnswer.trim();
 
         if(userAnswerTrimmed.equals(correctAnswer)) {
-            long timestamp = answerMessage.getTimestamp();
+            /* long timestamp = answerMessage.getTimestamp();
             List<String> answerInfo = new ArrayList<String>();
             answerInfo.add(0, playerUsername);
             answerInfo.add(1, String.valueOf(currentProblemId));
             answerTimestamps.put(answerInfo, timestamp);
 
-            String firstCorrectAnswer = findFirstCorrectAnswer(currentProblemId);
+            String firstCorrectAnswer = findFirstCorrectAnswer(currentProblemId); */
             int problemDifficulty = problemDao.findDifficultyByProblemId(currentProblemId);
 
-            if(firstCorrectAnswer.equals(player1Username)) {
+            if(playerUsername.equals(player1Username)) {
                 int currentPlayerScore = activeGame.getPlayer1Score();
                 activeGame.setPlayer1Score(currentPlayerScore + 1);
                 int currentPlayerXp = activeGame.getPlayer1Xp();
                 int xpToAdd = difficultyLevelService.getXpForDifficultyLevel(problemDifficulty);
                 activeGame.setPlayer1Xp(currentPlayerXp + xpToAdd);
-            } else if(firstCorrectAnswer.equals(player2Username)) {
+                activeGame.setIndex1(activeGame.getIndex1() + 1);
+            } else if(playerUsername.equals(player2Username)) {
                 int currentPlayerScore = activeGame.getPlayer2Score();
                 activeGame.setPlayer2Score(currentPlayerScore + 1);
                 int currentPlayerXp = activeGame.getPlayer2Xp();
                 int xpToAdd = difficultyLevelService.getXpForDifficultyLevel(problemDifficulty);;
                 activeGame.setPlayer2Xp(currentPlayerXp + xpToAdd);
+                activeGame.setIndex2(activeGame.getIndex2() + 1);
             }
-            //clearTimestamps();
-            activeGame.setCurrentProbIndex(activeGame.getCurrentProbIndex() + 1);
 
             gameDao.save(activeGame);
         }
@@ -249,6 +249,7 @@ public class MessageController {
         simpMessagingTemplate.convertAndSendToUser(player2Username, "/answer", gameMessage);
     }
 
+    //unused
     private static String findFirstCorrectAnswer(int currentProblemId) {
         Set<List<String>> keySet = answerTimestamps.keySet();
         long minTime = System.currentTimeMillis();
