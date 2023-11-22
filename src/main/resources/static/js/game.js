@@ -7,7 +7,6 @@
 
 /* const countdownElement = document.getElementById('countdown_text');
 const countdownContainer = document.getElementsByClassName('countdown-container')[0]; */
-import { parseUserInputToLatex } from "./test_latex.js";
 import { evaluateMathExpression } from "./test_latex.js";
 import { animateXp } from "./game_xp.js";
 
@@ -42,9 +41,9 @@ var gameUrl = window.location.href;
 var gameIdIndex = gameUrl.lastIndexOf("/") + 1;
 var gameId = gameUrl.substring(gameIdIndex);
 
-const playerType = {};
+let playerType;
 getPlayerType(gameId).then((result) => {
-    Object.assign(playerType, result);
+    playerType = result;
 });
 
 let currentProblem;
@@ -153,19 +152,25 @@ function handleScientific() {
     console.log(inputMode);
 }
 
+
 function convertToLatex() {
-    //const userInput = document.getElementById('user-input')
     const userInputValue = playerInput.value;
     const result = evaluateMathExpression(userInputValue);
-    const latexCode = parseUserInputToLatex(userInputValue);
-    console.log(latexCode);
     if(result === 'Error') {
         document.getElementById('latex-output').innerText = result;
     } else {
+        const latexCode = parseToLatex(userInputValue);
+        console.log(latexCode);
         const formattedLatex = `\\(` + latexCode + `\\)`
         document.getElementById('latex-output').innerText = formattedLatex;
         MathJax.Hub.Queue(['Typeset', MathJax.Hub, 'latex-output']);
     }
+}
+
+function parseToLatex(input) {
+    const nodeInput = math.parse(input);
+    const latexCode = nodeInput.toTex();
+    return latexCode;
 }
 
 function startCDTimer() {
