@@ -39,10 +39,10 @@ public class XpController {
         Game game = gameDao.getGameByGameId(gameId);
         String username;
         int xpAdd = 0;
-        if(playerType.equals("Player 1")) {
+        if(playerType.equals("1")) {
             username = game.getPlayer1Username();
             xpAdd = game.getPlayer1Xp();
-        } else if(playerType.equals("Player 2")) {
+        } else if(playerType.equals("2")) {
             username = game.getPlayer2Username();
             xpAdd = game.getPlayer2Xp();
         } else {

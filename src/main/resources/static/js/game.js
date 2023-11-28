@@ -130,7 +130,7 @@ endClose.addEventListener("click", () => {
 
 rematchButton.addEventListener("click", rematch);
 
-let inputMode = 'regular';
+/* let inputMode = 'regular';
 
 let regularButton = document.getElementById("regular_mode");
 let scientificButton = document.getElementById("sci_mode");
@@ -151,7 +151,7 @@ function handleScientific() {
     scientificButton.style.backgroundColor = "";
     console.log(inputMode);
 }
-
+ */
 
 function convertToLatex() {
     const userInputValue = playerInput.value;
@@ -173,25 +173,35 @@ function parseToLatex(input) {
     return latexCode;
 }
 
-function startCDTimer() {
-    countdownContainer.style.zIndex = '3';
-    countdownContainer.style.visibility = 'visible';
-    countdownElement.style.zIndex = '2';
-    countdownElement.style.visibility = 'visible';
-    setTimeout(fadeInAndOut, 1000);
+async function startCDTimer() {
+    return new Promise(resolve => {
+        countdownContainer.style.zIndex = '3';
+        countdownContainer.style.visibility = 'visible';
+        countdownElement.style.zIndex = '2';
+        countdownElement.style.visibility = 'visible';
+        fadeInAndOut().then(() => {
+            resolve("Countdown complete");
+        });
+    });
 }
 
-function fadeInAndOut() {
-    countdownElement.style.opacity = '1';
-    countdownElement.innerHTML = texts[index];
-    countdownElement.style.color = colors[index];
-    setTimeout(() => {
-        countdownElement.style.opacity = '0';
-        index++;
-        if (index < texts.length) {
-            setTimeout(fadeInAndOut, 500);
-        }
-    }, 500);
+async function fadeInAndOut() {
+    return new Promise(resolve => {
+        countdownElement.style.opacity = '1';
+        countdownElement.innerHTML = texts[index];
+        countdownElement.style.color = colors[index];
+        setTimeout(() => {
+            countdownElement.style.opacity = '0';
+            index++;
+            if (index < texts.length) {
+                setTimeout(() => {
+                    fadeInAndOut().then(resolve);
+                }, 500);
+            } else {
+                resolve();
+            }
+        }, 500);
+    });
 }
 
 function fadeOutBg() {
@@ -503,15 +513,11 @@ async function startGame() {
     countdownContainer = result[0];
     countdownElement = result[1];
 
-    setTimeout(fadeOutBg, 6000);
-    startCDTimer();
-    setTimeout(() => {
-        //content.style.opacity = '1';
+    startCDTimer().then(() => {
         startGameTimer();
-        console.log("Game started!");
-        //readyButton.style.visibility = "hidden";
         checkAnswer();
-    }, 6500);   
+        fadeOutBg();
+    });
 }
 
 /* function checkDisconnect() {
@@ -546,23 +552,27 @@ function checkAnswer() {
         console.log("Connected: " + frame);
         stompClient.subscribe('/user/' + username + '/answer', function (message) {
             let msg = JSON.parse(message.body);
-
-            var originalScore1 = player1Score;
-            var originalScore2 = player2Score;
+    
+            let originalScore1 = player1Score;
+            let originalScore2 = player2Score;
             player1Score = msg.score1;
             player2Score = msg.score2;
 
             player1ScoreField.innerHTML = player1Score;
             player2ScoreField.innerHTML = player2Score;
 
-            console.log("Player 1 Score: " + player1Score + "\nPlayer 2 Score: " + player2Score);
+            if(msg.winner !== null) {
+                endGame();
+            } else {
+                console.log("Player 1 Score: " + player1Score + "\nPlayer 2 Score: " + player2Score);
 
-            if(player1Score > originalScore1 && playerType === 1) {
-                nextProblem();
-            }
+                if(player1Score > originalScore1 && playerType === 1) {
+                    nextProblem();
+                }
 
-            if(player2Score > originalScore2 && playerType == 2) {
-                nextProblem();
+                if(player2Score > originalScore2 && playerType == 2) {
+                    nextProblem();
+                }
             }
 
             /* if ((player1Score - originalScore1 > 0) || (player2Score - originalScore2 > 0)) {
@@ -594,11 +604,6 @@ function nextProblem() {
         console.log("Current Problem: " + objectToProblem(currentProblem));
         console.log("Current ProblemId: " + currentProblemId);
         console.log("Current ProblemIndex: " + currentProblemIndex);
-    } else if(currentProblemIndex + 1 == numProblems) {
-        //end game
-        //alert("Game Ended!");
-        //display score
-        endGame();
     }
 }
 

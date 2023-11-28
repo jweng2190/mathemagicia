@@ -34,6 +34,7 @@ import com.example.model.GameStatus;
 import com.example.model.User;
 import com.example.service.DifficultyLevelService;
 import com.example.service.GameService;
+import com.example.service.ProblemService;
 import com.example.service.XpLevelService;
 
 @Controller
@@ -243,6 +244,13 @@ public class MessageController {
             gameDao.save(activeGame);
         }
 
+        //check if either player answered all problems
+        if(activeGame.getIndex1() == ProblemService.PROBLEM_SET_SIZE) {
+            activeGame.setWinner(player1Username);
+        } else if(activeGame.getIndex2() == ProblemService.PROBLEM_SET_SIZE) {
+            activeGame.setWinner(player2Username);
+        }
+
         GameMessage gameMessage = gameToMessage(activeGame);
 
         simpMessagingTemplate.convertAndSendToUser(player1Username, "/answer", gameMessage);
@@ -399,7 +407,7 @@ public class MessageController {
         //message.setPlayer2Joined(game.isPlayer2Joined());
         message.setGameStatus(game.getStatus());
         message.setProblemSet(game.getProblemSet());
-        //message.setWinner(game.getWinnerUser());
+        message.setWinner(game.getWinner());
         message.setScore1(game.getPlayer1Score());
         message.setScore2(game.getPlayer2Score());
         return message;

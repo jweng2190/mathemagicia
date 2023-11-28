@@ -11,6 +11,8 @@ public class GameMessage {
     private String gameId;
     private int score1;
     private int score2;
+    private String winner;
+
     /* private boolean player1Joined;
     private boolean player2Joined; */
     private GameStatus status;
@@ -46,6 +48,14 @@ public class GameMessage {
 
     public void setGameId(String gameId) {
         this.gameId = gameId;
+    }
+
+    public String getWinner() {
+        return this.winner;
+    }
+
+    public void setWinner(String winner) {
+        this.winner = winner;
     }
 
     /* public User getPlayer1() {
