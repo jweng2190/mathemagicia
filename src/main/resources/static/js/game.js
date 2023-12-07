@@ -53,6 +53,7 @@ let numProblems;
 var problems;
 
 let answerForm = document.getElementById("answer_form");
+let answerSubmit = document.getElementById("answer_submit");
 
 let readyButton = document.getElementById("ready");
 //get answer from form
@@ -68,6 +69,7 @@ let player1Score = 0;
 let player2Score = 0;
 
 var status;
+let gameWinner = null;
 
 /* let numD1 = 0;
 let numD2 = 0;
@@ -562,6 +564,7 @@ function checkAnswer() {
             player2ScoreField.innerHTML = player2Score;
 
             if(msg.winner !== null) {
+                gameWinner = msg.winner;
                 endGame();
             } else {
                 console.log("Player 1 Score: " + player1Score + "\nPlayer 2 Score: " + player2Score);
@@ -586,6 +589,7 @@ function checkAnswer() {
         problemNumberBox.innerHTML = "Problem " + (currentProblemIndex + 1);
         problemImage.src = currentProblem.image;
         answerForm.addEventListener("submit", sendAnswer);
+        answerSubmit.addEventListener("click", sendAnswer);
     });
 }
 
@@ -659,6 +663,14 @@ async function showFinalScores() {
     const finalScore1 = document.getElementById("final_score1");
     const finalScore2 = document.getElementById("final_score2");
 
+    if(username === gameWinner) {
+        document.getElementById("game-result").innerHTML = "You Won!";
+        document.getElementById("go-header").style.backgroundColor = "rgb(255, 172, 28)";
+    } else {
+        document.getElementById("game-result").innerHTML = "Game Over!";
+        document.getElementById("go-header").style.backgroundColor = "rgb(165, 157, 144)";
+    }
+
     finalScore1.innerHTML = player1Score;
     finalScore2.innerHTML = player2Score;
 
@@ -669,6 +681,7 @@ async function showFinalScores() {
 function endGame() {
     disableAnswer();
     stopTimer();
+    gameContent.style.zIndex = 3;
     let gameEndData = {
         gameId: gameId,
         playerUsername: username

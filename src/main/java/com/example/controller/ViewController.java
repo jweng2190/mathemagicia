@@ -117,9 +117,9 @@ public class ViewController {
         return "test_cd";
     }
 
-    @GetMapping("/test_sb")
-    public String testSb() {
-        return "test_sb";
+    @GetMapping("/test")
+    public String test() {
+        return "test";
     }
 
     @RolesAllowed({"USER"})
