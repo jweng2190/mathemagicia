@@ -1,9 +1,9 @@
 package com.example.dto.message;
 
 public class RematchMessage {
-    private String type;
     private String gameId;
     private String playerUsername;
+    private String type;
     private boolean accepted;
     private long currentTime;
 
