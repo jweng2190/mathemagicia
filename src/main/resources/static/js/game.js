@@ -131,6 +131,7 @@ endClose.addEventListener("click", () => {
 });
 
 rematchButton.addEventListener("click", rematch);
+var rematchState = false;
 
 /* let inputMode = 'regular';
 
@@ -698,24 +699,18 @@ function endGame() {
     });
 }
 
-function sendRematch(rematchStatus) {
+function sendRematch() {
     sendMessage({
         type: "game.rematch",
         gameId: gameId,
         playerUsername: username,
-        accepted: rematchStatus,
-        currentTime: Date.now()
     });
 }
 
 function rematch() {
-    sendRematch(true);
+    sendRematch();
 }
 
-
-function returnHome() {
-    sendRematch(false);   
-}
 
 function connectRematch() {
     const socketRematch = new WebSocket(base_uri + '/rematch', 'v10.stomp');
@@ -744,16 +739,36 @@ function handleGameStatus(message) {
 function handleRematchStatus(message) {
     let parsedMessage = JSON.parse(message);
     let rematchStatus = parsedMessage[0];
-    let newGameId = parsedMessage[1];
 
-    if(rematchStatus === "REMATCH2") {
+    switch(rematchStatus) {
+        case "accept":
+            let newGameId = parsedMessage[1];
+            console.log("Accepted: new game created.");
+            break;
+        case "invite":
+            let otherPlayer = parsedMessage[1];
+            console.log(otherPlayer + "requested a rematch.");
+            break;
+        case "reject":
+            //notify that opponent declined
+            console.log("Opponent declined rematch.");
+            break;
+        case "cancel":
+            console.log("Hide the request window");
+            break;
+        default:
+            let errorMsg = parsedMessage[1];
+            console.log(errorMsg);
+    }
+
+    /* if(rematchStatus === "REMATCH2") {
         console.log("REMATCH SUCCESS");
         window.location.href = "/game/" + newGameId;
     } else if(rematchStatus === "REMATCH1") {
         console.log("WAITING FOR REMATCH");
     } else {
         console.log("NO REMATCH");
-    }
+    } */
 }
 
 

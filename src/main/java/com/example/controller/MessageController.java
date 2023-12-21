@@ -137,30 +137,50 @@ public class MessageController {
         String player2 = activeGame.getPlayer2Username();
 
         String type = rematchMessage.getType();
-        if(type.equals("invite")) {
-            if(sentPlayer.equals(player1)) {
-                simpMessagingTemplate.convertAndSendToUser(player2, "/rematch", Arrays.asList("invite", sentPlayer));
-            } else {
-                simpMessagingTemplate.convertAndSendToUser(player1, "/rematch", Arrays.asList("invite", sentPlayer));
-            }
-        } else if(type.equals("accept")) {
-            //create new game
-            activeGame.setStatus(GameStatus.FINISHED);
-            gameDao.save(activeGame);
-            String playerCreate;
-            if(sentPlayer.equals(player1)) {
-                playerCreate = player2;
-            } else {
-                playerCreate = player1;
-            }
 
-            Game rematchGame = gameService.createGame(playerCreate,
-            activeGame.getGameDifficulty(), activeGame.getTimeLimit());
-        
-            String newGameId = rematchGame.getGameId();
-            simpMessagingTemplate.convertAndSendToUser(player1, "/rematch", Arrays.asList("accept", newGameId));
-            simpMessagingTemplate.convertAndSendToUser(player2, "/rematch", Arrays.asList("accept", newGameId));
-        }
+        switch(type) {
+            case "invite":
+                if(sentPlayer.equals(player1)) {
+                    simpMessagingTemplate.convertAndSendToUser(player2, "/rematch", Arrays.asList("invite", sentPlayer));
+                } else {
+                    simpMessagingTemplate.convertAndSendToUser(player1, "/rematch", Arrays.asList("invite", sentPlayer));
+                }
+                break;
+            case "accept":
+                //create new game
+                activeGame.setStatus(GameStatus.FINISHED);
+                gameDao.save(activeGame);
+                String playerCreate;
+                if(sentPlayer.equals(player1)) {
+                    playerCreate = player2;
+                } else {
+                    playerCreate = player1;
+                }
+
+                Game rematchGame = gameService.createGame(playerCreate,
+                activeGame.getGameDifficulty(), activeGame.getTimeLimit());
+            
+                String newGameId = rematchGame.getGameId();
+                simpMessagingTemplate.convertAndSendToUser(player1, "/rematch", Arrays.asList("accept", newGameId));
+                simpMessagingTemplate.convertAndSendToUser(player2, "/rematch", Arrays.asList("accept", newGameId));
+                break;
+            case "reject":
+                if(sentPlayer.equals(player1)) {
+                    simpMessagingTemplate.convertAndSendToUser(player2, "/rematch", Arrays.asList("reject", sentPlayer));
+                } else {
+                    simpMessagingTemplate.convertAndSendToUser(player1, "/rematch", Arrays.asList("reject", sentPlayer));
+                }
+            case "cancel":
+                if(sentPlayer.equals(player1)) {
+                    simpMessagingTemplate.convertAndSendToUser(player2, "/rematch", Arrays.asList("cancel", sentPlayer));
+                } else {
+                    simpMessagingTemplate.convertAndSendToUser(player1, "/rematch", Arrays.asList("cancel", sentPlayer));
+                }
+            default:
+                String errorMsg = "Invalid rematch request. Please try again later.";
+                simpMessagingTemplate.convertAndSendToUser(player1, "/rematch", Arrays.asList("error", errorMsg));
+                simpMessagingTemplate.convertAndSendToUser(player1, "/rematch", Arrays.asList("error", errorMsg));
+        } 
     }
 
 

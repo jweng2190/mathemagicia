@@ -4,16 +4,14 @@ public class RematchMessage {
     private String gameId;
     private String playerUsername;
     private String type;
-    private boolean accepted;
-    private long currentTime;
+    /* private boolean accepted;
+    private long currentTime; */
 
 
-    public RematchMessage(String type, String gameId, String playerUsername, boolean isAccepted, long currentTime) {
+    public RematchMessage(String type, String gameId, String playerUsername) {
         this.type = type;
         this.gameId = gameId;
         this.playerUsername = playerUsername;
-        this.accepted = isAccepted;
-        this.currentTime = currentTime;
     }
 
     public String getType() {
@@ -40,7 +38,7 @@ public class RematchMessage {
         this.playerUsername = playerUsername;
     }
 
-    public boolean isAccepted() {
+    /* public boolean isAccepted() {
         return this.accepted;
     }
 
@@ -54,5 +52,5 @@ public class RematchMessage {
 
     public void setCurrentTime(long currentTime) {
         this.currentTime = currentTime;
-    }
+    } */
 }
