@@ -3,23 +3,23 @@ package com.example.dto.message;
 public class RematchMessage {
     private String gameId;
     private String playerUsername;
-    private String type;
+    private String rematchType;
     /* private boolean accepted;
     private long currentTime; */
 
 
     public RematchMessage(String type, String gameId, String playerUsername) {
-        this.type = type;
+        this.rematchType = type;
         this.gameId = gameId;
         this.playerUsername = playerUsername;
     }
 
-    public String getType() {
-        return this.type;
+    public String getRematchType() {
+        return this.rematchType;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setRematchType(String type) {
+        this.rematchType = type;
     }
 
     public String getGameId() {

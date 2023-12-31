@@ -18,7 +18,7 @@ import lombok.AllArgsConstructor;
 public class ProblemService {
     @Autowired
     private ProblemRepository problemDao;
-    public static final int PROBLEM_SET_SIZE = 3;
+    public static final int PROBLEM_SET_SIZE = 1;
 
     public List<Problem> getRandomProblems(Integer numProblems, Game game) {
         String difficulty = game.getGameDifficulty();

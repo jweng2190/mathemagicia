@@ -136,7 +136,7 @@ public class MessageController {
         String player1 = activeGame.getPlayer1Username();
         String player2 = activeGame.getPlayer2Username();
 
-        String type = rematchMessage.getType();
+        String type = rematchMessage.getRematchType();
 
         switch(type) {
             case "invite":

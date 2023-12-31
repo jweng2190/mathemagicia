@@ -99,6 +99,9 @@ const rematchButton = document.getElementById('rematch');
 
 const modalAnswer = document.getElementById('modal-answer');
 const modalEnd = document.getElementById('modal-end');
+
+var modalA = new bootstrap.Modal(modalAnswer, {backdrop: 'static', keyboard: false});
+var modalE = new bootstrap.Modal(modalEnd, {backdrop: 'static', keyboard: false});
 //buttons for modal
 const endClose = document.getElementById("end-close");
 const amClose = document.getElementById("am-close");
@@ -116,22 +119,40 @@ playerInput.addEventListener('input', () => {
 });
 
 modalLink.addEventListener("click", () => {
-    let modalA = new bootstrap.Modal(modalAnswer);
     modalA.show();
 });
 
 amClose.addEventListener("click", () => {
-    let modalA = new bootstrap.Modal(modalAnswer);
     modalA.hide();
 });
 
 endClose.addEventListener("click", () => {
-    let modalE = new bootstrap.Modal(modalEnd);
     modalE.hide();
 });
 
-rematchButton.addEventListener("click", rematch);
+
 var rematchState = false;
+rematchButton.addEventListener("click", function(event) {
+    event.preventDefault();
+    processRematch();
+});
+
+const rematchSpan = document.getElementById("rematch_status");
+const rematchInc = document.getElementById("rematch_inc");
+const incomingReq = document.getElementById("incoming_req");
+const outgoingReq = document.getElementById("outgoing_req");
+const accRem = document.getElementById("accept_rematch");
+const rejRem = document.getElementById("reject_rematch");
+
+accRem.addEventListener("click", function(event) {
+    event.preventDefault();
+    acceptRematch();
+});
+
+rejRem.addEventListener("click", function(event) {
+    event.preventDefault()
+    rejectRematch();
+});
 
 /* let inputMode = 'regular';
 
@@ -658,8 +679,7 @@ function playScoreAnimation(player) {
 
 
 async function showFinalScores() {
-    let modal = new bootstrap.Modal(modalEnd);
-    modal.show();
+    modalE.show();
 
     const finalScore1 = document.getElementById("final_score1");
     const finalScore2 = document.getElementById("final_score2");
@@ -699,16 +719,51 @@ function endGame() {
     });
 }
 
-function sendRematch() {
+function sendRematch(rematchT) {
     sendMessage({
         type: "game.rematch",
         gameId: gameId,
         playerUsername: username,
+        rematchType: rematchT
     });
 }
 
-function rematch() {
-    sendRematch();
+function processRematch() {
+    if(rematchState) {
+        cancelRematch();
+    } else {
+        inviteRematch();
+    }
+}
+
+function inviteRematch() {
+    sendRematch("invite");
+    rematchState = true;
+
+    showCancel();
+
+    rematchSpan.style.display = "";
+    rematchSpan.textContent = "Status: Pending...";
+}
+
+function cancelRematch() {
+    sendRematch("cancel");
+    rematchState = false;
+
+    showRematch();
+
+    rematchSpan.style.display = "none";
+    rematchSpan.textContent = "";
+}
+
+function acceptRematch() {
+    sendRematch("accept");
+    incomingReq.style.display = "none";
+}
+
+function rejectRematch() {
+    sendRematch("reject");
+    incomingReq.style.display = "none";
 }
 
 
@@ -744,31 +799,46 @@ function handleRematchStatus(message) {
         case "accept":
             let newGameId = parsedMessage[1];
             console.log("Accepted: new game created.");
+            //window.location.href = "/game/" + newGameId;
             break;
         case "invite":
             let otherPlayer = parsedMessage[1];
-            console.log(otherPlayer + "requested a rematch.");
+            rematchInc.innerHTML = otherPlayer + " requested a rematch.";
+            incomingReq.style.display = "";
+            //console.log(otherPlayer + "requested a rematch.");
             break;
         case "reject":
+            rematchSpan.textContent = "Rematch declined";
+            rematchState = false;
+            showRematch();
+
             //notify that opponent declined
-            console.log("Opponent declined rematch.");
+            //console.log("Opponent declined rematch.");
             break;
         case "cancel":
-            console.log("Hide the request window");
+            incomingReq.style.display = "none";
+            //console.log("Hide the request window");
             break;
         default:
             let errorMsg = parsedMessage[1];
             console.log(errorMsg);
     }
+}
 
-    /* if(rematchStatus === "REMATCH2") {
-        console.log("REMATCH SUCCESS");
-        window.location.href = "/game/" + newGameId;
-    } else if(rematchStatus === "REMATCH1") {
-        console.log("WAITING FOR REMATCH");
-    } else {
-        console.log("NO REMATCH");
-    } */
+function showCancel() {
+    rematchButton.textContent = "Cancel";
+    rematchButton.style.backgroundColor = "gray";
+    rematchButton.classList.remove("btn-primary");
+    rematchButton.classList.add("btn-secondary");
+}
+
+function showRematch() {
+    rematchButton.textContent = "Rematch";
+    rematchButton.style.backgroundColor = "";
+    if(rematchButton.classList.contains("btn-secondary")) {
+        rematchButton.classList.remove("btn-secondary");
+        rematchButton.classList.add("btn-primary");
+    }
 }
 
 
