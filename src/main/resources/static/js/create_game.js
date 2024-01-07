@@ -1,3 +1,5 @@
+import { getSideBar } from "./sidebar.js";
+
 let easyDif = document.getElementById("easy");
 let mediumDif = document.getElementById("medium");
 let hardDif = document.getElementById("hard");
@@ -10,6 +12,8 @@ const formCreate = document.getElementById("cg_form");
 const inputDiff = document.getElementById("difficulty");
 const inputTime = document.getElementById("time");
 const createUrl = '/game/create';
+
+getSideBar("regular");
 
 easyDif.addEventListener('click', function() {
     handleDifficulty("easy");

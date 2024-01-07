@@ -4,11 +4,17 @@ const templNoGames = document.getElementById("no_games");
 const mainDiv = document.querySelector('div');
 const pageDisp = document.getElementById("currentPage")
 
+import { getSideBar } from "./sidebar.js";
+import { getTopBar } from "./topbar.js";
+
 // Constants for pagination
 const itemsPerPage = 10;
 var totalPages;
 let currentPage = 1;
 let gameJSON;
+
+getSideBar("regular");
+getTopBar();
 
 getGames().then((data) => {
     gameList = data;
@@ -169,7 +175,7 @@ function styleResultCell(game, cell) {
 
 function styleReviewCell(gameId, cell) {
     var linkReview = document.createElement("a");
-    linkReview.innerHTML = "Details";
+    linkReview.innerHTML = "Solutions";
     linkReview.href = "/review/" + gameId;
     //nothing right now
 

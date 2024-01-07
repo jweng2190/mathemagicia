@@ -96,6 +96,7 @@ const gameContent = document.getElementsByClassName('game-page')[0];
 let modalLink = document.getElementById("modal_link");
 
 const rematchButton = document.getElementById('rematch');
+const retHome = document.getElementById("return_home");
 
 const modalAnswer = document.getElementById('modal-answer');
 const modalEnd = document.getElementById('modal-end');
@@ -128,6 +129,10 @@ amClose.addEventListener("click", () => {
 
 endClose.addEventListener("click", () => {
     modalE.hide();
+});
+
+retHome.addEventListener("click", () => {
+    window.location.href = "/home";
 });
 
 
@@ -799,7 +804,7 @@ function handleRematchStatus(message) {
         case "accept":
             let newGameId = parsedMessage[1];
             console.log("Accepted: new game created.");
-            //window.location.href = "/game/" + newGameId;
+            window.location.href = "/game/" + newGameId;
             break;
         case "invite":
             let otherPlayer = parsedMessage[1];

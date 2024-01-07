@@ -1,3 +1,9 @@
+import { getSideBar } from "./sidebar.js";
+import { getTopBar } from "./topbar.js";
+
+getSideBar("regular");
+getTopBar();
+
 let easyDif = document.getElementById("easy");
 let mediumDif = document.getElementById("medium");
 let hardDif = document.getElementById("hard");

@@ -1,0 +1,107 @@
+<template>
+    <nav class="navbar navbar-expand bg-white shadow mb-4 topbar static-top navbar-light" id="top_bar_mm" style="width: 94%;margin-left: 78px;">
+        <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle me-3" id="sidebarToggleTop" type="button"><i class="fas fa-bars"></i></button>
+            <div style="display: flex;width: 300px;">
+                <div style="justify-content: center;align-items: center;display: flex;z-index: 2;">
+                    <span id="user_level" style="text-align: center;z-index: 1;margin-bottom: 10px;font-weight: 700;color: #FFF;position: absolute;"></span>
+                    <img style="z-index: 0;width: 50px;height: auto;" src="/img/shield.png">
+                </div>
+                <div id="user_xp" style="height: 28px;position: absolute;left: 45px;top: 21px;background: linear-gradient(90deg, #00b2ff, #00f863);z-index: 1;"></div>
+                <div id="total_xp" style="height: 28px;background-color: #d7d7d7;width: 200px;position: absolute;left: 45px;top: 21px;z-index: 0;"></div>
+                <div style="height: 28px;position: absolute;top: 21px;z-index: 2;margin-left: 60px;left: 70px;">
+                    <span id="xp_points" style="text-align: end;font-weight: 700;color: white;text-shadow: 0 0 2px #000;"></span>
+                </div>
+            </div>
+            <ul class="navbar-nav flex-nowrap ms-auto">
+                <li class="nav-item dropdown d-sm-none no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false" data-bs-toggle="dropdown" href="#"><i class="fas fa-search"></i></a>
+                    <div class="dropdown-menu dropdown-menu-end p-3 animated--grow-in" aria-labelledby="searchDropdown">
+                        <form class="me-auto navbar-search w-100">
+                            <div class="input-group"><input class="bg-light form-control border-0 small" type="text" placeholder="Search for ...">
+                                <div class="input-group-append"><button class="btn btn-primary py-0" type="button"><i class="fas fa-search"></i></button></div>
+                            </div>
+                        </form>
+                    </div>
+                </li>
+                <!-- <li class="nav-item d-flex dropdown no-arrow mx-1" id="notifications">
+                    <div class="nav-item dropdown d-flex flex-row no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false" data-bs-toggle="dropdown" href="#" style="justify-content: center;align-items: center;display: flex;height: 55px;"><span class="badge bg-danger badge-counter">2</span><i class="fas fa-bell fa-fw"></i></a>
+                        <div class="dropdown-menu dropdown-menu-end dropdown-list animated--grow-in">
+                            <h6 class="dropdown-header">alerts center</h6><a class="dropdown-item d-flex align-items-center" href="#">
+                                <div class="me-3">
+                                    <div class="bg-primary icon-circle"><i class="fas fa-file-alt text-white"></i></div>
+                                </div>
+                                <div><span class="small text-gray-500">December 12, 2019</span>
+                                    <p>A new monthly report is ready to download!</p>
+                                </div>
+                            </a><a class="dropdown-item d-flex align-items-center" href="#">
+                                <div class="me-3">
+                                    <div class="bg-success icon-circle"><i class="fas fa-donate text-white"></i></div>
+                                </div>
+                                <div><span class="small text-gray-500">December 7, 2019</span>
+                                    <p>$290.29 has been deposited into your account!</p>
+                                </div>
+                            </a><a class="dropdown-item d-flex align-items-center" href="#">
+                                <div class="me-3">
+                                    <div class="bg-warning icon-circle"><i class="fas fa-exclamation-triangle text-white"></i></div>
+                                </div>
+                                <div><span class="small text-gray-500">December 2, 2019</span>
+                                    <p>Spending Alert: We've noticed unusually high spending for your account.</p>
+                                </div>
+                            </a><a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
+                        </div>
+                    </div>
+                </li>
+                <li class="nav-item dropdown no-arrow mx-1" id="messages" style="justify-content: center;align-items: center;display: flex;height: 55px;">
+                    <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false" data-bs-toggle="dropdown" href="#" style="height: 55px;display: flex;align-items: center;justify-content: center;"><span class="badge bg-danger badge-counter">7</span><i class="fas fa-envelope fa-fw"></i></a>
+                        <div class="dropdown-menu dropdown-menu-end dropdown-list animated--grow-in">
+                            <h6 class="dropdown-header">alerts center</h6><a class="dropdown-item d-flex align-items-center" href="#">
+                                <div class="dropdown-list-image me-3"><img class="rounded-circle" src="assets/img/avatars/avatar4.jpeg">
+                                    <div class="bg-success status-indicator"></div>
+                                </div>
+                                <div class="fw-bold">
+                                    <div class="text-truncate"><span>Hi there! I am wondering if you can help me with a problem I've been having.</span></div>
+                                    <p class="small text-gray-500 mb-0">Emily Fowler - 58m</p>
+                                </div>
+                            </a><a class="dropdown-item d-flex align-items-center" href="#">
+                                <div class="dropdown-list-image me-3"><img class="rounded-circle" src="assets/img/avatars/avatar2.jpeg">
+                                    <div class="status-indicator"></div>
+                                </div>
+                                <div class="fw-bold">
+                                    <div class="text-truncate"><span>I have the photos that you ordered last month!</span></div>
+                                    <p class="small text-gray-500 mb-0">Jae Chun - 1d</p>
+                                </div>
+                            </a><a class="dropdown-item d-flex align-items-center" href="#">
+                                <div class="dropdown-list-image me-3"><img class="rounded-circle" src="assets/img/avatars/avatar3.jpeg">
+                                    <div class="bg-warning status-indicator"></div>
+                                </div>
+                                <div class="fw-bold">
+                                    <div class="text-truncate"><span>Last month's report looks great, I am very happy with the progress so far, keep up the good work!</span></div>
+                                    <p class="small text-gray-500 mb-0">Morgan Alvarez - 2d</p>
+                                </div>
+                            </a><a class="dropdown-item d-flex align-items-center" href="#">
+                                <div class="dropdown-list-image me-3"><img class="rounded-circle" src="assets/img/avatars/avatar5.jpeg">
+                                    <div class="bg-success status-indicator"></div>
+                                </div>
+                                <div class="fw-bold">
+                                    <div class="text-truncate"><span>Am I a good boy? The reason I ask is because someone told me that people say this to all dogs, even if they aren't good...</span></div>
+                                    <p class="small text-gray-500 mb-0">Chicken the Dog · 2w</p>
+                                </div>
+                            </a><a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
+                        </div>
+                    </div>
+                </li> -->
+                <li class="nav-item dropdown no-arrow" id="profile">
+                    <div class="nav-item dropdown no-arrow">
+                        <a class="dropdown-toggle d-flex flex-row justify-content-center align-items-center nav-link" aria-expanded="false" data-bs-toggle="dropdown" href="#" style="height: 55px;">
+                            <span id="topbar_username" class="d-none d-lg-inline me-2 text-gray-600 small"></span>
+                            <!--BADGE-->
+                            <img class="fa-square" id="user_badge" src="" style="width: 50px;height: 50px;">
+                        </a>
+                        <div class="dropdown-menu shadow dropdown-menu-end animated--grow-in"><a class="dropdown-item" href="#"><i class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Profile</a><a class="dropdown-item" href="#"><i class="fas fa-cogs fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Settings</a><a class="dropdown-item" href="#"><i class="fas fa-list fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Activity log</a>
+                            <div class="dropdown-divider"></div><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Logout</a>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</template>

@@ -1,0 +1,11 @@
+.hover-link::after {
+    content: "";
+    display: none;
+}
+
+.hover-link:hover::after {
+    display: inline;
+    content: attr(data-text);
+    margin-left: 5px;
+    font-size: 12px;
+}
