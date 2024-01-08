@@ -55,7 +55,7 @@ public class GameController {
             @RequestParam("difficulty") String difficulty,
             @RequestParam("time") String time) throws InvalidGameException {
         String username = principal.getName();
-        // User currentUser = userDao.getUserByUsername(username);
+        // User currentUser = userDao.findByUsername(username);
 
         /*
          * //check if user has already created a game
@@ -69,7 +69,7 @@ public class GameController {
         Game game = gameService.createGame(username, difficulty, time);
         gameDao.save(game);
         String gameId = game.getGameId();
-        User user = userDao.getUserByUsername(username);
+        User user = userDao.findByUsername(username);
         user.setActiveGameId(gameId);
         userDao.save(user);
         return ResponseEntity.ok(gameId);
@@ -81,7 +81,7 @@ public class GameController {
             @RequestParam("time") String time,
             @RequestParam("computerLevel") int computerLevel) throws InvalidGameException {
         String username = principal.getName();
-        // User currentUser = userDao.getUserByUsername(username);
+        // User currentUser = userDao.findByUsername(username);
 
         /*
          * //check if user has already created a game
@@ -97,7 +97,7 @@ public class GameController {
         gameService.setProblems(game);
         List<Problem> problems = game.getProblemSet();
         String gameId = game.getGameId();
-        User user = userDao.getUserByUsername(username);
+        User user = userDao.findByUsername(username);
         user.setActiveGameId(gameId);
         userDao.save(user);
 
@@ -112,7 +112,7 @@ public class GameController {
     @GetMapping("/active")
     public ResponseEntity<String> getActiveGameId(Principal principal) {
         String username = principal.getName();
-        User user = userDao.getUserByUsername(username);
+        User user = userDao.findByUsername(username);
         if(username == null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
@@ -194,6 +194,7 @@ public class GameController {
         String playerUsername = gameInfo.get("playerUsername");
 
         Game game = gameDao.getGameByGameId(gameId);
+        game.setStatus(GameStatus.FINISHED);
         if(game.getWinner() == null) {
             String winner = getWinner(game);
             game.setWinner(winner);
@@ -213,7 +214,7 @@ public class GameController {
         if(playerUsername.equals(player1)) {
             //int originalXp1 = userDao.getXpByUsername(player1);
             //int updatedXp1 = player1Xp + originalXp1;
-            User player1User = userDao.getUserByUsername(player1);
+            User player1User = userDao.findByUsername(player1);
             //player1User.setXp(updatedXp1); */
             //userDao.save(player1User);
             saveGame(game, player1User);
@@ -222,7 +223,7 @@ public class GameController {
         if(playerUsername.equals(player2)) {
             //int originalXp2 = userDao.getXpByUsername(player2);
             //int updatedXp2 = player2Xp + originalXp2;
-            User player2User = userDao.getUserByUsername(player2);
+            User player2User = userDao.findByUsername(player2);
             //player2User.setXp(updatedXp2);
             //userDao.save(player2User);
             saveGame(game, player2User);

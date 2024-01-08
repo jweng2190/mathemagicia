@@ -15,12 +15,16 @@ export async function getSideBar(type) {
                 document.body.insertBefore(templateContent, document.body.firstChild);
                 break;
             case "game":
+                const gameContainer = document.querySelector('.game-page');
+
+                if(gameContainer) {
+                    gameContainer.insertBefore(templateContent, gameContainer.firstChild);
+                } else {
+                    console.error("Oops! Could not get game content layout!");
+                }
                 break;
         }
-        //console.log(result);
     } catch(error) {
         console.error('Error during fetch: ' + error);
     }
 }
-
-//getSideBar();

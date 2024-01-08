@@ -86,7 +86,7 @@ public class UserController {
     public ResponseEntity<List<Game>> getAllGames(HttpServletRequest request) {
         Principal principal = request.getUserPrincipal();
         String username = principal.getName();
-        User user = userDao.getUserByUsername(username);
+        User user = userDao.findByUsername(username);
         List<Game> allGames = user.getGames();
         int numGames = allGames.size();
 

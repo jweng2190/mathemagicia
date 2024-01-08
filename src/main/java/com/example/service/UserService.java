@@ -101,7 +101,7 @@ public class UserService {
         String username = user.getUsername();
         String email = user.getEmail();
         //check for duplicate username or email
-        if(repo.getUserByUsername(username) != null || repo.getUserByEmail(email) != null) {
+        if(repo.findByUsername(username) != null || repo.getUserByEmail(email) != null) {
             return false;
         }
 
@@ -169,13 +169,13 @@ public class UserService {
 
     @Cacheable(value = "levelCache", key = "#username")
     public int getLevel(String username) {
-        User user = repo.getUserByUsername(username);
+        User user = repo.findByUsername(username);
         return user.getLevel();
     }
 
     @Cacheable(value = "usernameCache", key= "#username")
     public User getUser(String username) {
-        User user = repo.getUserByUsername(username);
+        User user = repo.findByUsername(username);
         return user;
     }
 

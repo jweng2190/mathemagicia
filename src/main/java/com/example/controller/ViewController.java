@@ -37,14 +37,10 @@ public class ViewController {
     @RolesAllowed({"USER"})
     @GetMapping("/game/{gameId}")
     public String game(Principal principal, @PathVariable String gameId) {
-        String username = principal.getName();
         Game game = gameDao.getGameByGameId(gameId);
         if(game.getPlayer1Username() != null && game.getPlayer2Username() != null) {
             return "game_error";
         }
-        User user = userDao.getUserByUsername(username);
-        user.setActiveGameId(gameId);
-        userDao.save(user);
         
         return "game_template";
     }

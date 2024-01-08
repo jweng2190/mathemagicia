@@ -49,7 +49,7 @@ public class XpController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
         
-        User user = userDao.getUserByUsername(username);
+        User user = userDao.findByUsername(username);
         int prevLevel = user.getLevel();
         int prevXp = user.getXp();
         int prevXpLevel = xpLevelService.getXpToLevelUp(prevLevel);

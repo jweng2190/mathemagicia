@@ -13,6 +13,8 @@ import com.example.model.Game;
 import com.example.model.GameStatus;
 import com.example.model.User;
 import com.example.service.GameService;
+import java.util.List;
+
 
 
 @Repository

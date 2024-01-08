@@ -40,7 +40,7 @@ public class GameService {
         game.setGameId(UUID.randomUUID().toString());
         //game.setPlayer1(player);
         game.setPlayer1Username(playerUsername);
-        game.setPlayer1Joined(true);
+        //game.setPlayer1Joined(true);
         game.setStatus(NEW);
 
         game.setPlayer1Disconnect(false);

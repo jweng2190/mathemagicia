@@ -1,12 +1,12 @@
 package com.example.dto.message;
 
-public class JoinMessage implements Message {
+public class JoinMessage {
     private String type;
-    private String gameId;
     private String playerUsername;
-    private String content;
+    private String gameId;
+    private String joinType;
 
-    @Override
+
     public String getType() {
         return type;
     }
@@ -15,19 +15,18 @@ public class JoinMessage implements Message {
         this.type = type;
     }
 
-    @Override
     public String getGameId() {
         return gameId;
     }
 
-    @Override
+    /* @Override
     public String getContent() {
         return content;
     }
 
     public void setContent(String content) {
         this.content = content;
-    }
+    } */
 
     public void setGameId(String gameId) {
         this.gameId = gameId;
@@ -40,4 +39,13 @@ public class JoinMessage implements Message {
     public void setPlayerUsername(String player) {
         this.playerUsername = player;
     }
+
+    public String getJoinType() {
+        return this.joinType;
+    }
+
+    public void setJoinType(String joinType) {
+        this.joinType = joinType;
+    }
+
 }

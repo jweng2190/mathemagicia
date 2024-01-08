@@ -5,10 +5,9 @@
 }); */
 //firefox bug?? interrupted websocket
 
-/* const countdownElement = document.getElementById('countdown_text');
-const countdownContainer = document.getElementsByClassName('countdown-container')[0]; */
 import { evaluateMathExpression } from "./test_latex.js";
 import { animateXp } from "./game_xp.js";
+import { getSideBar } from "./sidebar.js";
 
 let countdownElement;
 let countdownContainer;
@@ -19,6 +18,7 @@ const texts = ['READY', '3', '2', '1', 'GO!'];
 const colors = ['rgb(0, 150, 255)', 'rgb(222, 49, 99)', 'rgb(255, 117, 24)', 'rgb(255, 191, 0)', 'rgb(15, 255, 80)'];
 const badgeUrl = "https://mm-level-badges.s3.us-east-2.amazonaws.com";
 
+getSideBar("game");
 let index = 0;
 
 var loc = window.location, base_uri;

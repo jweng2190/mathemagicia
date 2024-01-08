@@ -57,9 +57,6 @@ public class MessageController {
     @Autowired
     private DifficultyLevelService difficultyLevelService;
 
-    @Autowired
-    private XpLevelService xpLevelService;
-
     private AtomicBoolean player1Finished = new AtomicBoolean(false);
     private AtomicBoolean player2Finished = new AtomicBoolean(false);
 
@@ -81,16 +78,20 @@ public class MessageController {
         } else {
             if(playerUsername.equals(gameToJoin.getPlayer1Username())) {
                 gameToJoin.setPlayer1Joined(true);
+                User player1 = userDao.findByUsername(playerUsername);
+                player1.setActiveGameId(gameId);
             } else {
-                gameToJoin.setPlayer2Username(playerUsername);
                 gameToJoin.setPlayer2Joined(true);
+                gameToJoin.setPlayer2Username(playerUsername);
+                User player2 = userDao.findByUsername(playerUsername);
+                player2.setActiveGameId(gameId);
             }
+
+            gameDao.save(gameToJoin);
 
             if(gameToJoin.isPlayer1Joined() && gameToJoin.isPlayer2Joined()) {
                 gameToJoin.setStatus(GameStatus.IN_PROGRESS);
             }
-
-            gameDao.save(gameToJoin);
 
             GameMessage gameMessage = gameToMessage(gameToJoin);
             gameMessage.setType("game.joined");
@@ -148,8 +149,6 @@ public class MessageController {
                 break;
             case "accept":
                 //create new game
-                activeGame.setStatus(GameStatus.FINISHED);
-                gameDao.save(activeGame);
                 String playerCreate;
                 if(sentPlayer.equals(player1)) {
                     playerCreate = player2;
@@ -380,7 +379,7 @@ public class MessageController {
             player1Finished.set(true);
             int originalXp1 = userDao.getXpByUsername(player1);
             int updatedXp1 = player1Xp + originalXp1;
-            User player1User = userDao.getUserByUsername(player1);
+            User player1User = userDao.findByUsername(player1);
             player1User.setXp(updatedXp1);
             userDao.save(player1User);
             saveGame(activeGame, player1User);
@@ -390,7 +389,7 @@ public class MessageController {
             player2Finished.set(true);
             int originalXp2 = userDao.getXpByUsername(player2);
             int updatedXp2 = player2Xp + originalXp2;
-            User player2User = userDao.getUserByUsername(player2);
+            User player2User = userDao.findByUsername(player2);
             player2User.setXp(updatedXp2);
             userDao.save(player2User);
             saveGame(activeGame, player2User);

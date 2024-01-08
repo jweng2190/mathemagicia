@@ -63,7 +63,7 @@ public class WebSocketEventListener {
         System.out.println("Connect- " + username + " : " + sessionId);
     }
 
-    @EventListener
+    /* @EventListener
     public void handleWebSocketDisconnect(SessionDisconnectEvent event) {
         Principal principal = event.getUser();
         String username = principal != null ? principal.getName() : null;
@@ -81,7 +81,7 @@ public class WebSocketEventListener {
                     String username1 = game.getPlayer1Username();
                     String username2 = game.getPlayer2Username();
 
-                    /* if (username.equals(username1)) {
+                    if (username.equals(username1)) {
                         int numDisconnect1 = game.getNumDisconnect1();
                         game.setNumDisconnect1(numDisconnect1 + 1);
                         game.setStatus(GameStatus.DISCONNECTED);
@@ -121,10 +121,10 @@ public class WebSocketEventListener {
                                 }
                             }
                         }, 60000); // 60 seconds in milliseconds
-                    } */
+                    }
                     game.setStatus(GameStatus.DISCONNECTED);
-                    User player1 = userDao.getUserByUsername(username1);
-                    User player2 = userDao.getUserByUsername(username2);
+                    User player1 = userDao.findByUsername(username1);
+                    User player2 = userDao.findByUsername(username2);
 
                     player1.setActiveGameId(null);
                     player2.setActiveGameId(null);
@@ -146,6 +146,34 @@ public class WebSocketEventListener {
         }
 
         System.out.println("Disconnect- " + username);
+    } */
+
+    @EventListener
+    public void handleWebSocketDisconnect(SessionDisconnectEvent event) {
+        Principal principal = event.getUser();
+        String username = principal != null ? principal.getName() : null;
+        if(username == null) {
+            return;
+        }
+
+        User player = userDao.findByUsername(username);
+        String gameId = player.getActiveGameId();
+        Game game = gameDao.getGameByGameId(gameId);
+
+        GameStatus gameStatus = game.getStatus();
+        if(gameStatus == GameStatus.NEW) {
+            if(username == game.getPlayer1Username()) {
+                game.setPlayer1Joined(false);
+            } else {
+                game.setPlayer2Joined(false);
+            }
+            player.setActiveGameId(null);
+        } else if(gameStatus == GameStatus.IN_PROGRESS) {
+
+        } else if(gameStatus == GameStatus.FINISHED) {
+
+        }
+        gameDao.save(game);
     }
 
     public String getWinner(Game game, String username) {
