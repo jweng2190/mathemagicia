@@ -148,7 +148,7 @@ public class WebSocketEventListener {
         System.out.println("Disconnect- " + username);
     } */
 
-    @EventListener
+    /* @EventListener
     public void handleWebSocketDisconnect(SessionDisconnectEvent event) {
         Principal principal = event.getUser();
         String username = principal != null ? principal.getName() : null;
@@ -162,10 +162,12 @@ public class WebSocketEventListener {
 
         GameStatus gameStatus = game.getStatus();
         if(gameStatus == GameStatus.NEW) {
-            if(username == game.getPlayer1Username()) {
+            if(username.equals(game.getPlayer1Username())) {
                 game.setPlayer1Joined(false);
+                System.out.println("Player 1 Not Ready");
             } else {
                 game.setPlayer2Joined(false);
+                System.out.println("Player 2 Not Ready");
             }
             player.setActiveGameId(null);
         } else if(gameStatus == GameStatus.IN_PROGRESS) {
@@ -174,7 +176,8 @@ public class WebSocketEventListener {
 
         }
         gameDao.save(game);
-    }
+        userDao.save(player);
+    } */
 
     public String getWinner(Game game, String username) {
         String username1 = game.getPlayer1Username();

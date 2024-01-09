@@ -252,6 +252,36 @@ public class GameController {
         }
     }
 
+    @PostMapping("/disconnect")
+    public void handleDisconnect(@RequestBody Map<String, String> playerInfo) {
+        String gameId = playerInfo.get("gameId");
+        String username = playerInfo.get("username");
+
+        Game game = gameDao.getGameByGameId(gameId);
+        GameStatus status = game.getStatus();
+        User user = userDao.findByUsername(username);
+        switch(status) {
+            case NEW:
+                if(game.getPlayer1Username().equals(username)) {
+                game.setPlayer1Joined(false);
+                } else {
+                    game.setPlayer2Joined(false);
+                }
+                
+                user.setActiveGameId(null);
+                gameDao.save(game);
+                userDao.save(user);
+                System.out.println("Disconnect: " + gameId);
+                break;
+
+            case IN_PROGRESS:
+                break;
+
+            default:
+                break;
+        }
+    }
+
     @GetMapping("/type/{id}")
     public ResponseEntity<Integer> getPlayerType(@PathVariable("id") String gameId, Principal principal) {
         Game game = gameDao.getGameByGameId(gameId);

@@ -112,7 +112,7 @@ export function animateStep(stats, animationStep) {
     }
 }
 
-export function congrats() {
+/* export function congrats() {
     setTimeout(() => {
         startConfetti();
         setTimeout(() => {
@@ -137,4 +137,4 @@ function showConfetti() {
     setTimeout(() => {
         myConfetti();
     }, 1000);
-}
+} */

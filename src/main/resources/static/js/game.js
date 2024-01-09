@@ -9,6 +9,36 @@ import { evaluateMathExpression } from "./test_latex.js";
 import { animateXp } from "./game_xp.js";
 import { getSideBar } from "./sidebar.js";
 
+var username;
+var gameId;
+var playerType;
+var mins = 10;
+window.onload = function() {
+    getUsername().then((result) => {
+        username = result;
+    });
+    
+    let gameUrl = window.location.href;
+    let gameIdIndex = gameUrl.lastIndexOf("/") + 1;
+    gameId = gameUrl.substring(gameIdIndex);
+
+    window.addEventListener("beforeunload", () => {
+        let xhr = new XMLHttpRequest();
+        xhr.open("POST", "/game/disconnect", true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(JSON.stringify({gameId: gameId, username: username}));
+    });
+
+    getPlayerType(gameId).then((result) => {
+        playerType = result;
+    });
+
+    getTimeLimit(gameId).then((timeString) => {
+        mins = parseInt(timeString);
+    });
+    connect();
+}
+
 let countdownElement;
 let countdownContainer;
 const loadingContainer = document.getElementsByClassName('loading-container')[0];
@@ -30,21 +60,6 @@ if (loc.protocol === "https:") {
 base_uri += "//" + loc.host;
 
 var stompClient = null;
-var username;
-getUsername().then((result) => {
-    username = result;
-});
-
-
-//get the gameId
-var gameUrl = window.location.href;
-var gameIdIndex = gameUrl.lastIndexOf("/") + 1;
-var gameId = gameUrl.substring(gameIdIndex);
-
-let playerType;
-getPlayerType(gameId).then((result) => {
-    playerType = result;
-});
 
 let currentProblem;
 let currentProblemId;
@@ -70,19 +85,6 @@ let player2Score = 0;
 
 var status;
 let gameWinner = null;
-
-/* let numD1 = 0;
-let numD2 = 0;
-getNumDisconnect(gameId).then((result) => {
-    numD1 = result[0];
-    numD2 = result[1];
-}); */
-
-//default value if not specified
-let mins = 10;
-getTimeLimit(gameId).then((timeString) => {
-    mins = parseInt(timeString);
-});
 
 let countdown;
 
@@ -431,7 +433,7 @@ function connect() {
     });
 } */
 
-function connectStatus() {
+/* function connectStatus() {
     const socketStatus = new WebSocket(base_uri + "/status", 'v10.stomp');
     stompClient = Stomp.over(socketStatus);
 
@@ -452,7 +454,7 @@ function connectStatus() {
         stompClient.send("/ws/game.status", {}, JSON.stringify(message));
         connect();
     });
-}
+} */
 
 /* function readyUp() {
     readyButton.innerHTML = "Waiting for opponent...";
@@ -874,11 +876,6 @@ function objectToProblem(problemObject) {
         answer: problemObject.answer,
         solution: problemObject.solution
     }
-}
-
-window.onload = function() {
-    connectStatus();
-    //connect();
 }
 
 async function getUsername() {

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.example.dao.GameRepository;
 import com.example.dao.UserRepository;
 import com.example.model.Game;
+import com.example.model.GameStatus;
 import com.example.model.User;
 
 import java.security.Principal;
@@ -38,7 +39,7 @@ public class ViewController {
     @GetMapping("/game/{gameId}")
     public String game(Principal principal, @PathVariable String gameId) {
         Game game = gameDao.getGameByGameId(gameId);
-        if(game.getPlayer1Username() != null && game.getPlayer2Username() != null) {
+        if(game.getStatus() != GameStatus.NEW) {
             return "game_error";
         }
         
