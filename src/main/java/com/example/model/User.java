@@ -43,6 +43,9 @@ public class User {
     @Column(name = "active_game")
     private String activeGameId;
 
+    @Column(name = "created_game")
+    private String createdGameId;
+
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_role",
@@ -187,6 +190,14 @@ public class User {
 
     public void setActiveGameId(String activeGameId) {
         this.activeGameId = activeGameId;
+    }
+
+    public String getCreatedGameId() {
+        return this.createdGameId;
+    }
+
+    public void setCreatedGameId(String createdGameId) {
+        this.createdGameId = createdGameId;
     }
 
     public String getFullName() {

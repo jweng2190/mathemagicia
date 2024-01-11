@@ -12,6 +12,9 @@ const formCreate = document.getElementById("cg_form");
 const inputDiff = document.getElementById("difficulty");
 const inputTime = document.getElementById("time");
 const createUrl = '/game/create';
+const pSuccess = document.getElementById("success_create");
+const successText = "Game successfully created! <br />Please return to dashboard<br />to access created game."
+const errorText = "You already have a created game.<br />Please check your game dashboard."
 
 getSideBar("regular");
 
@@ -34,7 +37,7 @@ standard.addEventListener("click", function() {
     handleTimeControl("standard");
 });
 
-formCreate.addEventListener('submit', function (event) {
+formCreate.addEventListener('submit', async function (event) {
     event.preventDefault();
 
     const formData = new FormData(event.target);
@@ -47,18 +50,54 @@ formCreate.addEventListener('submit', function (event) {
     console.log('difficulty:', difficulty);
     console.log('time:', time);
 
+    try {
+        const response = await fetch(createUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: params
+        });
+
+        if (!response.ok) {
+            if (response.status === 403) {
+                pSuccess.style.color = "red";
+                pSuccess.innerHTML = errorText;
+                pSuccess.style.display = "";
+            } else {
+                console.error('Error:', response.status);
+            }
+        } else {
+            const gameId = await response.text();
+
+            console.log('Data:', gameId);
+            pSuccess.style.color = "green";
+            pSuccess.innerHTML = successText;
+            pSuccess.style.display = "";
+        }
+    } catch (error) {
+        console.error('Fetch error:', error);
+    }
+
     //send create game POST request
-    fetch(createUrl, {
+    /* fetch(createUrl, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
         },
         body: params
     })
-        .then(response => response.text())
+        .then(response => response.text()).catch(error => {
+            console.error('Error:', error);
+            pSuccess.style.color = "red";
+            pSuccess.innerHTML = errorText;
+            pSuccess.style.display = "";})
         .then(gameId => {
             console.log(gameId);
-            const successMsg = "You have successfully created a " + time + " game with " + difficulty + " difficulty!";
+            pSuccess.style.color = "green";
+            pSuccess.innerHTML = successText;
+            pSuccess.style.display = "";
+
             Toastify({
                 text: successMsg,
                 duration: 3000, // Display for 3 seconds
@@ -74,7 +113,9 @@ formCreate.addEventListener('submit', function (event) {
         })
         .catch(error => {
             console.error('Error:', error);
-            const errorMsg = "Error: Something went wrong. Try again later."
+            pSuccess.style.color = "red";
+            pSuccess.innerHTML = errorText;
+            pSuccess.style.display = "";
             Toastify({
                 text: errorMsg,
                 duration: 3000, // Display for 3 seconds
@@ -84,7 +125,7 @@ formCreate.addEventListener('submit', function (event) {
                     background: "linear-gradient(to right, #00b09b, #96c93d)",
                 }
             }).showToast();
-        });
+        }); */
 });
 
 function handleDifficulty(difficulty) {

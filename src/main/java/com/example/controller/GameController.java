@@ -55,7 +55,10 @@ public class GameController {
             @RequestParam("difficulty") String difficulty,
             @RequestParam("time") String time) throws InvalidGameException {
         String username = principal.getName();
-        // User currentUser = userDao.findByUsername(username);
+        User user = userDao.findByUsername(username);
+        if(user.getCreatedGameId() != null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
 
         /*
          * //check if user has already created a game
@@ -69,8 +72,7 @@ public class GameController {
         Game game = gameService.createGame(username, difficulty, time);
         gameDao.save(game);
         String gameId = game.getGameId();
-        User user = userDao.findByUsername(username);
-        user.setActiveGameId(gameId);
+        user.setCreatedGameId(gameId);
         userDao.save(user);
         return ResponseEntity.ok(gameId);
     }
