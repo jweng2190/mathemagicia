@@ -1,21 +1,119 @@
 import { getTopBar } from "./topbar.js";
 import { getSideBar } from "./sidebar.js";
 
+const username = await getUsername();
+let gameId;
 const cgButton = document.getElementById("cg_button");
 const jgButton = document.getElementById("jg_button");
+
+const shareButton = document.getElementById("share");
+const joinButton = document.getElementById("join");
+const deleteButton = document.getElementById("delete");
+
+const contentRow = document.getElementById("game_data");
+const cells = contentRow.getElementsByTagName('td');
 
 cgButton.addEventListener("click", createGame);
 jgButton.addEventListener("click", joinGame);
 
 getTopBar();
 getSideBar("regular");
-
+getActiveGame();
 
 function createGame() {
     window.location.href = "/create_game";
 }
 
+async function getActiveGame() {
+    try {
+        const response = await fetch('/game/active_game', {
+            method: "POST", // *GET, POST, PUT, DELETE, etc.
+            mode: "cors", // no-cors, *cors, same-origin
+            cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+            credentials: "same-origin", // include, *same-origin, omit
+            headers: {
+                "Content-Type": "text/plain",
+            },
+            redirect: "follow", // manual, *follow, error
+            referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+            body: username, // body data type must match "Content-Type" header
+        });
+
+        const game = await response.json();
+        gameId = game[3];
+
+        shareButton.addEventListener("click", shareGame);
+        joinButton.addEventListener("click", joinGame);
+        deleteButton.addEventListener("click", deleteGame);
+        populateTable(game);
+    } catch(error) {
+        console.log("No created games found!");
+    }
+}
+
+async function populateTable(gameData) {
+    let cellDiff = cells[0];
+    let cellTime = cells[1];
+    let cellDate = cells[2];
+
+    let gameDiff, gameTime, gameDate;
+    gameDiff = gameData[0], gameTime = gameData[1], gameDate = gameData[2];
+
+    cellDiff.textContent = gameDiff.charAt(0).toUpperCase() + gameDiff.slice(1);
+    cellTime.textContent = gameTime;
+
+    let month = gameDate[1];
+    let day = gameDate[2];
+    let year = gameDate[0];
+    let dateString = month + "/" + day + "/" + year;
+    cellDate.textContent = dateString;
+
+    contentRow.style.display = "";
+}
+
+async function hideTable() {
+    let cellDiff = cells[0];
+    let cellTime = cells[1];
+    let cellDate = cells[2];
+    cellDiff.textContent = ""; cellTime.textContent = ""; cellDate.textContent = "";
+    contentRow.style.display = "none";
+}
+
+async function getUsername() {
+    try {
+        const response = await fetch("/username");
+        const result = await response.text();
+        return result;
+    } catch(error) {
+        console.error(error);
+    }
+}
+
+function shareGame() {
+    //TODO, popup modal
+}
+
 function joinGame() {
-    var gameId = gameIdInput.value;
     window.location.href = "/game/" + gameId;
+}
+
+async function deleteGame() {
+    hideTable();
+    const reqBody = JSON.stringify({
+        "username": username, "gameId": gameId
+    });
+    try {
+        const response = await fetch('/game/delete', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: reqBody
+        });
+
+        const result = await response.text();
+        console.log(result);
+    } catch(error) {
+        console.log(error);
+    }
 }

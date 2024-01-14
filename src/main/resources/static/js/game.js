@@ -13,30 +13,45 @@ var username;
 var gameId;
 var playerType;
 var mins = 10;
-window.onload = function() {
-    getUsername().then((result) => {
-        username = result;
-    });
+setUpGame();
+
+async function setUpGame() {
+    username = await getUsername();
     
     let gameUrl = window.location.href;
     let gameIdIndex = gameUrl.lastIndexOf("/") + 1;
     gameId = gameUrl.substring(gameIdIndex);
 
     window.addEventListener("beforeunload", () => {
-        let xhr = new XMLHttpRequest();
-        xhr.open("POST", "/game/disconnect", true);
-        xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.send(JSON.stringify({gameId: gameId, username: username}));
+        sendDisconnect();
     });
 
-    getPlayerType(gameId).then((result) => {
-        playerType = result;
+    window.addEventListener("popstate", () => {
+        sendDisconnect();
     });
 
-    getTimeLimit(gameId).then((timeString) => {
-        mins = parseInt(timeString);
-    });
+    playerType = await getPlayerType(gameId);
+    mins = await getTimeLimit(gameId);
+
     connect();
+}
+
+async function sendDisconnect() {
+    try {
+        const reqBody = JSON.stringify({
+            "gameId": gameId, "username": username
+        });
+        const response = await fetch("/game/disconnect", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: reqBody,
+            keepalive: true
+        });
+    } catch(e) {
+        console.log(e);
+    }
 }
 
 let countdownElement;
@@ -59,8 +74,7 @@ if (loc.protocol === "https:") {
 }
 base_uri += "//" + loc.host;
 
-var stompClient = null;
-
+var rematchClient;
 let currentProblem;
 let currentProblemId;
 let currentProblemIndex = 0;
@@ -331,8 +345,12 @@ function stopTimer() {
 }
 
 
-const sendMessage = (message) => {
-    stompClient.send(`/ws/${message.type}`, {}, JSON.stringify(message));
+const sendMessage = (message, client) => {
+    if(message.type === "game.rematch") {
+        rematchClient.send(`/ws/${message.type}`, {}, JSON.stringify(message));
+    } else {
+        client.send(`/ws/${message.type}`, {}, JSON.stringify(message));
+    }
 }
 
 const handleMessage = (message) => {
@@ -385,7 +403,7 @@ function connect() {
     const socketConnect = new WebSocket(base_uri + "/connect", 'v10.stomp');
     console.log('Connecting to game');
 
-    stompClient = Stomp.over(socketConnect);
+    let stompClient = Stomp.over(socketConnect);
     stompClient.connect({}, function (frame) {
         console.log(frame);
         stompClient.subscribe('/user/' + username + "/connect", function (message) {
@@ -406,7 +424,7 @@ function connect() {
             }
         });
         
-        joinGame();
+        joinGame(stompClient);
     });
 }
 
@@ -492,12 +510,12 @@ async function getPlayerType(gameId) {
 } */
 
 
-function joinGame() {
+function joinGame(stompClient) {
     sendMessage({
         type: "game.join",
         playerUsername: username,
         gameId: gameId
-    });
+    }, stompClient);
 }
 
 /* function queueGame() {
@@ -560,25 +578,23 @@ async function startGame() {
 }
  */
 
-var sendAnswer = function(event) {
-    event.preventDefault();
+function sendAnswer(client) {
     let playerAnswer = playerInput.value;
     playerInput.value = "";
-    if(stompClient !== null) {
-        sendMessage({
-            type: "game.answer",
-            playerUsername: username,
-            gameId: gameId,
-            answer: playerAnswer,
-            currentProblemId: currentProblemId,
-            timestamp: Date.now()
-        });
-    }
+
+    sendMessage({
+        type: "game.answer",
+        playerUsername: username,
+        gameId: gameId,
+        answer: playerAnswer,
+        currentProblemId: currentProblemId,
+        timestamp: Date.now()
+    }, client);
 }
 
 function checkAnswer() {
     const socket = new WebSocket(base_uri + '/game_answer', 'v10.stomp');
-    stompClient = Stomp.over(socket);
+    let stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
         console.log("Connected: " + frame);
         stompClient.subscribe('/user/' + username + '/answer', function (message) {
@@ -617,8 +633,17 @@ function checkAnswer() {
         answerForm.style.visibility = "visible";
         problemNumberBox.innerHTML = "Problem " + (currentProblemIndex + 1);
         problemImage.src = currentProblem.image;
-        answerForm.addEventListener("submit", sendAnswer);
-        answerSubmit.addEventListener("click", sendAnswer);
+        answerForm.addEventListener("submit", function(event) {
+            event.preventDefault();
+            let client = stompClient;
+            sendAnswer(client);
+        });
+
+        answerSubmit.addEventListener("click", function(event) {
+            event.preventDefault();
+            let client = stompClient;
+            sendAnswer(client);
+        });
     });
 }
 
@@ -706,16 +731,35 @@ async function showFinalScores() {
 }
 
 
-function endGame() {
+async function endGame() {
     disableAnswer();
     stopTimer();
     gameContent.style.zIndex = 3;
     let gameEndData = {
-        gameId: gameId,
-        playerUsername: username
+        "gameId": gameId,
+        "playerUsername": username
     };
     gameEndData = JSON.stringify(gameEndData);
-    postRequest("/game/game_end", gameEndData, "json").then((response) =>  {
+    
+    try {
+        const response = await fetch("/game/game_end", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: gameEndData
+        });
+        const result = await response.text();
+        if(result === "Game Ended") {
+            connectRematch();
+        } else {
+            throw new Error("Oops! Something went wrong.")
+        }
+    } catch(error) {
+        throw new Error(error);
+    }
+
+    /* postRequest("/game/game_end", gameEndData, "json").then((response) =>  {
         if(response === "Game Ended") {
             connectRematch();
         } else {
@@ -723,7 +767,7 @@ function endGame() {
         }
     }).catch((error) => {
         throw new Error(error);
-    });
+    }); */
 }
 
 function sendRematch(rematchT) {
@@ -776,10 +820,10 @@ function rejectRematch() {
 
 function connectRematch() {
     const socketRematch = new WebSocket(base_uri + '/rematch', 'v10.stomp');
-    stompClient = Stomp.over(socketRematch);
-    stompClient.connect({}, function (frame) {
+    rematchClient = Stomp.over(socketRematch);
+    rematchClient.connect({}, function (frame) {
         console.log("Connected: " + frame);
-        stompClient.subscribe('/user/' + username + '/rematch', function (message) {
+        rematchClient.subscribe('/user/' + username + '/rematch', function (message) {
             handleRematchStatus(message.body);
         });
         showFinalScores();

@@ -68,7 +68,6 @@ export function repeatAnimation(stats) {
         numSteps++;
         if(numSteps >= 3) {
             clearInterval(interval);
-            showConfetti();
         }
     }, 1250);
 }
@@ -81,7 +80,6 @@ export function animateWidth(stats) {
     divElement.style.width = targetWidth + 'px'; // Update the width dynamically
     const xpValue = document.getElementById("xp_value");
     xpValue.textContent = finalXp;
-    showConfetti();
 }
 
 export function animateStep(stats, animationStep) {

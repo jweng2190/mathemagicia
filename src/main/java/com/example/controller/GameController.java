@@ -2,6 +2,7 @@ package com.example.controller;
 
 import java.security.Principal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -136,6 +137,44 @@ public class GameController {
         }
     }
 
+    @PostMapping(path="/active_game", consumes = MediaType.TEXT_PLAIN_VALUE)
+    @RolesAllowed({"USER", "ADMIN"})
+    public ResponseEntity<List<Object>> getActiveGameData(@RequestBody String username) {
+        User user = userDao.findByUsername(username);
+        String gameId = user.getCreatedGameId();
+        if(gameId != null) {
+            Game game = gameDao.getGameByGameId(gameId);
+            List<Object> data = new ArrayList<Object>(Arrays.asList(
+                game.getGameDifficulty(), game.getTimeLimit(), game.getGameDate(), gameId
+            ));
+
+            return ResponseEntity.ok().body(data);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    @PostMapping(path="/delete", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RolesAllowed({"USER", "ADMIN"})
+    public ResponseEntity<String> deleteGame(@RequestBody Map<String, String> gameInfo) {
+        String username = gameInfo.get("username");
+        String gameId = gameInfo.get("gameId");
+        Game game = gameDao.getGameByGameId(gameId);
+        if(game == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        int status = gameService.deleteGame(gameId, username);
+        if(status == -1) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        User user = userDao.findByUsername(username);
+        user.setCreatedGameId(null);
+        userDao.save(user);
+        return ResponseEntity.ok("Game deleted successfully");
+    }
+
+
     @PostMapping(path="/problem_list", consumes = MediaType.TEXT_PLAIN_VALUE)
     @RolesAllowed({"USER", "ADMIN"})
     public ResponseEntity<List<Problem>> getProblemList(@RequestBody String gameId) {
@@ -197,6 +236,11 @@ public class GameController {
 
         Game game = gameDao.getGameByGameId(gameId);
         game.setStatus(GameStatus.FINISHED);
+        User user = userDao.findByUsername(playerUsername);
+        user.setActiveGameId(null);
+        user.setCreatedGameId(null);
+        userDao.save(user);
+
         if(game.getWinner() == null) {
             String winner = getWinner(game);
             game.setWinner(winner);
@@ -254,8 +298,9 @@ public class GameController {
         }
     }
 
-    @PostMapping("/disconnect")
-    public void handleDisconnect(@RequestBody Map<String, String> playerInfo) {
+    @PostMapping(path="/disconnect", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RolesAllowed({"USER", "ADMIN"})
+    public ResponseEntity<String> handleDisconnect(@RequestBody Map<String, String> playerInfo) {
         String gameId = playerInfo.get("gameId");
         String username = playerInfo.get("username");
 
@@ -265,8 +310,9 @@ public class GameController {
         switch(status) {
             case NEW:
                 if(game.getPlayer1Username().equals(username)) {
-                game.setPlayer1Joined(false);
+                    game.setPlayer1Joined(false);
                 } else {
+                    game.setPlayer2Username(null);
                     game.setPlayer2Joined(false);
                 }
                 
@@ -282,6 +328,7 @@ public class GameController {
             default:
                 break;
         }
+        return ResponseEntity.ok("Success!");
     }
 
     @GetMapping("/type/{id}")

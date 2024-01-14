@@ -33,40 +33,21 @@ export async function getTopBar() {
     getXp();
 }
 
-function getName() {
-    if(sessionStorage.getItem("username") == null) {
-        getUserInfo("Username").then((username) => {
-            topBarUsername.textContent = username;
-            sessionStorage.setItem("username", username);
-        });
-    } else {
-        topBarUsername.textContent = sessionStorage.getItem("username");
-    }
+async function getName() {
+    const username = await getUserInfo("Username");
+    topBarUsername.textContent = username;
+    console.log(username);
 }
 
-function getLevel() {
-    if(sessionStorage.getItem("level") == null) {
-        getUserInfo("Level").then((level) => {
-            topBarLevel.textContent = level;
-            getBadgeByLevel(level);
-            sessionStorage.setItem("level", level);
-        });
-    } else {
-        let level = sessionStorage.getItem("level");
-        getBadgeByLevel(level);
-        topBarLevel.textContent = level;
-    }
+async function getLevel() {
+    const level = await getUserInfo("Level");
+    topBarLevel.textContent = level;
+    getBadgeByLevel(level);
 }
 
-function getXp() {
-    if(sessionStorage.getItem("xp") == null) {
-        getUserXp().then((xp) => {
-            computeXp(xp);
-        });
-    } else {
-        let xp = sessionStorage.getItem("xp");
-        computeXp(xp);
-    }
+async function getXp() {
+    const xp = await getUserXp();
+    computeXp(xp);
 }
 
 function getBadgeByLevel(level) {

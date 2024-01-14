@@ -76,22 +76,22 @@ public class MessageController {
             errorMessage.setContent("Error: Unable to enter the game. The game is already full or an internal error has occurred.");
             sendToUsers(gameToJoin, "/connect", errorMessage);
         } else {
+            User player;
             if(playerUsername.equals(gameToJoin.getPlayer1Username())) {
                 gameToJoin.setPlayer1Joined(true);
-                User player1 = userDao.findByUsername(playerUsername);
-                player1.setActiveGameId(gameId);
             } else {
                 gameToJoin.setPlayer2Joined(true);
                 gameToJoin.setPlayer2Username(playerUsername);
-                User player2 = userDao.findByUsername(playerUsername);
-                player2.setActiveGameId(gameId);
             }
-
+            player = userDao.findByUsername(playerUsername);
+            player.setActiveGameId(gameId);
             gameDao.save(gameToJoin);
 
             if(gameToJoin.isPlayer1Joined() && gameToJoin.isPlayer2Joined()) {
                 gameToJoin.setStatus(GameStatus.IN_PROGRESS);
             }
+            gameDao.save(gameToJoin);
+            userDao.save(player);
 
             GameMessage gameMessage = gameToMessage(gameToJoin);
             gameMessage.setType("game.joined");
@@ -100,7 +100,7 @@ public class MessageController {
         }  
     }
 
-    @MessageMapping("/game.status")
+    /* @MessageMapping("/game.status")
     public void handleGameStatus(@Payload ClientStatusMessage statusMessage, Principal principal) {
         String username = principal.getName();
         String gameId = statusMessage.getGameId();
@@ -126,7 +126,7 @@ public class MessageController {
             disconnectMessage.setStatus("Connected");
             simpMessagingTemplate.convertAndSendToUser(username, "/status", disconnectMessage);
         }
-    }
+    } */
 
     @MessageMapping("/game.rematch")
     public void rematch(@Payload RematchMessage rematchMessage) {
@@ -158,8 +158,11 @@ public class MessageController {
 
                 Game rematchGame = gameService.createGame(playerCreate,
                 activeGame.getGameDifficulty(), activeGame.getTimeLimit());
-            
+                User userCreate = userDao.findByUsername(playerCreate);
                 String newGameId = rematchGame.getGameId();
+                userCreate.setCreatedGameId(newGameId);
+                userDao.save(userCreate);
+                
                 simpMessagingTemplate.convertAndSendToUser(player1, "/rematch", Arrays.asList("accept", newGameId));
                 simpMessagingTemplate.convertAndSendToUser(player2, "/rematch", Arrays.asList("accept", newGameId));
                 break;

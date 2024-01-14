@@ -1,5 +1,6 @@
 package com.example.service;
 import java.security.Principal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -43,17 +44,28 @@ public class GameService {
         //game.setPlayer1Joined(true);
         game.setStatus(NEW);
 
-        game.setPlayer1Disconnect(false);
-        game.setPlayer2Disconnect(false);
+        //game.setPlayer1Disconnect(false);
+        //game.setPlayer2Disconnect(false);
 
         game.setGameDifficulty(diff);
         game.setTimeLimit(time);
+        game.setGameDate(LocalDate.now());
 
         setProblems(game);
 
         gameDao.save(game);
 
         return game;
+    }
+
+    public int deleteGame(String gameId, String username) {
+        Game game = gameDao.getGameByGameId(gameId);
+        if(!game.getPlayer1Username().equals(username)) {
+            return -1;
+        }
+
+        gameDao.deleteByGameId(gameId);
+        return 0;
     }
 
     public void setProblems(Game game) {
@@ -70,10 +82,6 @@ public class GameService {
             }
         }
         return "";
-    }
-
-    public void deleteGame(String gameId) {
-        GameStorage.getInstance().deleteGame(gameId);
     }
 
     /* public Game getGameByUsername(String username) {

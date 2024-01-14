@@ -74,29 +74,11 @@ public class Game {
     @Column(name="player2_joined")
     private boolean player2Joined;
 
-    @Column(name="player1_ready")
-    private boolean player1Ready;
-
-    @Column(name="player2_ready")
-    private boolean player2Ready;
-
-    @Column(name="player1_rematch")
-    private boolean player1Rematch;
-
-    @Column(name="player2_rematch")
-    private boolean player2Rematch;
-
     @Transient
     private int numDisconnect1;
     
     @Transient
     private int numDisconnect2;
-
-    @Column(name="player1_disconnect")
-    private boolean player1Disconnect;
-
-    @Column(name="player2_disconnect")
-    private boolean player2Disconnect;
 
     @Column(name="index1")
     private int index1;
@@ -190,34 +172,6 @@ public class Game {
         this.player2Joined = player2Joined;
     }
 
-    public boolean isPlayer1Ready() {
-        return this.player1Ready;
-    }
-
-    public void setPlayer1Ready(boolean player1Ready) {
-        this.player1Ready = player1Ready;
-    }
-
-    public boolean isPlayer2Ready() {
-        return this.player2Ready;
-    }
-
-    public boolean isPlayer1Rematch() {
-        return this.player1Rematch;
-    }
-
-    public void setPlayer1Rematch(boolean player1Rematch) {
-        this.player1Rematch = player1Rematch;
-    }
-
-    public boolean isPlayer2Rematch() {
-        return this.player2Rematch;
-    }
-
-    public void setPlayer2Rematch(boolean player2Rematch) {
-        this.player2Rematch = player2Rematch;
-    }
-
     public List<Problem> getProblemSet() {
         return this.problemSet;
     }
@@ -280,22 +234,6 @@ public class Game {
 
     public void setNumDisconnect2(int numDisconnect2) {
         this.numDisconnect2 = numDisconnect2;
-    }
-
-    public boolean isPlayer1Disconnect() {
-        return this.player1Disconnect;
-    }
-
-    public void setPlayer1Disconnect(boolean player1Disconnect) {
-        this.player1Disconnect = player1Disconnect;
-    }
-
-    public boolean isPlayer2Disconnect() {
-        return this.player2Disconnect;
-    }
-
-    public void setPlayer2Disconnect(boolean player2Disconnect) {
-        this.player2Disconnect = player2Disconnect;
     }
 
     public int getIndex1() {
