@@ -1,10 +1,3 @@
-/* window.addEventListener('beforeunload', function () {
-    if (eventSource != null) {
-        eventSource.close();
-    }
-}); */
-//firefox bug?? interrupted websocket
-
 import { evaluateMathExpression } from "./test_latex.js";
 import { animateXp } from "./game_xp.js";
 import { getSideBar } from "./sidebar.js";
@@ -13,6 +6,13 @@ var username;
 var gameId;
 var playerType;
 var mins = 10;
+//problem stuff
+var currentProblem;
+var currentProblemId;
+var currentProblemIndex = 0;
+var numProblems;
+var problemList;
+
 setUpGame();
 
 async function setUpGame() {
@@ -32,7 +32,16 @@ async function setUpGame() {
 
     playerType = await getPlayerType(gameId);
     mins = await getTimeLimit(gameId);
+    problemList = await getProblemList(gameId);
+    numProblems = Object.keys(problemList).length;
+    currentProblem = problemList[0];
+    currentProblemId = problemList[0].problemId;
 
+    //debugging
+    console.log(currentProblem);
+    console.log("Current ProblemId: " + currentProblemId);
+    console.log("Current ProblemIndex: " + currentProblemIndex);
+    
     connect();
 }
 
@@ -75,11 +84,6 @@ if (loc.protocol === "https:") {
 base_uri += "//" + loc.host;
 
 var rematchClient;
-let currentProblem;
-let currentProblemId;
-let currentProblemIndex = 0;
-let numProblems;
-var problems;
 
 let answerForm = document.getElementById("answer_form");
 let answerSubmit = document.getElementById("answer_submit");
@@ -174,29 +178,6 @@ rejRem.addEventListener("click", function(event) {
     event.preventDefault()
     rejectRematch();
 });
-
-/* let inputMode = 'regular';
-
-let regularButton = document.getElementById("regular_mode");
-let scientificButton = document.getElementById("sci_mode");
-
-regularButton.addEventListener("click", handleRegular);
-scientificButton.addEventListener("click", handleScientific);
-
-function handleRegular() {
-    scientificButton.style.backgroundColor = "var(--bs-border-color-translucent)";
-    inputMode = 'regular';
-    regularButton.style.backgroundColor = "";
-    console.log(inputMode);
-}
-
-function handleScientific() {
-    regularButton.style.backgroundColor = "var(--bs-border-color-translucent)";
-    inputMode = 'scientific';
-    scientificButton.style.backgroundColor = "";
-    console.log(inputMode);
-}
- */
 
 function convertToLatex() {
     const userInputValue = playerInput.value;
@@ -314,6 +295,24 @@ async function getTimeLimit(gameId) {
     }
 }
 
+async function getProblemList(gameId) {
+    try {
+        const response = await fetch("/game/problem_list", {
+            method: "POST",
+            headers: {
+            "Content-Type": "text/plain",
+            },
+            body: gameId
+        });
+        if (!response.ok) {
+            throw new Error("Something went wrong.");
+        }
+        return response.json();
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
 
 function startGameTimer() {
     let timer = document.getElementById('timer_p');
@@ -353,52 +352,6 @@ const sendMessage = (message, client) => {
     }
 }
 
-const handleMessage = (message) => {
-    if (messagesTypes[message.type])
-        messagesTypes[message.type](message);
-}
-
-const messagesTypes = {
-    "game.join": (message) => {
-        updateGame(message);      
-    },
-    /* "game.gameOver": (message) => {
-        updateGame(message);
-        if (message.gameState === 'TIE') alert("Game over! It's a tie!");
-        else showWinner(message.winner);
-    }, */
-    "game.joined": (message) => {
-        if(status === "IN_PROGRESS") {
-            startGame();
-        }
-        updateGame(message);
-    },
-
-    "game.ready": (message) => {
-        updateGame(message);
-    },
-
-    "game.answer": (message) => {
-        //TODO
-    },
-    /* "game.move": (message) => {
-        updateGame(message);
-    },
-    "game.left": (message) => {
-        updateGame(message);
-        if (message.winner) showWinner(message.winner);
-    },
-    "error": (message) => {
-        toastr.error(message.content);
-    } */
-
-    "game.disconnect": (message) => {
-        console.log(message.body);
-        alert("Opponent disconnected! You win");
-    }
-}
-
-
 function connect() {
     const socketConnect = new WebSocket(base_uri + "/connect", 'v10.stomp');
     console.log('Connecting to game');
@@ -408,19 +361,18 @@ function connect() {
         console.log(frame);
         stompClient.subscribe('/user/' + username + "/connect", function (message) {
             let messageObject = JSON.parse(message.body);
-            status = messageObject.gameStatus;
-            //handleMessage(messageObject);
+            let type = messageObject.type;
+            switch(type) {
+                case "join":
+                    status = messageObject.gameStatus;
 
-            problems = messageObject.problemSet;
-            numProblems = Object.keys(problems).length;
-            currentProblem = problems[0];
-            currentProblemId = problems[0].problemId;
-            console.log("Current Problem: " + objectToProblem(currentProblem));
-            console.log("Current ProblemId: " + currentProblemId);
-            console.log("Current ProblemIndex: " + currentProblemIndex);
+                    if(status === "IN_PROGRESS") {
+                        startGame();
+                    }
+                    break;
 
-            if(status === "IN_PROGRESS") {
-                startGame();
+                case "disconnect":
+                    endGame();
             }
         });
         
@@ -474,21 +426,6 @@ function connect() {
     });
 } */
 
-/* function readyUp() {
-    readyButton.innerHTML = "Waiting for opponent...";
-    const socketReady = new WebSocket(base_uri + "/ready", 'v10.stomp');
-    stompClient = Stomp.over(socketReady);
-    stompClient.connect({"gameId": gameId}, function (frame) {
-        console.log("Connected: " + frame);
-        stompClient.subscribe(`/topic/game.ready`, function (message) {
-            handleMessage(JSON.parse(message.body));
-            handleGameStatus(message.body);
-        });
-        queueGame();
-    });
-}
- */
-
 async function getPlayerType(gameId) {
     const response = await fetch("/game/type/" + gameId);
     if (!response.ok) {
@@ -499,16 +436,6 @@ async function getPlayerType(gameId) {
     return playerType;
 }
 
-/* async function getNumDisconnect(gameId) {
-    const response = await fetch("/game/disconnect_num/" + gameId);
-    if (!response.ok) {
-        const message = `An error has occured: ${response.status}`;
-        throw new Error(message);
-    }
-    const numDisconnect = await response.json();
-    return numDisconnect;
-} */
-
 
 function joinGame(stompClient) {
     sendMessage({
@@ -517,14 +444,6 @@ function joinGame(stompClient) {
         gameId: gameId
     }, stompClient);
 }
-
-/* function queueGame() {
-    sendMessage({
-        type: "game.ready",
-        playerUsername: username,
-        gameId: gameId
-    });
-} */
 
 
 function updateGame(message) {
@@ -568,15 +487,6 @@ async function startGame() {
         fadeOutBg();
     });
 }
-
-/* function checkDisconnect() {
-    stompClient.connect({}, function () {
-        stompClient.send("/ws/setGameId", {}, JSON.stringify({ gameId: gameId }));
-    }, function (error) {
-        throw new Error(error);
-    });
-}
- */
 
 function sendAnswer(client) {
     let playerAnswer = playerInput.value;
@@ -653,8 +563,8 @@ function nextProblem() {
 
     if(currentProblemIndex + 1 < numProblems) {
         currentProblemIndex++;
-        currentProblem = problems[currentProblemIndex];
-        currentProblemId = problems[currentProblemIndex].problemId;
+        currentProblem = problemList[currentProblemIndex];
+        currentProblemId = problemList[currentProblemIndex].problemId;
 
         problemNumberBox.innerHTML = "Problem " + (currentProblemIndex + 1);
         problemImage.src = currentProblem.image;
@@ -758,16 +668,6 @@ async function endGame() {
     } catch(error) {
         throw new Error(error);
     }
-
-    /* postRequest("/game/game_end", gameEndData, "json").then((response) =>  {
-        if(response === "Game Ended") {
-            connectRematch();
-        } else {
-            throw new Error("Oops! Something went wrong.")
-        }
-    }).catch((error) => {
-        throw new Error(error);
-    }); */
 }
 
 function sendRematch(rematchT) {
@@ -930,29 +830,4 @@ async function getUsername() {
     }
     const username = await response.text();
     return username;
-}
-
-
-//figure out bug
-async function postRequest(url, data, type) {
-    let contentType;
-    if(type === "plain text") {
-        contentType = "text/plain";
-    } else if(type === "json") {
-        contentType = "application/json";
-    }
-
-    const response = await fetch(url, {
-        method: "POST", // *GET, POST, PUT, DELETE, etc.
-        mode: "same-origin", // no-cors, *cors, same-origin
-        cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-        credentials: "same-origin", // include, *same-origin, omit
-        headers: {
-            "Content-Type": contentType,
-        },
-        redirect: "follow", // manual, *follow, error
-        referrerPolicy: "same-origin", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-        body: data, // body data type must match "Content-Type" header
-    });
-    return response.text();
 }

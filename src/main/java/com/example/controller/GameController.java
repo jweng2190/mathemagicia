@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.dao.GameRepository;
 import com.example.dao.UserRepository;
 import com.example.dto.ConnectRequest;
+import com.example.dto.message.GameMessage;
 import com.example.model.Game;
 import com.example.model.GamePlay;
 import com.example.model.GameStatus;
@@ -49,7 +50,7 @@ public class GameController {
     private final BotService botService;
     private UserRepository userDao;
     private GameRepository gameDao;
-    //private GameStorage gameStorage = GameStorage.getInstance();
+    private SimpMessagingTemplate simpMessagingTemplate;
 
     @PostMapping("/create")
     public ResponseEntity<String> createGame(Principal principal,
@@ -144,6 +145,10 @@ public class GameController {
         String gameId = user.getCreatedGameId();
         if(gameId != null) {
             Game game = gameDao.getGameByGameId(gameId);
+            if(game.getStatus() != GameStatus.NEW) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            }
+
             List<Object> data = new ArrayList<Object>(Arrays.asList(
                 game.getGameDifficulty(), game.getTimeLimit(), game.getGameDate(), gameId
             ));
@@ -159,8 +164,12 @@ public class GameController {
     public ResponseEntity<String> deleteGame(@RequestBody Map<String, String> gameInfo) {
         String username = gameInfo.get("username");
         String gameId = gameInfo.get("gameId");
+        if(gameId == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
         Game game = gameDao.getGameByGameId(gameId);
-        if(game == null) {
+        if(game == null || game.getStatus() != GameStatus.NEW) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         int status = gameService.deleteGame(gameId, username);
@@ -238,7 +247,9 @@ public class GameController {
         game.setStatus(GameStatus.FINISHED);
         User user = userDao.findByUsername(playerUsername);
         user.setActiveGameId(null);
-        user.setCreatedGameId(null);
+        if(game.getPlayer1Username().equals(playerUsername)) {
+            user.setCreatedGameId(null);
+        }
         userDao.save(user);
 
         if(game.getWinner() == null) {
@@ -323,13 +334,31 @@ public class GameController {
                 break;
 
             case IN_PROGRESS:
-                break;
+                if(game.getPlayer1Username().equals(user.getUsername())) {
+                    game.setWinner(game.getPlayer2Username());
+                    user.setCreatedGameId(null);
+                } else {
+                    game.setWinner(game.getPlayer1Username());
+                }
 
+                user.setActiveGameId(null);
+                game.setStatus(GameStatus.FINISHED);
+
+                userDao.save(user);
+                gameDao.save(game);
+
+                GameMessage gm = new GameMessage();
+                gm.setGameId(gameId);
+                gm.setType("disconnect");
+                simpMessagingTemplate.convertAndSendToUser(game.getPlayer1Username(), "/connect", gm);
+                simpMessagingTemplate.convertAndSendToUser(game.getPlayer2Username(), "/connect", gm);
+                break;
             default:
                 break;
         }
         return ResponseEntity.ok("Success!");
     }
+    
 
     @GetMapping("/type/{id}")
     public ResponseEntity<Integer> getPlayerType(@PathVariable("id") String gameId, Principal principal) {

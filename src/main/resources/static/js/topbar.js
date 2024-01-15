@@ -36,7 +36,6 @@ export async function getTopBar() {
 async function getName() {
     const username = await getUserInfo("Username");
     topBarUsername.textContent = username;
-    console.log(username);
 }
 
 async function getLevel() {

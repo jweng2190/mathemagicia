@@ -12,26 +12,18 @@ public class GameMessage {
     private int score1;
     private int score2;
     private String winner;
-
-    /* private boolean player1Joined;
-    private boolean player2Joined; */
     private GameStatus status;
-    private String content;
-    private List<Problem> problemSet;
-
 
     public GameMessage() {
     }
 
     public GameMessage(String type, String gameId, int score1, int score2,
-         GameStatus status, String content, List<Problem> problemSet) {
+         GameStatus status) {
         this.type = type;
         this.gameId = gameId;
         this.score1 = score1;
         this.score2 = score2;
         this.status = status;
-        this.content = content;
-        this.problemSet = problemSet;
     }
 
     public String getType() {
@@ -104,22 +96,6 @@ public class GameMessage {
 
     public void setGameStatus(GameStatus status) {
         this.status = status;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public List<Problem> getProblemSet() {
-        return this.problemSet;
-    }
-
-    public void setProblemSet(List<Problem> problemSet) {
-        this.problemSet = problemSet;
     }
 
     /* public boolean isPlayer1Joined() {
