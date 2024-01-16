@@ -38,7 +38,7 @@ async function setUpGame() {
     currentProblemId = problemList[0].problemId;
 
     //debugging
-    console.log(currentProblem);
+    console.log(problemList);
     console.log("Current ProblemId: " + currentProblemId);
     console.log("Current ProblemIndex: " + currentProblemIndex);
     

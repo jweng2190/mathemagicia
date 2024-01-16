@@ -3,6 +3,12 @@ import { getSideBar } from "./sidebar.js";
 
 const username = await getUsername();
 let gameId;
+var loc = window.location.protocol + "//" + window.location.host;
+let shareM = document.getElementById("modal-share");
+var modalShare = new bootstrap.Modal(shareM, {backdrop: 'static', keyboard: false}); 
+var inputLink = document.getElementById("game_link");
+var copyButton = document.getElementById("copy_link");
+
 const cgButton = document.getElementById("cg_button");
 const jgButton = document.getElementById("jg_button");
 
@@ -15,6 +21,7 @@ const cells = contentRow.getElementsByTagName('td');
 
 cgButton.addEventListener("click", createGame);
 jgButton.addEventListener("click", joinGame);
+copyButton.addEventListener("click", copyToClipboard);
 
 getTopBar();
 getSideBar("regular");
@@ -91,6 +98,8 @@ async function getUsername() {
 
 function shareGame() {
     //TODO, popup modal
+    inputLink.value = loc + "/game/" + gameId; 
+    modalShare.show();
 }
 
 function joinGame() {
@@ -116,4 +125,24 @@ async function deleteGame() {
     } catch(error) {
         console.log(error);
     }
+}
+
+function copyToClipboard() {
+    inputLink.select();
+    inputLink.setSelectionRange(0, 99999);
+    document.execCommand("copy");
+    showNotification();
+}
+
+function showNotification() {
+    // Get the notification element
+    var notificationElement = document.getElementById("notification");
+
+    // Show the notification
+    notificationElement.style.display = "block";
+
+    // Hide the notification after a certain duration (e.g., 3 seconds)
+    setTimeout(function() {
+        notificationElement.style.display = "none";
+    }, 3000);
 }
