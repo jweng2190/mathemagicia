@@ -26,9 +26,9 @@ async function setUpGame() {
         sendDisconnect();
     });
 
-    window.addEventListener("popstate", () => {
+    /* window.addEventListener("popstate", () => {
         sendDisconnect();
-    });
+    });*/
 
     playerType = await getPlayerType(gameId);
     mins = await getTimeLimit(gameId);
@@ -459,6 +459,12 @@ async function startGame() {
         let data = await getPlayerData();
         player1 = data[0];
         player2 = data[1];
+
+        let p1Username = document.getElementById("player1_username");
+        let p2Username = document.getElementById("player2_username");
+
+        p1Username.innerHTML = player1;
+        p2Username.innerHTML = player2;
     } catch(err) {
         throw new Error(err);
     }

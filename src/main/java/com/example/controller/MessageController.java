@@ -42,7 +42,7 @@ public class MessageController {
     private DifficultyLevelService difficultyLevelService;
 
     @MessageMapping("/game.join")
-    public void joinGame(@Payload JoinMessage message) {
+    public synchronized void joinGame(@Payload JoinMessage message) {
         String playerUsername = message.getPlayerUsername();
         String gameId = message.getGameId();
 
