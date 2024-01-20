@@ -12,6 +12,7 @@ var currentProblemId;
 var currentProblemIndex = 0;
 var numProblems;
 var problemList;
+var statusList;
 
 setUpGame();
 
@@ -36,6 +37,7 @@ async function setUpGame() {
     numProblems = Object.keys(problemList).length;
     currentProblem = problemList[0];
     currentProblemId = problemList[0].problemId;
+    statusList = new Array(numProblems).fill(-1);
 
     //debugging
     console.log(problemList);
@@ -130,6 +132,10 @@ const amClose = document.getElementById("am-close");
 const player1Badge = document.getElementById("player1_badge");
 const player2Badge = document.getElementById("player2_badge");
 
+let navFirst, navPrev, pCurrProb, navNext, navLast;
+let statusImg = document.getElementById("status_img");
+let statusSpan = document.getElementById("status_span");
+
 let player1;
 let player2;
 
@@ -143,13 +149,13 @@ modalLink.addEventListener("click", () => {
     modalA.show();
 });
 
-amClose.addEventListener("click", () => {
+/* amClose.addEventListener("click", () => {
     modalA.hide();
 });
-
-endClose.addEventListener("click", () => {
+ */
+/* endClose.addEventListener("click", () => {
     modalE.hide();
-});
+}); */
 
 retHome.addEventListener("click", () => {
     window.location.href = "/home";
@@ -319,7 +325,8 @@ function startGameTimer() {
     timer.style.visibility = "visible";
 
     const now = new Date().getTime();
-    const deadline = mins * 60 * 1000 + now;
+    const deadline = 3 * 60 * 1000 + now;
+    //const deadline = mins * 60 * 1000 + now;
 
     countdown = setInterval(() => {
         var currentTime = new Date().getTime();
@@ -380,51 +387,77 @@ function connect() {
     });
 }
 
-/* function reconnect() {
-    const socketConnect = new WebSocket(base_uri + "/connect", 'v10.stomp');
-    console.log('Reconnecting to game');
+function handleProbNav() {
+    navFirst = document.getElementById("nav_first");
+    navPrev = document.getElementById("nav_prev");
+    pCurrProb = document.getElementById("curr_prob");
+    navNext = document.getElementById("nav_next");
+    navLast = document.getElementById("nav_last");
 
-    stompClient = Stomp.over(socketConnect);
-    stompClient.connect({"gameId" : gameId}, function (frame) {
-        console.log(frame);
-        stompClient.subscribe('/topic/game.state', function (message) {
-            var messageObject = JSON.parse(message.body);
-            handleMessage(messageObject);
-            problems = messageObject.problemSet;
-            numProblems = Object.keys(problems).length;
-            currentProblem = problems[0];
-            currentProblemId = problems[0].problemId;
-            console.log("Current Problem: " + objectToProblem(currentProblem));
-            console.log("Current ProblemId: " + currentProblemId);
-            console.log("Current ProblemIndex: " + currentProblemIndex);
-        });
-        
-        joinGame();
-    });
-} */
+    navFirst.addEventListener("click", goFirst);
+    navPrev.addEventListener("click", goPrev);
+    navNext.addEventListener("click", goNext);
+    navLast.addEventListener("click", goLast);
 
-/* function connectStatus() {
-    const socketStatus = new WebSocket(base_uri + "/status", 'v10.stomp');
-    stompClient = Stomp.over(socketStatus);
+    pCurrProb.innerHTML = (currentProblemIndex + 1) + "/" + numProblems;
+}
 
-    stompClient.connect({}, function (frame) {
-        stompClient.subscribe('/user/' + username + "/status", function (message) {
-            var statusMsg = JSON.parse(message.body);
-            console.log(statusMsg);
+function goFirst() {
+    currentProblemIndex = 0;
+    displayProb();
+    showProbStatus(statusList[currentProblemIndex]);
+}
 
-            let status = statusMsg.status;
-            if(status === 'Disconnected') {
-                alert("Opponent disconnected. You win!");
-            }
-        });
-        let message = {
-            gameId: gameId,
-            playerUsername: username
-        }
-        stompClient.send("/ws/game.status", {}, JSON.stringify(message));
-        connect();
-    });
-} */
+function goPrev() {
+    if(currentProblemIndex >= 1) {
+        --currentProblemIndex;
+        displayProb();
+    }
+    showProbStatus(statusList[currentProblemIndex]);
+}
+
+function goNext() {
+    if(currentProblemIndex + 1 < numProblems) {
+        ++currentProblemIndex;
+        displayProb();
+    }
+    showProbStatus(statusList[currentProblemIndex]);
+}
+
+function goLast() {
+    currentProblemIndex = numProblems - 1;
+    displayProb();
+    showProbStatus(statusList[currentProblemIndex]);
+}
+
+function displayProb() {
+    currentProblem = problemList[currentProblemIndex];
+    currentProblemId = problemList[currentProblemIndex].problemId;
+
+    problemNumberBox.innerHTML = "Problem " + (currentProblemIndex + 1);
+    problemImage.src = currentProblem.image;
+    pCurrProb.innerHTML = (currentProblemIndex + 1) + "/" + numProblems;
+}
+
+function showProbStatus(probStatus) {
+    switch(probStatus) {
+        case -1:
+            //not attempted
+            statusImg.style.display = "none";
+            statusSpan.style.display = "";
+            break;
+        case 0:
+            statusSpan.style.display = "none";
+            statusImg.src = "/img/incorrect.png";
+            statusImg.style.display = "";
+            break;
+        case 1:
+            statusSpan.style.display = "none";
+            statusImg.src = "/img/correct.png";
+            statusImg.style.display = "";
+            break;
+    }
+}
 
 async function getPlayerType(gameId) {
     const response = await fetch("/game/type/" + gameId);
@@ -491,6 +524,7 @@ async function startGame() {
         startGameTimer();
         checkAnswer();
         fadeOutBg();
+        handleProbNav();
     });
 }
 
@@ -515,28 +549,20 @@ function checkAnswer() {
         console.log("Connected: " + frame);
         stompClient.subscribe('/user/' + username + '/answer', function (message) {
             let msg = JSON.parse(message.body);
-    
-            let originalScore1 = player1Score;
-            let originalScore2 = player2Score;
-            player1Score = msg.score1;
-            player2Score = msg.score2;
+
+            let answerStatus = msg.status;
+            let pType = msg.playerType;
+            player1Score = msg.player1Score;
+            player2Score = msg.player2Score;
 
             player1ScoreField.innerHTML = player1Score;
             player2ScoreField.innerHTML = player2Score;
 
-            if(msg.winner !== null) {
-                gameWinner = msg.winner;
-                endGame();
-            } else {
-                console.log("Player 1 Score: " + player1Score + "\nPlayer 2 Score: " + player2Score);
+            console.log("Player 1 Score: " + player1Score + "\nPlayer 2 Score: " + player2Score);
 
-                if(player1Score > originalScore1 && playerType === 1) {
-                    nextProblem();
-                }
-
-                if(player2Score > originalScore2 && playerType == 2) {
-                    nextProblem();
-                }
+            if(playerType === pType) {
+                statusList[currentProblemIndex] = answerStatus;
+                showProbStatus(statusList[currentProblemIndex]);
             }
 
             /* if ((player1Score - originalScore1 > 0) || (player2Score - originalScore2 > 0)) {
@@ -642,8 +668,6 @@ async function showFinalScores() {
 
     finalScore1.innerHTML = player1Score;
     finalScore2.innerHTML = player2Score;
-
-    animateXp(gameId, playerType);
 }
 
 
@@ -665,12 +689,9 @@ async function endGame() {
             },
             body: gameEndData
         });
-        const result = await response.text();
-        if(result === "Game Ended") {
-            connectRematch();
-        } else {
-            throw new Error("Oops! Something went wrong.")
-        }
+        const xpData = await response.json();
+        animateXp(xpData);
+        connectRematch();
     } catch(error) {
         throw new Error(error);
     }
@@ -736,17 +757,6 @@ function connectRematch() {
     });
 }
 
-
-function handleGameStatus(message) {
-    let messageObject = JSON.parse(message);
-    let messageStatus = messageObject.status;
-    if(messageStatus === "READY2") {
-        readyButton.innerHTML = "READY!";
-        setTimeout(startGame(), 2000);
-    }
-
-    console.log(messageStatus);
-}
 
 function handleRematchStatus(message) {
     let parsedMessage = JSON.parse(message);

@@ -2,6 +2,7 @@ package com.example.service;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,9 +11,12 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import com.example.dao.GameRepository;
+import com.example.dao.UserRepository;
+import com.example.dto.message.GameMessage;
 import com.example.model.Game;
 import com.example.model.GamePlay;
 import com.example.model.GameStatus;
@@ -31,9 +35,14 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class GameService {
     private ProblemService problemService;
+    private XpLevelService xpLevelService;
+    private SimpMessagingTemplate simpMessagingTemplate;
 
     @Autowired
     private GameRepository gameDao;
+
+    @Autowired
+    private UserRepository userDao;
 
     public Game createGame(String playerUsername, String diff, String time) {
         Game game = new Game();
@@ -44,9 +53,6 @@ public class GameService {
         //game.setPlayer1Joined(true);
         game.setStatus(NEW);
 
-        //game.setPlayer1Disconnect(false);
-        //game.setPlayer2Disconnect(false);
-
         game.setGameDifficulty(diff);
         game.setTimeLimit(time);
         game.setGameDate(LocalDate.now());
@@ -54,6 +60,10 @@ public class GameService {
         setProblems(game);
 
         gameDao.save(game);
+        User user = userDao.findByUsername(playerUsername);
+        String gameId = game.getGameId();
+        user.setCreatedGameId(gameId);
+        userDao.save(user);
 
         return game;
     }
@@ -68,10 +78,114 @@ public class GameService {
         return 0;
     }
 
+    public synchronized List<Integer> endGame(String gameId, String playerUsername) {
+        Game game = gameDao.getGameByGameId(gameId);
+        game.setStatus(GameStatus.FINISHED);
+        User user = userDao.findByUsername(playerUsername);
+        user.setActiveGameId(null);
+        if(game.getPlayer1Username().equals(playerUsername)) {
+            user.setCreatedGameId(null);
+        }
+        userDao.save(user);
+
+        if(game.getWinner() == null) {
+            String winner = getWinner(game);
+            game.setWinner(winner);
+        }
+
+        if(game.getGameDate() == null) {
+            game.setGameDate(LocalDate.now());
+        }
+        gameDao.save(game);
+
+        String player1 = game.getPlayer1Username();
+        String player2 = game.getPlayer2Username();
+
+        int player1Xp = game.getPlayer1Xp();
+        int player2Xp = game.getPlayer2Xp();
+
+        int currXp = user.getXp();
+        int level = user.getLevel();
+        int xpThreshold = xpLevelService.getXpToLevelUp(level);
+        List<Integer> newXpData;
+
+        int xpAdd;
+        if(playerUsername.equals(player1)) {
+            newXpData = xpLevelService.levelUp(currXp, level, player1Xp);
+            xpAdd = player1Xp;
+        } else {
+            newXpData = xpLevelService.levelUp(currXp, level, player2Xp);
+            xpAdd = player2Xp;
+        }
+
+        int newLevel = newXpData.get(0);
+        int newXp = newXpData.get(1);
+        int newThreshold = newXpData.get(2);
+        user.setLevel(newLevel);
+        user.setXp(newXp);
+        userDao.save(user);
+        saveGame(game, user);
+
+        return Arrays.asList(level, currXp, xpThreshold, newLevel, newXp, newThreshold, xpAdd);
+    }
+
+    public synchronized void handleDisconnect(String gameId, String username) {
+        Game game = gameDao.getGameByGameId(gameId);
+        GameStatus status = game.getStatus();
+        User user = userDao.findByUsername(username);
+        switch(status) {
+            case NEW:
+                if(game.getPlayer1Username().equals(username)) {
+                    game.setPlayer1Joined(false);
+                } else {
+                    game.setPlayer2Username(null);
+                    game.setPlayer2Joined(false);
+                }
+                
+                user.setActiveGameId(null);
+                gameDao.save(game);
+                userDao.save(user);
+                System.out.println("Disconnect: " + gameId);
+                break;
+            case FINISHED:
+                user.setActiveGameId(null);
+                if(game.getPlayer1Username().equals(username)) {
+                    user.setCreatedGameId(null);
+                }
+                userDao.save(user);
+                break;
+            default:
+                endGame(gameId, username);
+                GameMessage gm = new GameMessage();
+                gm.setGameId(gameId);
+                gm.setType("disconnect");
+                simpMessagingTemplate.convertAndSendToUser(game.getPlayer1Username(), "/connect", gm);
+                simpMessagingTemplate.convertAndSendToUser(game.getPlayer2Username(), "/connect", gm);
+                break;
+        }
+    }
+
     public void setProblems(Game game) {
         List<Problem> problems = problemService.getRandomProblems(ProblemService.PROBLEM_SET_SIZE, game);
         game.setProblemSet(problems);
         gameDao.save(game);
+    }
+
+    private void saveGame(Game game, User user) {
+        List<Game> games = user.getGames();
+        //add most recent first
+        games.add(0, game);
+        userDao.save(user);
+    }
+
+    public String getWinner(Game game) {
+        if(game.getPlayer1Score() > game.getPlayer2Score()) {
+            return game.getPlayer1Username();
+        } else if (game.getPlayer1Score() < game.getPlayer2Score()) {
+            return game.getPlayer2Username();
+        } else {
+            return null;
+        }
     }
 
     public String getGameCodeByUsername(String player1Username) {
@@ -83,14 +197,6 @@ public class GameService {
         }
         return "";
     }
-
-    /* public Game getGameByUsername(String username) {
-        Map<String, Game> allGames = GameStorage.getInstance().getGames();
-        for(String key : allGames.keySet()) {
-            String player2Username = allGames.get(key).getPlayer2().getUsername();
-            if()
-        }
-    } */
 
     public List<Game> getGamesByCreator(String creatorUsername) {
         Map<String, Game> allGames = GameStorage.getInstance().getGames();
@@ -108,60 +214,9 @@ public class GameService {
         return gameListByUser;
     }
 
-    /* public Game getGameById(String gameId) {
-        Map<String, Game> allGames = GameStorage.getInstance().getGames();
-        for(String key : allGames.keySet()) {
-            Game game = allGames.get(key);
-            if(game.getGameId().equals(gameId)) {
-                return game;
-            }
-        }
-        return null;
-    } */
-
     @Cacheable(value = "gameCache", key = "#gameId")
     public Game getGameById(String gameId) {
         Game game = gameDao.getGameByGameId(gameId);
         return game;
     }
-
-    /* public Game connectToGame(User player2, String gameId) throws InvalidParamException, InvalidGameException {
-        if (!GameStorage.getInstance().getGames().containsKey(gameId)) {
-            throw new InvalidParamException("Game with provided id doesn't exist");
-        }
-        Game game = GameStorage.getInstance().getGames().get(gameId);
-
-        if (game.getPlayer2() != null) {
-            throw new InvalidGameException("Game is not valid anymore");
-        }
-
-        game.setPlayer2(player2);
-        game.setStatus(IN_PROGRESS);
-        GameStorage.getInstance().setGame(game);
-        return game;
-    }
- */
-    /* public Game connectToRandomGame(User player2) throws NotFoundException {
-        Game game = GameStorage.getInstance().getGames().values().stream()
-                .filter(it -> it.getStatus().equals(NEW))
-                .findFirst().orElseThrow(() -> new NotFoundException("Game not found"));
-        game.setPlayer2(player2);
-        game.setStatus(IN_PROGRESS);
-        GameStorage.getInstance().setGame(game);
-        return game;
-    }
-    
-    public Game gamePlay(GamePlay gamePlay) throws NotFoundException, InvalidGameException {
-        if (!GameStorage.getInstance().getGames().containsKey(gamePlay.getGameId())) {
-            throw new NotFoundException("Game not found");
-        }
-
-        Game game = GameStorage.getInstance().getGames().get(gamePlay.getGameId());
-        if (game.getStatus().equals(FINISHED)) {
-            throw new InvalidGameException("Game is already finished");
-        }
-
-        GameStorage.getInstance().setGame(game);
-        return game;
-    } */
 }

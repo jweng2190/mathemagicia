@@ -50,7 +50,6 @@ public class GameController {
     private final BotService botService;
     private UserRepository userDao;
     private GameRepository gameDao;
-    private SimpMessagingTemplate simpMessagingTemplate;
 
     @PostMapping("/create")
     public ResponseEntity<String> createGame(Principal principal,
@@ -62,21 +61,8 @@ public class GameController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
-        /*
-         * //check if user has already created a game
-         * List<Game> creatorGames = gameService.getGamesByCreator(username);
-         * if(creatorGames.size() >= 1) {
-         * return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-         * }
-         */
-        // for testing purposes
-
         Game game = gameService.createGame(username, difficulty, time);
-        gameDao.save(game);
-        String gameId = game.getGameId();
-        user.setCreatedGameId(gameId);
-        userDao.save(user);
-        return ResponseEntity.ok(gameId);
+        return ResponseEntity.ok(game.getGameId());
     }
 
     @PostMapping("/computer")
@@ -85,20 +71,8 @@ public class GameController {
             @RequestParam("time") String time,
             @RequestParam("computerLevel") int computerLevel) throws InvalidGameException {
         String username = principal.getName();
-        // User currentUser = userDao.findByUsername(username);
-
-        /*
-         * //check if user has already created a game
-         * List<Game> creatorGames = gameService.getGamesByCreator(username);
-         * if(creatorGames.size() >= 1) {
-         * return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-         * }
-         */
-        // for testing purposes
 
         Game game = gameService.createGame(username, difficulty, time);
-        gameDao.save(game);
-        gameService.setProblems(game);
         List<Problem> problems = game.getProblemSet();
         String gameId = game.getGameId();
         User user = userDao.findByUsername(username);
@@ -239,54 +213,12 @@ public class GameController {
 
     @PostMapping(path="/game_end", consumes = MediaType.APPLICATION_JSON_VALUE)
     @RolesAllowed({"USER", "ADMIN"})
-    public ResponseEntity<String> endGame(@RequestBody Map<String, String> gameInfo) {
+    public synchronized ResponseEntity<List<Integer>> endGame(@RequestBody Map<String, String> gameInfo) {
         String gameId = gameInfo.get("gameId");
         String playerUsername = gameInfo.get("playerUsername");
+        List<Integer> response = gameService.endGame(gameId, playerUsername);
 
-        Game game = gameDao.getGameByGameId(gameId);
-        game.setStatus(GameStatus.FINISHED);
-        User user = userDao.findByUsername(playerUsername);
-        user.setActiveGameId(null);
-        if(game.getPlayer1Username().equals(playerUsername)) {
-            user.setCreatedGameId(null);
-        }
-        userDao.save(user);
-
-        if(game.getWinner() == null) {
-            String winner = getWinner(game);
-            game.setWinner(winner);
-        }
-
-        if(game.getGameDate() == null) {
-            game.setGameDate(LocalDate.now());
-        }
-        gameDao.save(game);
-
-        String player1 = game.getPlayer1Username();
-        String player2 = game.getPlayer2Username();
-
-        int player1Xp = game.getPlayer1Xp();
-        int player2Xp = game.getPlayer2Xp();
-
-        if(playerUsername.equals(player1)) {
-            //int originalXp1 = userDao.getXpByUsername(player1);
-            //int updatedXp1 = player1Xp + originalXp1;
-            User player1User = userDao.findByUsername(player1);
-            //player1User.setXp(updatedXp1); */
-            //userDao.save(player1User);
-            saveGame(game, player1User);
-        }
-
-        if(playerUsername.equals(player2)) {
-            //int originalXp2 = userDao.getXpByUsername(player2);
-            //int updatedXp2 = player2Xp + originalXp2;
-            User player2User = userDao.findByUsername(player2);
-            //player2User.setXp(updatedXp2);
-            //userDao.save(player2User);
-            saveGame(game, player2User);
-        }
-
-        return ResponseEntity.ok().body("Game Ended");
+        return ResponseEntity.ok().body(response);
     }
 
     @PostMapping(path="/xp_earned", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -305,58 +237,17 @@ public class GameController {
         } else if(playerType.equals("Player 2")) {
             return ResponseEntity.ok().body(game.getPlayer2Xp());
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).build();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
 
     @PostMapping(path="/disconnect", consumes = MediaType.APPLICATION_JSON_VALUE)
     @RolesAllowed({"USER", "ADMIN"})
-    public ResponseEntity<String> handleDisconnect(@RequestBody Map<String, String> playerInfo) {
+    public void handleDisconnect(@RequestBody Map<String, String> playerInfo) {
         String gameId = playerInfo.get("gameId");
         String username = playerInfo.get("username");
 
-        Game game = gameDao.getGameByGameId(gameId);
-        GameStatus status = game.getStatus();
-        User user = userDao.findByUsername(username);
-        switch(status) {
-            case NEW:
-                if(game.getPlayer1Username().equals(username)) {
-                    game.setPlayer1Joined(false);
-                } else {
-                    game.setPlayer2Username(null);
-                    game.setPlayer2Joined(false);
-                }
-                
-                user.setActiveGameId(null);
-                gameDao.save(game);
-                userDao.save(user);
-                System.out.println("Disconnect: " + gameId);
-                break;
-
-            case IN_PROGRESS:
-                if(game.getPlayer1Username().equals(user.getUsername())) {
-                    game.setWinner(game.getPlayer2Username());
-                    user.setCreatedGameId(null);
-                } else {
-                    game.setWinner(game.getPlayer1Username());
-                }
-
-                user.setActiveGameId(null);
-                game.setStatus(GameStatus.FINISHED);
-
-                userDao.save(user);
-                gameDao.save(game);
-
-                GameMessage gm = new GameMessage();
-                gm.setGameId(gameId);
-                gm.setType("disconnect");
-                simpMessagingTemplate.convertAndSendToUser(game.getPlayer1Username(), "/connect", gm);
-                simpMessagingTemplate.convertAndSendToUser(game.getPlayer2Username(), "/connect", gm);
-                break;
-            default:
-                break;
-        }
-        return ResponseEntity.ok("Success!");
+        gameService.handleDisconnect(gameId, username);
     }
     
 
@@ -391,23 +282,6 @@ public class GameController {
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-    }
-
-    public String getWinner(Game game) {
-        if(game.getPlayer1Score() > game.getPlayer2Score()) {
-            return game.getPlayer1Username();
-        } else if (game.getPlayer1Score() < game.getPlayer2Score()) {
-            return game.getPlayer2Username();
-        } else {
-            return null;
-        }
-    }
-
-    private void saveGame(Game game, User user) {
-        List<Game> games = user.getGames();
-        //add most recent first
-        games.add(0, game);
-        userDao.save(user);
     }
 
     public int parseTime(String time) {

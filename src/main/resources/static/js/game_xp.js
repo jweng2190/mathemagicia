@@ -21,29 +21,23 @@ export async function getXpInfo(gameId, type) {
     return responseBody;
 }
 
-export async function animateXp(gameId, playerType) {
-    let stats;
-    try {
-        stats = await getXpInfo(gameId, playerType);
-    } catch(e) {
-        throw new Error(e);
-    }
+export async function animateXp(stats) {
     const playerLevel = document.getElementById("player_level");
     const xpValue = document.getElementById("xp_value");
     const xpBar = document.getElementById("current_xp");
-    let currentXp = stats[0][1];
-    let xpLevelUp = stats[0][2];
-    playerLevel.textContent = stats[0][0];
+    let currentXp = stats[1];
+    let xpLevelUp = stats[2];
+    const originalLevel = stats[0];
+    playerLevel.textContent = originalLevel;
     xpValue.textContent = currentXp;
     const width = (currentXp / xpLevelUp) * 200;
     xpBar.style.width = width + "px";
 
-    const targetScore = stats[2][0];
+    const targetScore = stats[6];
     const increment = 1;
     let currentScore = 0;
 
-    const originalLevel = stats[0][0];
-    const level = stats[1][0];
+    const level = stats[3];
     const scoreCounter = document.getElementById('earned_xp');
 
     const interval = setInterval(() => {
@@ -74,8 +68,8 @@ export function repeatAnimation(stats) {
 
 export function animateWidth(stats) {
     const divElement = document.getElementById('current_xp');
-    const finalXp = stats[1][1];
-    const totalXp = stats[1][2];
+    const finalXp = stats[4];
+    const totalXp = stats[5];
     const targetWidth = (finalXp / totalXp) * 200; // Set the desired final width
     divElement.style.width = targetWidth + 'px'; // Update the width dynamically
     const xpValue = document.getElementById("xp_value");
@@ -84,9 +78,9 @@ export function animateWidth(stats) {
 
 export function animateStep(stats, animationStep) {
     const playerLevel = document.getElementById('player_level');
-    const newLevel = stats[1][0];
-    const newXp = stats[1][1];
-    const totalXp = stats[1][2];
+    const newLevel = stats[3];
+    const newXp = stats[4];
+    const totalXp = stats[5];
     const newWidth = (newXp / totalXp) * 200;
     const divElement = document.getElementById('current_xp');
 

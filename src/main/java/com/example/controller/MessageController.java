@@ -11,6 +11,7 @@ import com.example.dao.GameRepository;
 import com.example.dao.ProblemRepository;
 import com.example.dao.UserRepository;
 import com.example.dto.message.AnswerMessage;
+import com.example.dto.message.GameAnswer;
 import com.example.dto.message.GameMessage;
 import com.example.dto.message.JoinMessage;
 import com.example.dto.message.RematchMessage;
@@ -162,15 +163,14 @@ public class MessageController {
 
 
     @MessageMapping("/game.answer")
-    public void checkAnswer(@Payload AnswerMessage answerMessage) {
+    public synchronized void checkAnswer(@Payload AnswerMessage answerMessage) {
         String activeGameId = answerMessage.getGameId();
         Game activeGame = gameDao.getGameByGameId(activeGameId);
 
-        //get both usernames
+        String playerUsername = answerMessage.getPlayerUsername();
+        int playerType = playerTypeByGame(activeGame, playerUsername);
         String player1Username = activeGame.getPlayer1Username();
         String player2Username = activeGame.getPlayer2Username();
-
-        String playerUsername = answerMessage.getPlayerUsername();
 
         String userAnswer = answerMessage.getAnswer();
         int currentProblemId = answerMessage.getCurrentProblemId();
@@ -178,40 +178,42 @@ public class MessageController {
         String correctAnswer = problemDao.findAnswerByProblem(currentProblemId);
         String userAnswerTrimmed = userAnswer.trim();
 
-        if(userAnswerTrimmed.equals(correctAnswer)) {
-            int problemDifficulty = problemDao.findDifficultyByProblemId(currentProblemId);
-
-            if(playerUsername.equals(player1Username)) {
+        GameAnswer gameAnswer;
+        int problemDifficulty = problemDao.findDifficultyByProblemId(currentProblemId);
+        if(playerType == 1) {
+            if(userAnswerTrimmed.equals(correctAnswer)) {
                 int currentPlayerScore = activeGame.getPlayer1Score();
                 activeGame.setPlayer1Score(currentPlayerScore + 1);
                 int currentPlayerXp = activeGame.getPlayer1Xp();
                 int xpToAdd = difficultyLevelService.getXpForDifficultyLevel(problemDifficulty);
                 activeGame.setPlayer1Xp(currentPlayerXp + xpToAdd);
                 activeGame.setIndex1(activeGame.getIndex1() + 1);
-            } else if(playerUsername.equals(player2Username)) {
+                gameAnswer = new GameAnswer(activeGame.getPlayer1Score(), activeGame.getPlayer2Score(),
+                1, playerType);
+            } else {
+                gameAnswer = new GameAnswer(activeGame.getPlayer1Score(), activeGame.getPlayer2Score(),
+                0, playerType); 
+            }
+        } else {
+            if(userAnswerTrimmed.equals(correctAnswer)) {
                 int currentPlayerScore = activeGame.getPlayer2Score();
                 activeGame.setPlayer2Score(currentPlayerScore + 1);
                 int currentPlayerXp = activeGame.getPlayer2Xp();
-                int xpToAdd = difficultyLevelService.getXpForDifficultyLevel(problemDifficulty);;
+                int xpToAdd = difficultyLevelService.getXpForDifficultyLevel(problemDifficulty);
                 activeGame.setPlayer2Xp(currentPlayerXp + xpToAdd);
                 activeGame.setIndex2(activeGame.getIndex2() + 1);
+                gameAnswer = new GameAnswer(activeGame.getPlayer1Score(), activeGame.getPlayer2Score(),
+                1, playerType);
+            } else {
+                gameAnswer = new GameAnswer(activeGame.getPlayer1Score(), activeGame.getPlayer2Score(),
+                0, playerType); 
             }
-
-            gameDao.save(activeGame);
         }
 
-        //check if either player answered all problems
-        if(activeGame.getIndex1() == ProblemService.PROBLEM_SET_SIZE) {
-            activeGame.setWinner(player1Username);
-        } else if(activeGame.getIndex2() == ProblemService.PROBLEM_SET_SIZE) {
-            activeGame.setWinner(player2Username);
-        }
         gameDao.save(activeGame);
 
-        GameMessage gameMessage = gameToMessage(activeGame);
-
-        simpMessagingTemplate.convertAndSendToUser(player1Username, "/answer", gameMessage);
-        simpMessagingTemplate.convertAndSendToUser(player2Username, "/answer", gameMessage);
+        simpMessagingTemplate.convertAndSendToUser(player1Username, "/answer", gameAnswer);
+        simpMessagingTemplate.convertAndSendToUser(player2Username, "/answer", gameAnswer);
     }
 
     @MessageMapping("/computer")
@@ -276,5 +278,9 @@ public class MessageController {
         } else {
             return null;
         }
+    }
+
+    public static int playerTypeByGame(Game game, String username) {
+        return (game.getPlayer1Username().equals(username)) ? 1 : 2;
     }
 }

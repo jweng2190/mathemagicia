@@ -37,8 +37,12 @@ public class ViewController {
 
     @RolesAllowed({"USER"})
     @GetMapping("/game/{gameId}")
-    public String game(Principal principal, @PathVariable String gameId) {
+    public String game(@PathVariable String gameId) {
         Game game = gameDao.getGameByGameId(gameId);
+        if(game == null) {
+            return "game_error";
+        }
+        
         if(game.getStatus() != GameStatus.NEW) {
             return "game_error";
         }
