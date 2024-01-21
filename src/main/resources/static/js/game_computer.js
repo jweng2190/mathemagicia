@@ -4,7 +4,6 @@ import { getSideBar } from "./sidebar.js";
 
 var username;
 var gameId;
-var playerType;
 var mins = 10;
 //problem stuff
 var currentProblem;
@@ -14,7 +13,8 @@ var numProblems;
 var problemList;
 var statusList;
 
-let botInfo;
+var computerLevel;
+let botTimes;
 let botFinalScore;
 
 setUpGame();
@@ -22,12 +22,11 @@ setUpGame();
 async function setUpGame() {
     username = await getUsername();
     
-    let gameUrl = window.location.href;
-    let gameIdIndex = gameUrl.lastIndexOf("/") + 1;
-    gameId = gameUrl.substring(gameIdIndex);
+    gameId = sessionStorage.getItem("gameId");
+    computerLevel = sessionStorage.getItem("computerLevel");
 
-    playerType = await getPlayerType(gameId);
-    mins = await getTimeLimit(gameId);
+    let minsStr = await getTimeLimit(gameId);
+    mins = parseInt(minsStr, 10);
     problemList = await getProblemList(gameId);
     numProblems = Object.keys(problemList).length;
     currentProblem = problemList[0];
@@ -99,12 +98,6 @@ let player2Score = 0;
 let gameWinner = null;
 let countdown;
 
-//default value if not specified
-let mins = 10;
-getTimeLimit(gameId).then((timeString) => {
-    mins = parseInt(timeString);
-});
-
 async function getBotData() {
     try {
         let message = {
@@ -112,18 +105,19 @@ async function getBotData() {
             "computerLevel": computerLevel
         };
         message = JSON.stringify(message);
-        botInfo = await fetch("/game/bot_stats", {
+        const response = await fetch("/game/bot_stats", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
             body: message,
         });
+        const botInfo = await response.json();
         
-        botFinalScore = botInfo.shift();
-        botInfo = botInfo[0];
+        botFinalScore = botInfo[0];
+        botTimes = botInfo[1];
         console.log(botFinalScore);
-        console.log(botInfo);
+        console.log(botTimes);
     } catch(e) {
         console.error(e);
     }
@@ -148,7 +142,6 @@ let statusImg = document.getElementById("status_img");
 let statusSpan = document.getElementById("status_span");
 
 let player1;
-let player2;
 
 playerInput.addEventListener('input', () => {
     setTimeout(() => {
@@ -249,18 +242,15 @@ async function createCountdown() {
     });
 }
 
-async function getPlayerData() {
+/* async function getPlayerData() {
     const response = await fetch("/game/players?gameId=" + gameId);
     if(response.ok) {
         const data = await response.json();
-        /* console.log("Player 1 Username: " + data[0]);
-        console.log("Player 2 Username: " + data[1]); */
         return data;
     } else {
-        //handle expection
         throw new Error("An error occurred. Unable to fetch player information.")
     }
-}
+} */
 
 async function getTimeLimit(gameId) {
     try {
@@ -304,7 +294,7 @@ function startGameTimer() {
     timer.style.visibility = "visible";
 
     const now = new Date().getTime();
-    const deadline = 3 * 60 * 1000 + now;
+    const deadline = 10 * 60 * 1000 + now;
     //const deadline = mins * 60 * 1000 + now;
 
     countdown = setInterval(() => {
@@ -335,8 +325,8 @@ const sendMessage = (message, client) => {
 }
 
 async function animateBotScore() {
-    for(let i = 0; i < botInfo.length; i++) {
-        await delay(botInfo[i] * 1000);
+    for(let i = 0; i < botTimes.length; i++) {
+        await delay(botTimes[i] * 1000);
         doScoreAnim();
     }
 }
@@ -346,11 +336,11 @@ function delay(ms) {
 }
 
 function doScoreAnim() {
-    botScore++;
+    player2Score++;
 
     player2ScoreField.classList.add("animated-score");
     setTimeout(() => {
-        player2ScoreField.innerHTML = botScore;
+        player2ScoreField.innerHTML = player2Score;
     }, 300);
     setTimeout(() => {
         if(player2ScoreField.classList.contains("animated-score")) {
@@ -447,51 +437,47 @@ async function startGame() {
     loadingContainer.style.zIndex = '-3';
     
     try {
-        let data = await getPlayerData();
-        player1 = data[0];
-        player2 = data[1];
+        player1 = username;
 
         let p1Username = document.getElementById("player1_username");
         let p2Username = document.getElementById("player2_username");
 
         p1Username.innerHTML = player1;
-        p2Username.innerHTML = player2;
+        p2Username.innerHTML = "Bot Lvl " + computerLevel;
     } catch(err) {
         throw new Error(err);
     }
 
     try{
         let b1Response = await fetch("/level?username=" + player1);
-        let b2Response = await fetch("/level?username=" + player2);
 
         let b1Lvl = await b1Response.json();
-        let b2Lvl = await b2Response.json();
 
         player1Badge.src = badgeUrl + "/b" + b1Lvl + ".png";
-        player2Badge.src = badgeUrl + "/b" + b2Lvl + ".png";
+        player2Badge.src = "/img/bot.png";
     } catch(err) {
         console.log(err);
     }
     
-
     const result = await createCountdown();
     countdownContainer = result[0];
     countdownElement = result[1];
 
     startCDTimer().then(() => {
         startGameTimer();
+        animateBotScore();
         checkAnswer();
         fadeOutBg();
         handleProbNav();
     });
 }
 
-function sendAnswer(client) {
+function sendIndivAnswer(client) {
     let playerAnswer = playerInput.value;
     playerInput.value = "";
 
     sendMessage({
-        type: "game.answer",
+        type: "computer",
         playerUsername: username,
         gameId: gameId,
         answer: playerAnswer,
@@ -508,20 +494,18 @@ function checkAnswer() {
         stompClient.subscribe('/user/' + username + '/bot', function (message) {
             let msg = JSON.parse(message.body);
 
-            let answerStatus = msg.status;
-            let pType = msg.playerType;
-            player1Score = msg.player1Score;
-            player2Score = msg.player2Score;
+            let answerStatus;
+            for(var key in msg) {
+                player1Score = key;
+                answerStatus = msg[key];
+            }
 
             player1ScoreField.innerHTML = player1Score;
-            player2ScoreField.innerHTML = player2Score;
 
-            console.log("Player 1 Score: " + player1Score + "\nPlayer 2 Score: " + player2Score);
+            console.log("Player 1 Score: " + player1Score);
 
-            if(playerType === pType) {
-                statusList[currentProblemIndex] = answerStatus;
-                showProbStatus(statusList[currentProblemIndex]);
-            }
+            statusList[currentProblemIndex] = answerStatus;
+            showProbStatus(statusList[currentProblemIndex]);
 
             /* if ((player1Score - originalScore1 > 0) || (player2Score - originalScore2 > 0)) {
                 //add back later
@@ -536,13 +520,13 @@ function checkAnswer() {
         answerForm.addEventListener("submit", function(event) {
             event.preventDefault();
             let client = stompClient;
-            sendAnswer(client);
+            sendIndivAnswer(client);
         });
 
         answerSubmit.addEventListener("click", function(event) {
             event.preventDefault();
             let client = stompClient;
-            sendAnswer(client);
+            sendIndivAnswer(client);
         });
     });
 }

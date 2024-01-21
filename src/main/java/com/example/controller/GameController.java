@@ -61,7 +61,7 @@ public class GameController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
-        Game game = gameService.createGame(username, difficulty, time);
+        Game game = gameService.createGame(username, difficulty, time, "regular");
         return ResponseEntity.ok(game.getGameId());
     }
 
@@ -72,7 +72,7 @@ public class GameController {
             @RequestParam("computerLevel") int computerLevel) throws InvalidGameException {
         String username = principal.getName();
 
-        Game game = gameService.createGame(username, difficulty, time);
+        Game game = gameService.createGame(username, difficulty, time, "computer");
         List<Problem> problems = game.getProblemSet();
         String gameId = game.getGameId();
         User user = userDao.findByUsername(username);

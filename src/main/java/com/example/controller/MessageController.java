@@ -2,6 +2,10 @@ package com.example.controller;
 
 import java.security.Principal;
 import java.util.Arrays;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -133,7 +137,7 @@ public class MessageController {
                 }
 
                 Game rematchGame = gameService.createGame(playerCreate,
-                activeGame.getGameDifficulty(), activeGame.getTimeLimit());
+                activeGame.getGameDifficulty(), activeGame.getTimeLimit(), "regular");
                 User userCreate = userDao.findByUsername(playerCreate);
                 String newGameId = rematchGame.getGameId();
                 userCreate.setCreatedGameId(newGameId);
@@ -217,10 +221,10 @@ public class MessageController {
     }
 
     @MessageMapping("/computer")
-    public void indivAnswer(@Payload AnswerMessage answerMsg, Principal principal) {
+    public void indivAnswer(@Payload AnswerMessage answerMsg) {
         String gameId = answerMsg.getGameId();
         int currentProblemId = answerMsg.getCurrentProblemId();
-        String username = principal.getName();
+        String username = answerMsg.getPlayerUsername();
 
         Game activeGame = gameDao.getGameByGameId(gameId);
 
@@ -228,18 +232,25 @@ public class MessageController {
         String correctAnswer = problemDao.findAnswerByProblem(currentProblemId);
         String userAnswerTrimmed = userAnswer.trim();
         int currentPlayerScore = activeGame.getPlayer1Score();
+        int status;
 
         if(userAnswerTrimmed.equals(correctAnswer)) {
             int problemDifficulty = problemDao.findDifficultyByProblemId(currentProblemId);
             activeGame.setPlayer1Score(currentPlayerScore + 1);
             currentPlayerScore++;
+            status = 1;
             int currentPlayerXp = activeGame.getPlayer1Xp();
             int xpToAdd = difficultyLevelService.getXpForDifficultyLevel(problemDifficulty) / 2;
             activeGame.setPlayer1Xp(currentPlayerXp + xpToAdd);
             gameDao.save(activeGame);
+        } else {
+            status = 0;
         }
+        Map<Integer, Integer> m = Stream.of(new Object[][] {
+            {currentPlayerScore, status}
+        }).collect(Collectors.toMap(data -> (Integer)data[0], data -> (Integer)data[1]));
 
-        simpMessagingTemplate.convertAndSendToUser(username, "/bot", currentPlayerScore);
+        simpMessagingTemplate.convertAndSendToUser(username, "/bot", m);
     }
 
     private void sendToUsers(Game game, String dest, Object msg) {

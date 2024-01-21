@@ -44,7 +44,7 @@ public class GameService {
     @Autowired
     private UserRepository userDao;
 
-    public Game createGame(String playerUsername, String diff, String time) {
+    public Game createGame(String playerUsername, String diff, String time, String type) {
         Game game = new Game();
         //set id
         game.setGameId(UUID.randomUUID().toString());
@@ -62,7 +62,10 @@ public class GameService {
         gameDao.save(game);
         User user = userDao.findByUsername(playerUsername);
         String gameId = game.getGameId();
-        user.setCreatedGameId(gameId);
+
+        if(type.equals("regular")) {
+            user.setCreatedGameId(gameId);
+        }
         userDao.save(user);
 
         return game;
