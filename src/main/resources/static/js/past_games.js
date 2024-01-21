@@ -11,19 +11,11 @@ import { getTopBar } from "./topbar.js";
 const itemsPerPage = 10;
 var totalPages;
 let currentPage = 1;
-let gameJSON;
 
 getSideBar("regular");
 getTopBar();
 
-getGames().then((data) => {
-    gameList = data;
-    totalPages = Math.ceil(gameList.length / itemsPerPage);
-    pageDisp.textContent = "Page 1\/" + totalPages;
-    console.log(gameList);
-    populateTable(currentPage);
-});
-
+displayPast();
 
 document.getElementById("nextPage").addEventListener("click", () => {
     if (currentPage < totalPages) {
@@ -38,6 +30,18 @@ document.getElementById("prevPage").addEventListener("click", () => {
         populateTable(currentPage);
     }
 });
+
+async function displayPast() {
+    try {
+        gameList = await getGames();
+        totalPages = Math.ceil(gameList.length / itemsPerPage);
+        pageDisp.textContent = "Page 1\/" + totalPages;
+        console.log(gameList);
+        populateTable(currentPage);
+    } catch(e) {
+        console.log("An error occurred when getting games!");
+    }
+}
 
 async function getGames() {
     const response = await fetch("/all_games");
