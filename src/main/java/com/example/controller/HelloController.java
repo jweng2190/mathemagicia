@@ -1,44 +1,36 @@
 package com.example.controller;
 
+import java.security.Principal;
+
+import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.authentication.AuthenticationTrustResolver;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
-@Controller
+@RestController
 public class HelloController {
-	private AuthenticationTrustResolver trustResolver;
-	public HelloController(AuthenticationTrustResolver trustResolver) {
-        this.trustResolver = trustResolver;
-    }
+	ModelAndView modelAndView = new ModelAndView();
 
 	@GetMapping("/")
-	public String index() {
-		Authentication authentication = getAuthentication();
+	public ModelAndView index(HttpServletRequest request) {
+		Principal principal = request.getUserPrincipal();
 
-        if(authentication == null || authentication instanceof AnonymousAuthenticationToken) {
-            return "index";
-        }
-
-        return "redirect:/home";
-	}
-
-	/**
-	 * Obtain the current active <code>Authentication</code>
-	 *
-	 * @return the authentication object or <code>null</code>
-	 */
-	private Authentication getAuthentication() {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-		if (!trustResolver.isAnonymous(auth)) {
-			return auth;
+		if(principal == null) {
+			modelAndView.setViewName("index.html");
+			return modelAndView;
+		} else {
+			modelAndView.setViewName("home.html");
+			return modelAndView;
 		}
-
-		return null;
 	}
-
-	
 }
