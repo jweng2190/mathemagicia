@@ -179,6 +179,14 @@ public class UserService {
         return user;
     }
 
+    public List<Integer> getProfileData(String username) {
+        User user = repo.findByUsername(username);
+        int gamesPlayed = user.getGames().size();
+        int gamesWon = user.getGamesWon();
+        int probsSolved = user.getProblemsSolved();
+        return Arrays.asList(gamesPlayed, gamesWon, probsSolved);
+    }
+
     //TODO
     /* @Cacheable(value = "searchCache", key= "#payload")
     public ArrayList<List<String>> getEmailListBySearch(Map<String, String> payload) {

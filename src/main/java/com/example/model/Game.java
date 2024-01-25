@@ -80,12 +80,6 @@ public class Game {
     @Transient
     private int numDisconnect2;
 
-    @Column(name="index1")
-    private int index1;
-
-    @Column(name="index2")
-    private int index2;
-
     @Transient
     private LocalTime timeRemaining;
 
@@ -234,22 +228,6 @@ public class Game {
 
     public void setNumDisconnect2(int numDisconnect2) {
         this.numDisconnect2 = numDisconnect2;
-    }
-
-    public int getIndex1() {
-        return this.index1;
-    }
-
-    public void setIndex1(int index1) {
-        this.index1 = index1;
-    }
-
-    public int getIndex2() {
-        return this.index2;
-    }
-
-    public void setIndex2(int index2) {
-        this.index2 = index2;
     }
 
     public LocalTime getTimeRemaining() {

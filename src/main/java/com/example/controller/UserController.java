@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -175,5 +177,17 @@ public class UserController {
         String msg = "Email sent successfully";
         List<String> responseList = Arrays.asList(new String[] {msg});
         return ResponseEntity.ok().body(responseList);
+    }
+
+    @GetMapping("/profile_data")
+    @RolesAllowed({"USER", "ADMIN"})
+    public ResponseEntity<List<Integer>> userProfile() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if(auth == null || !auth.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        String username = auth.getName();
+        List<Integer> profileData = userService.getProfileData(username);
+        return ResponseEntity.ok().body(profileData);
     }
 }

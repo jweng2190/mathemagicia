@@ -125,7 +125,13 @@ public class ViewController {
 
     @RolesAllowed({"USER"})
     @GetMapping("/create_game")
-    public String testCg() {
+    public String cg() {
         return "create_game";
+    }
+
+    @RolesAllowed({"USER"})
+    @GetMapping("/profile")
+    public String userProfile() {
+        return "profile";
     }
 }

@@ -29,8 +29,9 @@ export async function getTopBar() {
     xpPoints = document.getElementById("xp_points");
 
     getName();
-    getLevel();
+    const userLevel = await getLevel();
     getXp();
+    return userLevel;
 }
 
 async function getName() {
@@ -42,6 +43,7 @@ async function getLevel() {
     const level = await getUserInfo("Level");
     topBarLevel.textContent = level;
     getBadgeByLevel(level);
+    return level;
 }
 
 async function getXp() {

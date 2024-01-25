@@ -191,7 +191,6 @@ public class MessageController {
                 int currentPlayerXp = activeGame.getPlayer1Xp();
                 int xpToAdd = difficultyLevelService.getXpForDifficultyLevel(problemDifficulty);
                 activeGame.setPlayer1Xp(currentPlayerXp + xpToAdd);
-                activeGame.setIndex1(activeGame.getIndex1() + 1);
                 gameAnswer = new GameAnswer(activeGame.getPlayer1Score(), activeGame.getPlayer2Score(),
                 1, playerType);
             } else {
@@ -205,7 +204,6 @@ public class MessageController {
                 int currentPlayerXp = activeGame.getPlayer2Xp();
                 int xpToAdd = difficultyLevelService.getXpForDifficultyLevel(problemDifficulty);
                 activeGame.setPlayer2Xp(currentPlayerXp + xpToAdd);
-                activeGame.setIndex2(activeGame.getIndex2() + 1);
                 gameAnswer = new GameAnswer(activeGame.getPlayer1Score(), activeGame.getPlayer2Score(),
                 1, playerType);
             } else {

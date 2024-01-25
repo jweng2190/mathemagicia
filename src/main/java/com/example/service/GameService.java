@@ -88,12 +88,15 @@ public class GameService {
         user.setActiveGameId(null);
         if(game.getPlayer1Username().equals(playerUsername)) {
             user.setCreatedGameId(null);
+            user.setProblemsSolved(user.getProblemsSolved() + game.getPlayer1Score());
+        } else {
+            user.setProblemsSolved(user.getProblemsSolved() + game.getPlayer2Score());
         }
-        userDao.save(user);
 
         if(game.getWinner() == null) {
             String winner = getWinner(game);
             game.setWinner(winner);
+            user.setGamesWon(user.getGamesWon() + 1);
         }
 
         if(game.getGameDate() == null) {

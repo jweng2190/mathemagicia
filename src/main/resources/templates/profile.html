@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html data-bs-theme="light" lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>User Profile</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link rel="icon" type="image/x-icon" href="/img/logos/logo_4.png">
+</head>
+
+<body style="margin: 0;padding: 0;display: flex;flex-direction: column;">
+    <div style="width: 80%;flex-direction: column;display: flex;align-items: center;flex: 1;margin-left: 10%;margin-top: 2%;">
+        <div class="table-responsive" style="width: 80%;height: auto;">
+            <table class="table" id="game_stats">
+                <thead>
+                    <tr>
+                        <th>Games Played</th>
+                        <th>Games Won</th>
+                        <th>Problems Solved</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td id="games_played"></td>
+                        <td id="games_won"></td>
+                        <td id="prob_solved"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="table-responsive" style="width: 80%;">
+            <table class="table" id="badges_table">
+                <thead>
+                    <tr>
+                        <th>Badges</th>
+                    </tr>
+                </thead>
+                <tbody id="badges_body">
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/profile.js" type="module"></script>
+</body>
+
+</html>

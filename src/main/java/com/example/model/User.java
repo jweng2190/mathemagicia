@@ -46,6 +46,12 @@ public class User {
     @Column(name = "created_game")
     private String createdGameId;
 
+    @Column(name = "games_won")
+    private int gamesWon;
+
+    @Column(name = "prob_solved")
+    private int problemsSolved;
+
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_role",
@@ -198,6 +204,22 @@ public class User {
 
     public void setCreatedGameId(String createdGameId) {
         this.createdGameId = createdGameId;
+    }
+
+    public int getGamesWon() {
+        return this.gamesWon;
+    }
+
+    public void setGamesWon(int gamesWon) {
+        this.gamesWon = gamesWon;
+    }
+
+    public int getProblemsSolved() {
+        return this.problemsSolved;
+    }
+
+    public void setProblemsSolved(int problemsSolved) {
+        this.problemsSolved = problemsSolved;
     }
 
     public String getFullName() {
