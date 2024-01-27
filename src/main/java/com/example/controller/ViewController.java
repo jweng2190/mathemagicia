@@ -134,4 +134,15 @@ public class ViewController {
     public String userProfile() {
         return "profile";
     }
+
+    @GetMapping("/register_success")
+    public String registerSuccess() {
+        return "register_success";
+    }
+
+    @GetMapping("/register_fail")
+    public String registerFail() {
+        return "register_fail";
+    }
+    
 }

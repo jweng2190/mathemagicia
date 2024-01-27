@@ -6,11 +6,16 @@ import com.example.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
+import org.springframework.util.MultiValueMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -30,26 +35,20 @@ public class RegistrationController {
 
     @GetMapping("/register")
     public ModelAndView showRegistrationForm(Model model) {
-        model.addAttribute("user", new User());
-
         modelAndView.setViewName("register.html");
         return modelAndView;
     }
 
-    @PostMapping("/process_register")
-    public ModelAndView processRegister(@Validated User user, BindingResult result, HttpServletRequest request)
+    @PostMapping(value = "/register", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public ResponseEntity<String> processRegister(@RequestBody MultiValueMap<String, String> formData, HttpServletRequest request)
             throws UnsupportedEncodingException, MessagingException {
-        boolean isRegistered = service.register(user, getSiteUrl(request));
+        boolean isRegistered = service.register(formData, getSiteUrl(request));
 
-        if(!isRegistered) {
-            ModelAndView modelAndView = new ModelAndView();
-            modelAndView.setViewName("register_fail.html");
-            return modelAndView;
+        if(isRegistered) {
+            return ResponseEntity.ok("Success");
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("register_success.html");
-        return modelAndView;
     }
 
     private String getSiteUrl(HttpServletRequest request) {

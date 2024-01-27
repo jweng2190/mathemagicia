@@ -70,6 +70,19 @@ public class User {
     )
     private List<Game> games;
 
+    public User() {
+
+    }
+
+    public User(String username, String password, String firstName, String lastName, Integer grade, String email) {
+        this.username = username;
+        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.grade = grade;
+        this.email = email;
+    }
+
     public Set<Role> getRoles() {
         return roles;
     }

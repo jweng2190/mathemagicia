@@ -55,7 +55,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeRequests()
-                .antMatchers( "/", "/register", "/login", "/forgot_password", "/reset_password").permitAll()
+                .antMatchers( "/", "/register", "/register_success", "/register_fail", "/verify", "/login", "/forgot_password", "/reset_password").permitAll()
                 .anyRequest().authenticated()
                 .and().formLogin().loginPage("/login").defaultSuccessUrl("/home")
                 .and().logout().logoutSuccessUrl("/").deleteCookies("JSESSIONID")

@@ -16,6 +16,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.MultiValueMap;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -95,11 +96,16 @@ public class UserService {
         mailSender.send(message);
     }
 
-    public boolean register(User user, String siteURL)
+    public boolean register(MultiValueMap<String, String> formData, String siteURL)
             throws UnsupportedEncodingException, MessagingException {
         
-        String username = user.getUsername();
-        String email = user.getEmail();
+        String username = formData.get("username").get(0);
+        String email = formData.get("email").get(0);
+        String firstName = formData.get("f_name").get(0);
+        String lastName = formData.get("l_name").get(0);
+        Integer grade = Integer.parseInt(formData.get("grade").get(0));
+        String password = formData.get("password").get(0);
+        User user = new User(username, password, firstName, lastName, grade, email);
         //check for duplicate username or email
         if(repo.findByUsername(username) != null || repo.getUserByEmail(email) != null) {
             return false;
