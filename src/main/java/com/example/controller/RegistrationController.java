@@ -3,6 +3,7 @@ package com.example.controller;
 import com.example.dao.UserRepository;
 import com.example.model.User;
 import com.example.service.UserService;
+import com.example.service.UserService.USER_FIELD_FLAG;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
@@ -22,6 +23,8 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 public class RegistrationController {
@@ -42,12 +45,14 @@ public class RegistrationController {
     @PostMapping(value = "/register", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public ResponseEntity<String> processRegister(@RequestBody MultiValueMap<String, String> formData, HttpServletRequest request)
             throws UnsupportedEncodingException, MessagingException {
-        boolean isRegistered = service.register(formData, getSiteUrl(request));
+        USER_FIELD_FLAG check = service.register(formData, getSiteUrl(request));
 
-        if(isRegistered) {
+        if(check == USER_FIELD_FLAG.SUCCESS) {
             return ResponseEntity.ok("Success");
+        } else if(check == USER_FIELD_FLAG.USERNAME_EXISTING){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("username existing");
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("email existing");
         }
     }
 

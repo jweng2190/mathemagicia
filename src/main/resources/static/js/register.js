@@ -16,11 +16,18 @@ async function sendFormData() {
         body: urlEncodedData
     });
     console.log(response);
+
+    const message = await response.text();
     
     if(response.ok) {
         window.location.href = "/register_success";
     } else {
-        window.location.href = "/register_fail";
+        if(message === "username existing") {
+            console.log("username existing");
+        } else if(message === "email existing") {
+            console.log("email existing");
+        }
+        //window.location.href = "/register_fail";
     }
 }
 

@@ -42,6 +42,10 @@ public class UserService {
     @Autowired
     private JavaMailSender mailSender;
 
+    public enum USER_FIELD_FLAG {
+        SUCCESS, USERNAME_EXISTING, EMAIL_EXISTING
+    }
+
     private void encodePassword(User user) {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         String encodedPassword = passwordEncoder.encode(user.getPassword());
@@ -96,7 +100,7 @@ public class UserService {
         mailSender.send(message);
     }
 
-    public boolean register(MultiValueMap<String, String> formData, String siteURL)
+    public USER_FIELD_FLAG register(MultiValueMap<String, String> formData, String siteURL)
             throws UnsupportedEncodingException, MessagingException {
         
         String username = formData.get("username").get(0);
@@ -107,8 +111,12 @@ public class UserService {
         String password = formData.get("password").get(0);
         User user = new User(username, password, firstName, lastName, grade, email);
         //check for duplicate username or email
-        if(repo.findByUsername(username) != null || repo.getUserByEmail(email) != null) {
-            return false;
+        if(repo.findByUsername(username) != null) {
+            return USER_FIELD_FLAG.USERNAME_EXISTING;
+        }
+
+        if(repo.getUserByEmail(email) != null) {
+            return USER_FIELD_FLAG.EMAIL_EXISTING;
         }
 
         String encodedPassword = passwordEncoder.encode(user.getPassword());
@@ -125,7 +133,7 @@ public class UserService {
         repo.save(user);
 
         sendVerificationEmail(user, siteURL);
-        return true;
+        return USER_FIELD_FLAG.SUCCESS;
     }
 
     private void sendVerificationEmail(User user, String siteURL)
