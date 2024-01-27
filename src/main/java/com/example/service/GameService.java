@@ -3,6 +3,7 @@ import java.security.Principal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,6 +57,8 @@ public class GameService {
         game.setGameDifficulty(diff);
         game.setTimeLimit(time);
         game.setGameDate(LocalDate.now());
+        game.setProbStatus1(Collections.nCopies(ProblemService.PROBLEM_SET_SIZE, -1));
+        game.setProbStatus2(Collections.nCopies(ProblemService.PROBLEM_SET_SIZE, -1));
 
         setProblems(game);
 

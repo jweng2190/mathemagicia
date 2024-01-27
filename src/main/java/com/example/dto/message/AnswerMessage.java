@@ -5,6 +5,7 @@ public class AnswerMessage {
     private String gameId;
     private String playerUsername;
     private String answer;
+    private int currentProblemIndex;
     private int currentProblemId;
     private long timestamp;
 
@@ -12,12 +13,13 @@ public class AnswerMessage {
     public AnswerMessage() {
     } 
 
-    public AnswerMessage(String type, String gameId, String playerUsername, String answer, int currentProblemId,
-            long timestamp) {
+    public AnswerMessage(String type, String gameId, String playerUsername, String answer, int currentProblemIndex,
+    int currentProblemId, long timestamp) {
         this.type = type;
         this.gameId = gameId;
         this.playerUsername = playerUsername;
         this.answer = answer;
+        this.currentProblemIndex = currentProblemIndex;
         this.currentProblemId = currentProblemId;
         this.timestamp = timestamp;
     }
@@ -47,6 +49,14 @@ public class AnswerMessage {
     }
     public void setAnswer(String answer) {
         this.answer = answer;
+    }
+
+    public int getCurrentProblemIndex() {
+        return this.currentProblemIndex;
+    }
+
+    public void setCurrentProblemIndex(int currentProblemIndex) {
+        this.currentProblemIndex = currentProblemIndex;
     }
 
     public int getCurrentProblemId() {

@@ -11,6 +11,9 @@ import java.util.Random;
 
 import javax.annotation.PostConstruct;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
 import com.example.model.Bot;
@@ -22,6 +25,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class BotService {
     private List<Bot> bots;
     public static final int NUM_PROBS_BOT = 3;
+    @Autowired
+    private ResourceLoader resourceLoader;
 
     @PostConstruct
     public void init() {
@@ -29,7 +34,8 @@ public class BotService {
         ObjectMapper objectMapper = new ObjectMapper();
 
         try {
-            InputStream inputStream = getClass().getResourceAsStream("bot.json");
+            final Resource fileResource = resourceLoader.getResource("classpath:bot.json");
+            InputStream inputStream = fileResource.getInputStream();
             List<Bot> bots = objectMapper.readValue(inputStream, new TypeReference<List<Bot>>() {});
             this.bots = bots;
         } catch (IOException e) {

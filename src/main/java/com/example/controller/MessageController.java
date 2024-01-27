@@ -168,16 +168,17 @@ public class MessageController {
 
     @MessageMapping("/game.answer")
     public synchronized void checkAnswer(@Payload AnswerMessage answerMessage) {
-        String activeGameId = answerMessage.getGameId();
-        Game activeGame = gameDao.getGameByGameId(activeGameId);
+        String gameId = answerMessage.getGameId();
+        Game game = gameDao.getGameByGameId(gameId);
 
         String playerUsername = answerMessage.getPlayerUsername();
-        int playerType = playerTypeByGame(activeGame, playerUsername);
-        String player1Username = activeGame.getPlayer1Username();
-        String player2Username = activeGame.getPlayer2Username();
+        int playerType = playerTypeByGame(game, playerUsername);
+        String player1Username = game.getPlayer1Username();
+        String player2Username = game.getPlayer2Username();
 
         String userAnswer = answerMessage.getAnswer();
         int currentProblemId = answerMessage.getCurrentProblemId();
+        int currentProblemIndex = answerMessage.getCurrentProblemIndex();
 
         String correctAnswer = problemDao.findAnswerByProblem(currentProblemId);
         String userAnswerTrimmed = userAnswer.trim();
@@ -185,34 +186,56 @@ public class MessageController {
         GameAnswer gameAnswer;
         int problemDifficulty = problemDao.findDifficultyByProblemId(currentProblemId);
         if(playerType == 1) {
-            if(userAnswerTrimmed.equals(correctAnswer)) {
-                int currentPlayerScore = activeGame.getPlayer1Score();
-                activeGame.setPlayer1Score(currentPlayerScore + 1);
-                int currentPlayerXp = activeGame.getPlayer1Xp();
+            if(userAnswerTrimmed.equals(correctAnswer) && 
+            game.getProbStatus1().get(currentProblemIndex) != 1) {
+                game.getProbStatus1().set(currentProblemIndex, 1);
+                int currentPlayerScore = game.getPlayer1Score();
+                game.setPlayer1Score(currentPlayerScore + 1);
+                int currentPlayerXp = game.getPlayer1Xp();
                 int xpToAdd = difficultyLevelService.getXpForDifficultyLevel(problemDifficulty);
-                activeGame.setPlayer1Xp(currentPlayerXp + xpToAdd);
-                gameAnswer = new GameAnswer(activeGame.getPlayer1Score(), activeGame.getPlayer2Score(),
+                game.setPlayer1Xp(currentPlayerXp + xpToAdd);
+                gameAnswer = new GameAnswer(game.getPlayer1Score(), game.getPlayer2Score(),
                 1, playerType);
             } else {
-                gameAnswer = new GameAnswer(activeGame.getPlayer1Score(), activeGame.getPlayer2Score(),
-                0, playerType); 
+                if(userAnswerTrimmed.equals(correctAnswer)) {
+                    game.getProbStatus1().set(currentProblemIndex, 0);
+                    gameAnswer = new GameAnswer(game.getPlayer1Score(), game.getPlayer2Score(),
+                    1, playerType); 
+                } else {
+                    gameAnswer = new GameAnswer(game.getPlayer1Score(), game.getPlayer2Score(),
+                    0, playerType); 
+                }
             }
         } else {
-            if(userAnswerTrimmed.equals(correctAnswer)) {
-                int currentPlayerScore = activeGame.getPlayer2Score();
-                activeGame.setPlayer2Score(currentPlayerScore + 1);
-                int currentPlayerXp = activeGame.getPlayer2Xp();
+            if(userAnswerTrimmed.equals(correctAnswer) &&
+            game.getProbStatus2().get(currentProblemIndex) != 1) {
+                game.getProbStatus2().set(currentProblemIndex, 1);
+                int currentPlayerScore = game.getPlayer2Score();
+                game.setPlayer2Score(currentPlayerScore + 1);
+                int currentPlayerXp = game.getPlayer2Xp();
                 int xpToAdd = difficultyLevelService.getXpForDifficultyLevel(problemDifficulty);
-                activeGame.setPlayer2Xp(currentPlayerXp + xpToAdd);
-                gameAnswer = new GameAnswer(activeGame.getPlayer1Score(), activeGame.getPlayer2Score(),
+                game.setPlayer2Xp(currentPlayerXp + xpToAdd);
+                gameAnswer = new GameAnswer(game.getPlayer1Score(), game.getPlayer2Score(),
                 1, playerType);
             } else {
-                gameAnswer = new GameAnswer(activeGame.getPlayer1Score(), activeGame.getPlayer2Score(),
-                0, playerType); 
+                if(userAnswerTrimmed.equals(correctAnswer)) {
+                    game.getProbStatus2().set(currentProblemIndex, 0);
+                    gameAnswer = new GameAnswer(game.getPlayer1Score(), game.getPlayer2Score(),
+                    1, playerType); 
+                } else {
+                    gameAnswer = new GameAnswer(game.getPlayer1Score(), game.getPlayer2Score(),
+                    0, playerType); 
+                }
             }
         }
 
-        gameDao.save(activeGame);
+        gameDao.save(game);
+
+        if(game.getPlayer1Score() == ProblemService.PROBLEM_SET_SIZE) {
+            gameAnswer.setWinner(player1Username);
+        } else if(game.getPlayer2Score() == ProblemService.PROBLEM_SET_SIZE) {
+            gameAnswer.setWinner(player2Username);
+        }
 
         simpMessagingTemplate.convertAndSendToUser(player1Username, "/answer", gameAnswer);
         simpMessagingTemplate.convertAndSendToUser(player2Username, "/answer", gameAnswer);

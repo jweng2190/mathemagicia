@@ -5,6 +5,7 @@ public class GameAnswer {
     private int player2Score;
     private int status;
     private int playerType;
+    private String winner;
 
     public GameAnswer() {
         
@@ -49,5 +50,11 @@ public class GameAnswer {
         this.playerType = playerType;
     }
 
+    public String getWinner() {
+        return this.winner;
+    }
 
+    public void setWinner(String winner) {
+        this.winner = winner;
+    }
 }

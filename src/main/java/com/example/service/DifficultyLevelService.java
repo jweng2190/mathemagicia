@@ -5,6 +5,9 @@ import java.io.InputStream;
 
 import javax.annotation.PostConstruct;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
 import com.example.model.DifficultyLevel;
@@ -17,12 +20,15 @@ import java.util.Optional;
 @Service
 public class DifficultyLevelService {
     private List<DifficultyLevel> difficultyLevels;
+    @Autowired
+    private ResourceLoader resourceLoader;
 
     @PostConstruct
     public void init() {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            InputStream inputStream = getClass().getResourceAsStream("difficulty_xp.json");
+            final Resource fileResource = resourceLoader.getResource("classpath:difficulty_xp.json");
+            InputStream inputStream = fileResource.getInputStream();
             DifficultyLevelsWrapper wrapper = objectMapper.readValue(inputStream, DifficultyLevelsWrapper.class);
             difficultyLevels = wrapper.getDifficultyLevels();
         } catch (IOException e) {

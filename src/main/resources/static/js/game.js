@@ -325,7 +325,7 @@ function startGameTimer() {
     timer.style.visibility = "visible";
 
     const now = new Date().getTime();
-    const deadline = 3 * 60 * 1000 + now;
+    const deadline = mins * 60 * 1000 + now;
     //const deadline = mins * 60 * 1000 + now;
 
     countdown = setInterval(() => {
@@ -537,6 +537,7 @@ function sendAnswer(client) {
         playerUsername: username,
         gameId: gameId,
         answer: playerAnswer,
+        currentProblemIndex: currentProblemIndex,
         currentProblemId: currentProblemId,
         timestamp: Date.now()
     }, client);
@@ -555,6 +556,8 @@ function checkAnswer() {
             player1Score = msg.player1Score;
             player2Score = msg.player2Score;
 
+            let gameWinner = msg.winner;
+
             player1ScoreField.innerHTML = player1Score;
             player2ScoreField.innerHTML = player2Score;
 
@@ -563,6 +566,10 @@ function checkAnswer() {
             if(playerType === pType) {
                 statusList[currentProblemIndex] = answerStatus;
                 showProbStatus(statusList[currentProblemIndex]);
+            }
+
+            if(gameWinner !== null) {
+                endGame();
             }
 
             /* if ((player1Score - originalScore1 > 0) || (player2Score - originalScore2 > 0)) {

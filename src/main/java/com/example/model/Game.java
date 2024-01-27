@@ -31,12 +31,6 @@ public class Game {
     @Column(name="player2_username")
     private String player2Username;
 
-    /* @Transient
-    private User player1;
-
-    @Transient
-    private User player2; */
-
     @Enumerated(EnumType.STRING)
     @Column(name="game_status")
     private GameStatus status;
@@ -73,6 +67,12 @@ public class Game {
 
     @Column(name="player2_joined")
     private boolean player2Joined;
+
+    @Transient
+    private List<Integer> probStatus1;
+
+    @Transient
+    private List<Integer> probStatus2;
 
     @Transient
     private int numDisconnect1;
@@ -125,22 +125,6 @@ public class Game {
     public void setTimeLimit(String timeLimit) {
         this.timeLimit = timeLimit;
     }
-
-    /* public User getPlayer1() {
-        return this.player1;
-    }
-
-    public void setPlayer1(User player1) {
-        this.player1 = player1;
-    }
-
-    public User getPlayer2() {
-        return this.player2;
-    }
-
-    public void setPlayer2(User player2) {
-        this.player2 = player2;
-    } */
 
     public GameStatus getStatus() {
         return this.status;
@@ -253,4 +237,21 @@ public class Game {
     public void setPlayer2Xp(Integer player2Xp) {
         this.player2Xp = player2Xp;
     }
+
+    public List<Integer> getProbStatus1() {
+        return this.probStatus1;
+    }
+
+    public void setProbStatus1(List<Integer> probStatus1) {
+        this.probStatus1 = probStatus1;
+    }
+
+    public List<Integer> getProbStatus2() {
+        return this.probStatus2;
+    }
+
+    public void setProbStatus2(List<Integer> probStatus2) {
+        this.probStatus2 = probStatus2;
+    }
+
 }

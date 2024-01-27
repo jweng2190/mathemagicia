@@ -13,12 +13,17 @@ import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
 @Service
 public class XpLevelService {
     private List<XpLevel> xpLevels;
+    @Autowired
+    private ResourceLoader resourceLoader;
 
     @PostConstruct
     public void init() {
@@ -26,7 +31,8 @@ public class XpLevelService {
         ObjectMapper objectMapper = new ObjectMapper();
 
         try {
-            InputStream inputStream = getClass().getResourceAsStream("level.json");
+            final Resource fileResource = resourceLoader.getResource("classpath:level.json");
+            InputStream inputStream = fileResource.getInputStream();
             List<XpLevel> xpLevels = objectMapper.readValue(inputStream, new TypeReference<List<XpLevel>>() {});
             this.xpLevels = xpLevels;
         } catch (IOException e) {
