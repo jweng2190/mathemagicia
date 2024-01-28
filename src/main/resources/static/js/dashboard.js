@@ -1,6 +1,14 @@
 import { getTopBar } from "./topbar.js";
 import { getSideBar } from "./sidebar.js";
 
+var loc = window.location, base_uri;
+if (loc.protocol === "https:") {
+    base_uri = "wss:";
+} else {
+    base_uri = "ws:";
+}
+base_uri += "//" + loc.host;
+
 const username = await getUsername();
 let gameId;
 var loc = window.location.protocol + "//" + window.location.host;
@@ -11,6 +19,8 @@ var copyButton = document.getElementById("copy_link");
 
 const cgButton = document.getElementById("cg_button");
 const jgButton = document.getElementById("jg_button");
+
+const statusCell = document.getElementById("status_game");
 
 const shareButton = document.getElementById("share");
 const joinButton = document.getElementById("join");
@@ -23,6 +33,7 @@ cgButton.addEventListener("click", createGame);
 jgButton.addEventListener("click", joinGame);
 copyButton.addEventListener("click", copyToClipboard);
 
+connectStatus();
 getTopBar();
 getSideBar("regular");
 getActiveGame();
@@ -145,4 +156,23 @@ function showNotification() {
     setTimeout(function() {
         notificationElement.style.display = "none";
     }, 3000);
+}
+
+function connectStatus() {
+    const socket = new WebSocket(base_uri + "/created_status", "v10.stomp");
+    const stompClient = Stomp.over(socket);
+    stompClient.connect({}, function (frame) {
+        console.log("Connected: " + frame);
+        stompClient.subscribe('/user/' + username + '/created_status', function (message) {
+            if(message.body === "joined") {
+                console.log("Player 2 Joined!");
+                statusCell.textContent = "Ready";
+                statusCell.style.color = "green";
+            } else if(message.body === "disconnect") {
+                statusCell.textContent = "Not Ready";
+                statusCell.style.color = "red";
+                console.log("Player 2 left.")
+            }
+        });
+    });
 }

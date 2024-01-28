@@ -62,6 +62,8 @@ public class MessageController {
             } else {
                 gameToJoin.setPlayer2Joined(true);
                 gameToJoin.setPlayer2Username(playerUsername);
+                simpMessagingTemplate.convertAndSendToUser(gameToJoin.getPlayer1Username(),
+                "/created_status", "joined");
             }
             player = userDao.findByUsername(playerUsername);
             player.setActiveGameId(gameId);

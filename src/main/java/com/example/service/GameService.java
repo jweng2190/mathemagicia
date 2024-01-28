@@ -162,6 +162,8 @@ public class GameService {
                 } else {
                     game.setPlayer2Username(null);
                     game.setPlayer2Joined(false);
+                    simpMessagingTemplate.convertAndSendToUser(game.getPlayer1Username(), 
+                    "/created_status", "disconnect");
                 }
                 
                 user.setActiveGameId(null);
