@@ -18,7 +18,7 @@ var inputLink = document.getElementById("game_link");
 var copyButton = document.getElementById("copy_link");
 
 const cgButton = document.getElementById("cg_button");
-const jgButton = document.getElementById("jg_button");
+/* const jgButton = document.getElementById("jg_button"); */
 
 const statusCell = document.getElementById("status_game");
 
@@ -30,7 +30,7 @@ const contentRow = document.getElementById("game_data");
 const cells = contentRow.getElementsByTagName('td');
 
 cgButton.addEventListener("click", createGame);
-jgButton.addEventListener("click", joinGame);
+//jgButton.addEventListener("click", joinGame);
 copyButton.addEventListener("click", copyToClipboard);
 
 connectStatus();
