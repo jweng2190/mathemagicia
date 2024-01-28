@@ -98,7 +98,7 @@ public class GameService {
         return 0;
     }
 
-    public synchronized List<Integer> endGame(String gameId, String playerUsername) {
+    public synchronized List<Object> endGame(String gameId, String playerUsername) {
         Game game = gameDao.getGameByGameId(gameId);
         game.setStatus(GameStatus.FINISHED);
         User user = userDao.findByUsername(playerUsername);
@@ -110,10 +110,11 @@ public class GameService {
             user.setProblemsSolved(user.getProblemsSolved() + game.getPlayer2Score());
         }
 
-        if(game.getWinner() == null) {
-            String winner = getWinner(game);
-            game.setWinner(winner);
-            user.setGamesWon(user.getGamesWon() + 1);
+        String winner = getWinner(game);
+        if(winner != null) {
+            if(user.getUsername().equals(winner)) {
+                user.setGamesWon(user.getGamesWon() + 1);
+            }
         }
 
         if(game.getGameDate() == null) {
@@ -149,7 +150,7 @@ public class GameService {
         userDao.save(user);
         saveGame(game, user);
 
-        return Arrays.asList(level, currXp, xpThreshold, newLevel, newXp, newThreshold, xpAdd);
+        return Arrays.asList(level, currXp, xpThreshold, newLevel, newXp, newThreshold, xpAdd, winner);
     }
 
     public synchronized void handleDisconnect(String gameId, String username) {

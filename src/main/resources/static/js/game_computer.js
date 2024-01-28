@@ -34,9 +34,9 @@ async function setUpGame() {
     statusList = new Array(numProblems).fill(-1);
 
     //debugging
-    console.log(problemList);
+    /* console.log(problemList);
     console.log("Current ProblemId: " + currentProblemId);
-    console.log("Current ProblemIndex: " + currentProblemIndex);
+    console.log("Current ProblemIndex: " + currentProblemIndex); */
 
     getBotData();
     startGame();
@@ -595,7 +595,9 @@ async function endGame() {
             },
             body: gameEndData
         });
-        const xpData = await response.json();
+        const xpWinnerData = await response.json();
+        const xpData = xpWinnerData.slice(0, 7);
+        gameWinner = xpWinnerData[7];
         animateXp(xpData);
         showFinalScores();
     } catch(error) {

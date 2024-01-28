@@ -14,6 +14,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -158,17 +161,29 @@ public class GameController {
 
     @PostMapping(path="/problem_list", consumes = MediaType.TEXT_PLAIN_VALUE)
     @RolesAllowed({"USER", "ADMIN"})
-    public ResponseEntity<List<Problem>> getProblemList(@RequestBody String gameId) {
+    public ResponseEntity<List<ProblemShort>> getProblemList(@RequestBody String gameId) {
         Game game = gameDao.getGameByGameId(gameId);
         if(game == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         List<Problem> problems = game.getProblemSet();
-        /* List<ProblemShort> problemShorts = problems.stream()
+        List<ProblemShort> problemShorts = problems.stream()
         .map(problem -> new ProblemShort(problem.getProblemId(), problem.getImage()))
-        .collect(Collectors.toList()); */
+        .collect(Collectors.toList());
 
-        return ResponseEntity.ok().body(problems);
+        return ResponseEntity.ok().body(problemShorts);
+    }
+
+    @GetMapping("full_problems/{gameId}")
+    @RolesAllowed({"USER", "ADMIN"})
+    public ResponseEntity<List<Problem>> getFullProblems(@PathVariable String gameId) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if(auth == null || auth instanceof AnonymousAuthenticationToken) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        Game game = gameDao.getGameByGameId(gameId);
+        List<Problem> problemSet = game.getProblemSet();
+        return ResponseEntity.ok().body(problemSet);
     }
 
     @PostMapping(path="/bot_stats", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -215,10 +230,10 @@ public class GameController {
 
     @PostMapping(path="/game_end", consumes = MediaType.APPLICATION_JSON_VALUE)
     @RolesAllowed({"USER", "ADMIN"})
-    public synchronized ResponseEntity<List<Integer>> endGame(@RequestBody Map<String, String> gameInfo) {
+    public synchronized ResponseEntity<List<Object>> endGame(@RequestBody Map<String, String> gameInfo) {
         String gameId = gameInfo.get("gameId");
         String playerUsername = gameInfo.get("playerUsername");
-        List<Integer> response = gameService.endGame(gameId, playerUsername);
+        List<Object> response = gameService.endGame(gameId, playerUsername);
 
         return ResponseEntity.ok().body(response);
     }

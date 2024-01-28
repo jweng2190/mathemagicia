@@ -24,7 +24,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Service
 public class BotService {
     private List<Bot> bots;
-    public static final int NUM_PROBS_BOT = 3;
     @Autowired
     private ResourceLoader resourceLoader;
 
@@ -53,7 +52,7 @@ public class BotService {
         int botScore = 0;
         Random random = new Random();
 
-        for(int i = 0; i < NUM_PROBS_BOT; i++) {
+        for(int i = 0; i < ProblemService.PROBLEM_SET_SIZE; i++) {
             int difficulty = problemSet.get(i).getDifficulty();
             int originalTime = bot.findTimeByDiff(difficulty);
             double randomNumber = -1 + (random.nextDouble() * 2);
