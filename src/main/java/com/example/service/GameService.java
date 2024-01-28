@@ -75,13 +75,14 @@ public class GameService {
 
         setProblems(game);
 
-        gameDao.save(game);
         User user = userDao.findByUsername(playerUsername);
         String gameId = game.getGameId();
-
-        if(type.equals("regular")) {
+        if(type.equals("live")) {
             user.setCreatedGameId(gameId);
+            game.setType(type);
         }
+
+        gameDao.save(game);  
         userDao.save(user);
 
         return game;

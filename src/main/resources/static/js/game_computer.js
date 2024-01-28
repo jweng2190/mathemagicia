@@ -95,7 +95,7 @@ let problemImage = document.getElementById("problem_image");
 let player1Score = 0;
 let player2Score = 0;
 
-let gameWinner = null;
+var gameWinner = null;
 let countdown;
 
 async function getBotData() {
@@ -294,7 +294,7 @@ function startGameTimer() {
     timer.style.visibility = "visible";
 
     const now = new Date().getTime();
-    const deadline = 10 * 60 * 1000 + now;
+    const deadline = mins * 60 * 1000 + now;
     //const deadline = mins * 60 * 1000 + now;
 
     countdown = setInterval(() => {
@@ -324,9 +324,15 @@ const sendMessage = (message, client) => {
     client.send(`/ws/${message.type}`, {}, JSON.stringify(message));
 }
 
-async function animateBotScore() {
+async function animateBotScore(client) {
+    let botMsg = {
+        type: "bot",
+        gameId: gameId
+    };
+
     for(let i = 0; i < botTimes.length; i++) {
         await delay(botTimes[i] * 1000);
+        client.send(`/ws/computer`, {}, JSON.stringify(botMsg));
         doScoreAnim();
     }
 }
@@ -336,8 +342,7 @@ function delay(ms) {
 }
 
 function doScoreAnim() {
-    player2Score++;
-
+    ++player2Score;
     player2ScoreField.classList.add("animated-score");
     setTimeout(() => {
         player2ScoreField.innerHTML = player2Score;
@@ -465,7 +470,7 @@ async function startGame() {
 
     startCDTimer().then(() => {
         startGameTimer();
-        animateBotScore();
+        //animateBotScore();
         checkAnswer();
         fadeOutBg();
         handleProbNav();
@@ -481,6 +486,7 @@ function sendIndivAnswer(client) {
         playerUsername: username,
         gameId: gameId,
         answer: playerAnswer,
+        currentProblemIndex: currentProblemIndex,
         currentProblemId: currentProblemId,
         timestamp: Date.now()
     }, client);
@@ -494,18 +500,24 @@ function checkAnswer() {
         stompClient.subscribe('/user/' + username + '/bot', function (message) {
             let msg = JSON.parse(message.body);
 
-            let answerStatus;
-            for(var key in msg) {
-                player1Score = key;
-                answerStatus = msg[key];
+            gameWinner = msg[2];
+            let type = msg[3];
+            if(type === 1) {
+                player1Score = msg[0];
+                let answerStatus = msg[1];
+                player1ScoreField.innerHTML = player1Score;
+                console.log("Player 1 Score: " + player1Score);
+
+                statusList[currentProblemIndex] = answerStatus;
+                showProbStatus(statusList[currentProblemIndex]);
+                if(gameWinner != null) {
+                    endGame();
+                }
+            } else {
+                if(gameWinner != null) {
+                    endGame();
+                }
             }
-
-            player1ScoreField.innerHTML = player1Score;
-
-            console.log("Player 1 Score: " + player1Score);
-
-            statusList[currentProblemIndex] = answerStatus;
-            showProbStatus(statusList[currentProblemIndex]);
 
             /* if ((player1Score - originalScore1 > 0) || (player2Score - originalScore2 > 0)) {
                 //add back later
@@ -528,6 +540,8 @@ function checkAnswer() {
             let client = stompClient;
             sendIndivAnswer(client);
         });
+
+        animateBotScore(stompClient);
     });
 }
 
@@ -566,6 +580,7 @@ async function endGame() {
     disableAnswer();
     stopTimer();
     gameContent.style.zIndex = 3;
+    showFinalScores();
     let gameEndData = {
         "gameId": gameId,
         "playerUsername": username

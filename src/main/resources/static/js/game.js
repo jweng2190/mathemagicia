@@ -40,9 +40,9 @@ async function setUpGame() {
     statusList = new Array(numProblems).fill(-1);
 
     //debugging
-    /* console.log(problemList);
+    console.log(problemList);
     console.log("Current ProblemId: " + currentProblemId);
-    console.log("Current ProblemIndex: " + currentProblemIndex); */
+    console.log("Current ProblemIndex: " + currentProblemIndex);
     
     connect();
 }

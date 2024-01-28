@@ -34,6 +34,7 @@ import com.example.model.ProblemShort;
 import com.example.model.User;
 import com.example.service.BotService;
 import com.example.service.GameService;
+import com.example.service.ProblemService;
 import com.example.storage.GameStorage;
 import com.exception.InvalidGameException;
 import com.exception.InvalidParamException;
@@ -63,7 +64,7 @@ public class GameController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
-        Game game = gameService.createGame(username, difficulty, time, "regular");
+        Game game = gameService.createGame(username, difficulty, time, "live");
         return ResponseEntity.ok(game.getGameId());
     }
 
@@ -75,16 +76,11 @@ public class GameController {
         String username = principal.getName();
 
         Game game = gameService.createGame(username, difficulty, time, "computer");
-        List<Problem> problems = game.getProblemSet();
         String gameId = game.getGameId();
         User user = userDao.findByUsername(username);
         user.setActiveGameId(gameId);
         userDao.save(user);
 
-        int timeMins = parseTime(time);
-        List<Object> botInfo = botService.getBotTimes(computerLevel, timeMins, problems);
-        int botScore = (int) botInfo.get(0);
-        game.setPlayer2Score(botScore);
         return ResponseEntity.ok(Arrays.asList(gameId, computerLevel));
     }
 
@@ -162,17 +158,17 @@ public class GameController {
 
     @PostMapping(path="/problem_list", consumes = MediaType.TEXT_PLAIN_VALUE)
     @RolesAllowed({"USER", "ADMIN"})
-    public ResponseEntity<List<ProblemShort>> getProblemList(@RequestBody String gameId) {
+    public ResponseEntity<List<Problem>> getProblemList(@RequestBody String gameId) {
         Game game = gameDao.getGameByGameId(gameId);
         if(game == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         List<Problem> problems = game.getProblemSet();
-        List<ProblemShort> problemShorts = problems.stream()
+        /* List<ProblemShort> problemShorts = problems.stream()
         .map(problem -> new ProblemShort(problem.getProblemId(), problem.getImage()))
-        .collect(Collectors.toList());
+        .collect(Collectors.toList()); */
 
-        return ResponseEntity.ok().body(problemShorts);
+        return ResponseEntity.ok().body(problems);
     }
 
     @PostMapping(path="/bot_stats", consumes = MediaType.APPLICATION_JSON_VALUE)

@@ -2,6 +2,7 @@ package com.example.controller;
 
 import java.security.Principal;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -258,35 +259,62 @@ public class MessageController {
 
     @MessageMapping("/computer")
     public void indivAnswer(@Payload AnswerMessage answerMsg) {
+        String type = answerMsg.getType();
         String gameId = answerMsg.getGameId();
-        int currentProblemId = answerMsg.getCurrentProblemId();
-        String username = answerMsg.getPlayerUsername();
-
         Game activeGame = gameDao.getGameByGameId(gameId);
-
-        String userAnswer = answerMsg.getAnswer();
-        String correctAnswer = problemDao.findAnswerByProblem(currentProblemId);
-        String userAnswerTrimmed = userAnswer.trim();
-        int currentPlayerScore = activeGame.getPlayer1Score();
-        int status;
-
-        if(userAnswerTrimmed.equals(correctAnswer)) {
-            int problemDifficulty = problemDao.findDifficultyByProblemId(currentProblemId);
-            activeGame.setPlayer1Score(currentPlayerScore + 1);
-            currentPlayerScore++;
-            status = 1;
-            int currentPlayerXp = activeGame.getPlayer1Xp();
-            int xpToAdd = difficultyLevelService.getXpForDifficultyLevel(problemDifficulty) / 2;
-            activeGame.setPlayer1Xp(currentPlayerXp + xpToAdd);
+        if(type.equals("bot")) {
+            activeGame.setPlayer2Score(activeGame.getPlayer2Score() + 1);
+            if(activeGame.getPlayer2Score() == ProblemService.PROBLEM_SET_SIZE) {
+                activeGame.setWinner("computer won");
+            }
             gameDao.save(activeGame);
+            List<Object> gameData = Arrays.asList(activeGame.getPlayer2Score(), -1, activeGame.getWinner(), 2);
+            simpMessagingTemplate.convertAndSendToUser(activeGame.getPlayer1Username(), "/bot", gameData);
         } else {
-            status = 0;
-        }
-        Map<Integer, Integer> m = Stream.of(new Object[][] {
-            {currentPlayerScore, status}
-        }).collect(Collectors.toMap(data -> (Integer)data[0], data -> (Integer)data[1]));
+            int currentProblemId = answerMsg.getCurrentProblemId();
+            int currentProblemIndex = answerMsg.getCurrentProblemIndex();
+            String username = answerMsg.getPlayerUsername();
 
-        simpMessagingTemplate.convertAndSendToUser(username, "/bot", m);
+            String userAnswer = answerMsg.getAnswer();
+            String correctAnswer = problemDao.findAnswerByProblem(currentProblemId);
+            String userAnswerTrimmed = userAnswer.trim();
+            int currentPlayerScore = activeGame.getPlayer1Score();
+            String status1 = activeGame.getStatusProb1();
+            int status;
+
+            if(getStatusByIndex(status1, currentProblemIndex) != 1) {
+                String newStatus;
+                if(userAnswerTrimmed.equals(correctAnswer)) {
+                    newStatus = setStatusByIndex(status1, currentProblemIndex, 1);
+                    int problemDifficulty = problemDao.findDifficultyByProblemId(currentProblemId);
+                    activeGame.setPlayer1Score(currentPlayerScore + 1);
+                    currentPlayerScore++;
+                    status = 1;
+                    int currentPlayerXp = activeGame.getPlayer1Xp();
+                    int xpToAdd = difficultyLevelService.getXpForDifficultyLevel(problemDifficulty) / 2;
+                    activeGame.setPlayer1Xp(currentPlayerXp + xpToAdd);
+                    gameDao.save(activeGame);
+                } else {
+                    newStatus = setStatusByIndex(status1, currentProblemIndex, 0);
+                    status = 0;
+                }
+                activeGame.setStatusProb1(newStatus);
+            } else {
+                status = (userAnswerTrimmed.equals(correctAnswer)) ? 1 : 0;
+            }
+            
+            if(activeGame.getPlayer1Score() == ProblemService.PROBLEM_SET_SIZE) {
+                activeGame.setWinner(activeGame.getPlayer1Username());
+            }
+            gameDao.save(activeGame);
+
+            List<Object> gameData = Arrays.asList(currentPlayerScore, status, activeGame.getWinner(), 1);
+    /*         Map<Object, Object> m = Stream.of(new Object[][] {
+                {currentPlayerScore, status, activeGame.getWinner()}
+            }).collect(Collectors.toMap(data -> (Integer)data[0], data -> (Integer)data[1])); */
+
+            simpMessagingTemplate.convertAndSendToUser(username, "/bot", gameData);
+        }
     }
 
     private void sendToUsers(Game game, String dest, Object msg) {

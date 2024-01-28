@@ -74,6 +74,8 @@ public class Game {
     @Column(name="status_prob2")
     private String statusProb2;
 
+    private String type;
+
     /* @Transient
     private List<Integer> probStatus1;
 
@@ -258,5 +260,13 @@ public class Game {
 
     public void setStatusProb2(String statusProb2) {
         this.statusProb2 = statusProb2;
+    }
+
+    public String getType() {
+        return this.type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }
