@@ -40,9 +40,9 @@ async function setUpGame() {
     statusList = new Array(numProblems).fill(-1);
 
     //debugging
-    console.log(problemList);
+    /* console.log(problemList);
     console.log("Current ProblemId: " + currentProblemId);
-    console.log("Current ProblemIndex: " + currentProblemIndex);
+    console.log("Current ProblemIndex: " + currentProblemIndex); */
     
     connect();
 }
@@ -90,7 +90,6 @@ var rematchClient;
 let answerForm = document.getElementById("answer_form");
 let answerSubmit = document.getElementById("answer_submit");
 
-let readyButton = document.getElementById("ready");
 //get answer from form
 let playerInput = document.getElementById("player_answer");
 
@@ -125,9 +124,6 @@ const modalEnd = document.getElementById('modal-end');
 
 var modalA = new bootstrap.Modal(modalAnswer, {backdrop: 'static', keyboard: false});
 var modalE = new bootstrap.Modal(modalEnd, {backdrop: 'static', keyboard: false});
-//buttons for modal
-const endClose = document.getElementById("end-close");
-const amClose = document.getElementById("am-close");
 
 const player1Badge = document.getElementById("player1_badge");
 const player2Badge = document.getElementById("player2_badge");

@@ -30,6 +30,7 @@ import com.example.model.Game;
 import com.example.model.GamePlay;
 import com.example.model.GameStatus;
 import com.example.model.Problem;
+import com.example.model.ProblemShort;
 import com.example.model.User;
 import com.example.service.BotService;
 import com.example.service.GameService;
@@ -38,6 +39,7 @@ import com.exception.InvalidGameException;
 import com.exception.InvalidParamException;
 import com.exception.NotFoundException;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -160,13 +162,17 @@ public class GameController {
 
     @PostMapping(path="/problem_list", consumes = MediaType.TEXT_PLAIN_VALUE)
     @RolesAllowed({"USER", "ADMIN"})
-    public ResponseEntity<List<Problem>> getProblemList(@RequestBody String gameId) {
+    public ResponseEntity<List<ProblemShort>> getProblemList(@RequestBody String gameId) {
         Game game = gameDao.getGameByGameId(gameId);
         if(game == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         List<Problem> problems = game.getProblemSet();
-        return ResponseEntity.ok().body(problems);
+        List<ProblemShort> problemShorts = problems.stream()
+        .map(problem -> new ProblemShort(problem.getProblemId(), problem.getImage()))
+        .collect(Collectors.toList());
+
+        return ResponseEntity.ok().body(problemShorts);
     }
 
     @PostMapping(path="/bot_stats", consumes = MediaType.APPLICATION_JSON_VALUE)
