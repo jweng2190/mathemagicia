@@ -180,25 +180,33 @@ public class MessageController {
         int currentProblemId = answerMessage.getCurrentProblemId();
         int currentProblemIndex = answerMessage.getCurrentProblemIndex();
 
+        String status1 = game.getStatusProb1();
+        String status2 = game.getStatusProb2();
+
         String correctAnswer = problemDao.findAnswerByProblem(currentProblemId);
         String userAnswerTrimmed = userAnswer.trim();
 
         GameAnswer gameAnswer;
         int problemDifficulty = problemDao.findDifficultyByProblemId(currentProblemId);
         if(playerType == 1) {
-            if(userAnswerTrimmed.equals(correctAnswer) && 
-            game.getProbStatus1().get(currentProblemIndex) != 1) {
-                game.getProbStatus1().set(currentProblemIndex, 1);
-                int currentPlayerScore = game.getPlayer1Score();
-                game.setPlayer1Score(currentPlayerScore + 1);
-                int currentPlayerXp = game.getPlayer1Xp();
-                int xpToAdd = difficultyLevelService.getXpForDifficultyLevel(problemDifficulty);
-                game.setPlayer1Xp(currentPlayerXp + xpToAdd);
-                gameAnswer = new GameAnswer(game.getPlayer1Score(), game.getPlayer2Score(),
-                1, playerType);
+            if(getStatusByIndex(status1, currentProblemIndex) != 1) {
+                if(userAnswerTrimmed.equals(correctAnswer)) {
+                    status1 = setStatusByIndex(status1, currentProblemIndex, 1);
+                    game.setStatusProb1(status1);
+                    int currentPlayerScore = game.getPlayer1Score();
+                    game.setPlayer1Score(currentPlayerScore + 1);
+                    int currentPlayerXp = game.getPlayer1Xp();
+                    int xpToAdd = difficultyLevelService.getXpForDifficultyLevel(problemDifficulty);
+                    game.setPlayer1Xp(currentPlayerXp + xpToAdd);
+                    gameAnswer = new GameAnswer(game.getPlayer1Score(), game.getPlayer2Score(),
+                    1, playerType);
+                } else {
+                    status1 = setStatusByIndex(status1, currentProblemIndex, 0);
+                    gameAnswer = new GameAnswer(game.getPlayer1Score(), game.getPlayer2Score(),
+                0, playerType);
+                }
             } else {
                 if(userAnswerTrimmed.equals(correctAnswer)) {
-                    game.getProbStatus1().set(currentProblemIndex, 0);
                     gameAnswer = new GameAnswer(game.getPlayer1Score(), game.getPlayer2Score(),
                     1, playerType); 
                 } else {
@@ -207,19 +215,24 @@ public class MessageController {
                 }
             }
         } else {
-            if(userAnswerTrimmed.equals(correctAnswer) &&
-            game.getProbStatus2().get(currentProblemIndex) != 1) {
-                game.getProbStatus2().set(currentProblemIndex, 1);
-                int currentPlayerScore = game.getPlayer2Score();
-                game.setPlayer2Score(currentPlayerScore + 1);
-                int currentPlayerXp = game.getPlayer2Xp();
-                int xpToAdd = difficultyLevelService.getXpForDifficultyLevel(problemDifficulty);
-                game.setPlayer2Xp(currentPlayerXp + xpToAdd);
-                gameAnswer = new GameAnswer(game.getPlayer1Score(), game.getPlayer2Score(),
-                1, playerType);
+            if(getStatusByIndex(status2, currentProblemIndex) != 1) {
+                if(userAnswerTrimmed.equals(correctAnswer)) {
+                    status2 = setStatusByIndex(status2, currentProblemIndex, 1);
+                    game.setStatusProb2(status2);
+                    int currentPlayerScore = game.getPlayer2Score();
+                    game.setPlayer2Score(currentPlayerScore + 1);
+                    int currentPlayerXp = game.getPlayer2Xp();
+                    int xpToAdd = difficultyLevelService.getXpForDifficultyLevel(problemDifficulty);
+                    game.setPlayer2Xp(currentPlayerXp + xpToAdd);
+                    gameAnswer = new GameAnswer(game.getPlayer1Score(), game.getPlayer2Score(),
+                    1, playerType);
+                } else {
+                    status2 = setStatusByIndex(status2, currentProblemIndex, 0);
+                    gameAnswer = new GameAnswer(game.getPlayer1Score(), game.getPlayer2Score(),
+                0, playerType);
+                }
             } else {
                 if(userAnswerTrimmed.equals(correctAnswer)) {
-                    game.getProbStatus2().set(currentProblemIndex, 0);
                     gameAnswer = new GameAnswer(game.getPlayer1Score(), game.getPlayer2Score(),
                     1, playerType); 
                 } else {
@@ -314,5 +327,25 @@ public class MessageController {
 
     public static int playerTypeByGame(Game game, String username) {
         return (game.getPlayer1Username().equals(username)) ? 1 : 2;
+    }
+
+    public static int getStatusByIndex(String s, int i) {
+        String[] values = s.split(",");
+        if (i >= 0 && i < values.length) {
+            return Integer.parseInt(values[i]);
+        } else {
+            return -1;
+        }
+    }
+
+    public static String setStatusByIndex(String s, int i, int status) {
+        String[] values = s.split(",");
+        if (i >= 0 && i < values.length) {
+            values[i] = String.valueOf(status);
+            String modifiedString = String.join(",", values);
+            return modifiedString;
+        } else {
+            return s;
+        }
     }
 }

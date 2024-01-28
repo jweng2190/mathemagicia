@@ -57,8 +57,21 @@ public class GameService {
         game.setGameDifficulty(diff);
         game.setTimeLimit(time);
         game.setGameDate(LocalDate.now());
-        game.setProbStatus1(Collections.nCopies(ProblemService.PROBLEM_SET_SIZE, -1));
-        game.setProbStatus2(Collections.nCopies(ProblemService.PROBLEM_SET_SIZE, -1));
+
+        String status1 = ""; String status2 = "";
+        int n = ProblemService.PROBLEM_SET_SIZE;
+        for(int i = 0; i < n; i++) {
+            if(i != n - 1) {
+                status1 += "-1,";
+                status2 += "-1,";
+            } else {
+                status1 += "-1";
+                status2 += "-1";
+            }
+        }
+
+        game.setStatusProb1(status1);
+        game.setStatusProb2(status2);
 
         setProblems(game);
 

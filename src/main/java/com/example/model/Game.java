@@ -68,11 +68,17 @@ public class Game {
     @Column(name="player2_joined")
     private boolean player2Joined;
 
-    @Transient
+    @Column(name="status_prob1")
+    private String statusProb1;
+
+    @Column(name="status_prob2")
+    private String statusProb2;
+
+    /* @Transient
     private List<Integer> probStatus1;
 
     @Transient
-    private List<Integer> probStatus2;
+    private List<Integer> probStatus2; */
 
     @Transient
     private int numDisconnect1;
@@ -238,20 +244,19 @@ public class Game {
         this.player2Xp = player2Xp;
     }
 
-    public List<Integer> getProbStatus1() {
-        return this.probStatus1;
+    public String getStatusProb1() {
+        return this.statusProb1;
     }
 
-    public void setProbStatus1(List<Integer> probStatus1) {
-        this.probStatus1 = probStatus1;
+    public void setStatusProb1(String statusProb1) {
+        this.statusProb1 = statusProb1;
     }
 
-    public List<Integer> getProbStatus2() {
-        return this.probStatus2;
+    public String getStatusProb2() {
+        return this.statusProb2;
     }
 
-    public void setProbStatus2(List<Integer> probStatus2) {
-        this.probStatus2 = probStatus2;
+    public void setStatusProb2(String statusProb2) {
+        this.statusProb2 = statusProb2;
     }
-
 }
