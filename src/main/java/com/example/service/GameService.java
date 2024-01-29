@@ -49,26 +49,15 @@ public class GameService {
         Game game = new Game();
         //set id
         game.setGameId(UUID.randomUUID().toString());
-        //game.setPlayer1(player);
         game.setPlayer1Username(playerUsername);
-        //game.setPlayer1Joined(true);
         game.setStatus(NEW);
 
         game.setGameDifficulty(diff);
         game.setTimeLimit(time);
         game.setGameDate(LocalDate.now());
 
-        String status1 = ""; String status2 = "";
-        int n = ProblemService.PROBLEM_SET_SIZE;
-        for(int i = 0; i < n; i++) {
-            if(i != n - 1) {
-                status1 += "-1,";
-                status2 += "-1,";
-            } else {
-                status1 += "-1";
-                status2 += "-1";
-            }
-        }
+        String status1 = initializeProbStatus();
+        String status2 = initializeProbStatus();
 
         game.setStatusProb1(status1);
         game.setStatusProb2(status2);
@@ -85,6 +74,25 @@ public class GameService {
         gameDao.save(game);  
         userDao.save(user);
 
+        return game;
+    }
+
+    public Game createQPGame(User player1, User player2) {
+        Game game = new Game();
+        game.setGameId(UUID.randomUUID().toString());
+        game.setPlayer1Username(player1.getUsername());
+        game.setPlayer2Username(player2.getUsername());
+        game.setStatus(NEW);
+        game.setTimeLimit("10:00");
+        game.setGameDate(LocalDate.now());
+
+        String status1 = initializeProbStatus();
+        String status2 = initializeProbStatus();
+
+        game.setStatusProb1(status1);
+        game.setStatusProb2(status2);
+
+        setProblems(game);
         return game;
     }
 
@@ -192,7 +200,7 @@ public class GameService {
     }
 
     public void setProblems(Game game) {
-        List<Problem> problems = problemService.getRandomProblems(ProblemService.PROBLEM_SET_SIZE, game);
+        List<Problem> problems = problemService.getRandomProblems(game);
         game.setProblemSet(problems);
         gameDao.save(game);
     }
@@ -212,6 +220,19 @@ public class GameService {
         } else {
             return null;
         }
+    }
+
+    public String initializeProbStatus() {
+        String status = "";
+        int n = ProblemService.PROBLEM_SET_SIZE;
+        for(int i = 0; i < n; i++) {
+            if(i != n - 1) {
+                status += "-1,";
+            } else {
+                status += "-1";
+            }
+        }
+        return status;
     }
 
     public String getGameCodeByUsername(String player1Username) {

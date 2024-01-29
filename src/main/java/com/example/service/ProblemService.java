@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import com.example.dao.ProblemRepository;
@@ -20,32 +21,25 @@ public class ProblemService {
     private ProblemRepository problemDao;
     public static final int PROBLEM_SET_SIZE = 20;
 
-    public List<Problem> getRandomProblems(Integer numProblems, Game game) {
+    public List<Problem> getRandomProblems(Game game) {
         String difficulty = game.getGameDifficulty();
         List<Problem> allProblems;
+
+        if(difficulty == null) {
+            allProblems = problemDao.findRandProblems(PROBLEM_SET_SIZE);
+            return allProblems;
+        }
+
         if(difficulty.equals("easy")) {
-            allProblems = problemDao.findAllEasyProblems();
+            allProblems = problemDao.findAllEasyProblems(PROBLEM_SET_SIZE);
         } else if(difficulty.equals("medium")) {
-            allProblems = problemDao.findAllMediumProblems();
+            allProblems = problemDao.findAllMediumProblems(PROBLEM_SET_SIZE);
         } else if(difficulty.equals("hard")) {
-            allProblems = problemDao.findAllHardProblems();
+            allProblems = problemDao.findAllHardProblems(PROBLEM_SET_SIZE);
         } else {
-            allProblems = problemDao.findAllMediumProblems();
-        }
-        
-        int length = allProblems.size();
-        ArrayList<Integer> problemIndices = new ArrayList<Integer>();
-        for(int i = 0; i < length; i++) {
-            problemIndices.add(i, i);
+            allProblems = problemDao.findAllMediumProblems(PROBLEM_SET_SIZE);
         }
 
-        Collections.shuffle(problemIndices);
-
-        List<Problem> problemList = new ArrayList<Problem>();
-        for(int i = 0; i < numProblems; i++) {
-            problemList.add(i, allProblems.get(problemIndices.get(i)));
-        }
-
-        return problemList;
+        return allProblems;
     }
 }

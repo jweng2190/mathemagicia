@@ -19,12 +19,15 @@ public interface ProblemRepository extends JpaRepository<Problem, Integer> {
     @Query(value = "SELECT * FROM problem WHERE contest=\'mathcounts\'", nativeQuery = true)
     List<Problem> findAllMCProblems();
 
-    @Query(value = "SELECT * FROM problem WHERE difficulty BETWEEN 1 AND 3", nativeQuery = true)
-    List<Problem> findAllEasyProblems();
+    @Query(value = "SELECT * FROM problem WHERE difficulty BETWEEN 1 AND 3 ORDER BY RAND() LIMIT ?1", nativeQuery = true)
+    List<Problem> findAllEasyProblems(Integer maxProbs);
 
-    @Query(value = "SELECT * FROM problem WHERE difficulty BETWEEN 4 AND 6", nativeQuery = true)
-    List<Problem> findAllMediumProblems();
+    @Query(value = "SELECT * FROM problem WHERE difficulty BETWEEN 4 AND 6 ORDER BY RAND() LIMIT ?1", nativeQuery = true)
+    List<Problem> findAllMediumProblems(Integer maxProbs);
 
-    @Query(value = "SELECT * FROM problem WHERE difficulty BETWEEN 7 AND 10", nativeQuery = true)
-    List<Problem> findAllHardProblems();
+    @Query(value = "SELECT * FROM problem WHERE difficulty BETWEEN 7 AND 10 ORDER BY RAND() LIMIT ?1", nativeQuery = true)
+    List<Problem> findAllHardProblems(Integer maxProbs);
+
+    @Query(value = "SELECT * FROM problem WHERE difficulty BETWEEN 1 AND 10 ORDER BY RAND() LIMIT ?1", nativeQuery = true)
+    List<Problem> findRandProblems(Integer maxProbs);
 }

@@ -97,6 +97,11 @@ public class ViewController {
         return "computer";
     }
 
+    @GetMapping("/quick_play")
+    public String quickPlay() {
+        return "quick_play";
+    }
+
 
     @GetMapping("/test_end")
     public String testEnd() {
