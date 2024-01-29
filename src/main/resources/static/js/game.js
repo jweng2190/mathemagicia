@@ -1,6 +1,7 @@
 import { evaluateMathExpression } from "./test_latex.js";
 import { animateXp } from "./game_xp.js";
 import { getSideBar } from "./sidebar.js";
+import { getBaseUri } from "./get_base_uri.js";
 
 var username;
 var gameId;
@@ -77,13 +78,7 @@ const badgeUrl = "https://mm-level-badges.s3.us-east-2.amazonaws.com";
 getSideBar("game");
 let index = 0;
 
-var loc = window.location, base_uri;
-if (loc.protocol === "https:") {
-    base_uri = "wss:";
-} else {
-    base_uri = "ws:";
-}
-base_uri += "//" + loc.host;
+const base_uri = getBaseUri();
 
 var rematchClient;
 

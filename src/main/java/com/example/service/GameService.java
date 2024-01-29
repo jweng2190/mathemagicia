@@ -68,8 +68,8 @@ public class GameService {
         String gameId = game.getGameId();
         if(type.equals("live")) {
             user.setCreatedGameId(gameId);
-            game.setType(type);
         }
+        game.setType(type);
 
         gameDao.save(game);  
         userDao.save(user);

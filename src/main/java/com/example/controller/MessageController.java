@@ -25,6 +25,7 @@ import com.example.model.GameStatus;
 import com.example.model.User;
 import com.example.service.DifficultyLevelService;
 import com.example.service.GameService;
+import com.example.service.MatchmakingService;
 import com.example.service.ProblemService;
 
 @Controller
@@ -46,6 +47,9 @@ public class MessageController {
 
     @Autowired
     private DifficultyLevelService difficultyLevelService;
+
+    @Autowired
+    private MatchmakingService matchmakingService;
 
     @MessageMapping("/game.join")
     public synchronized void joinGame(@Payload JoinMessage message) {
@@ -315,6 +319,11 @@ public class MessageController {
 
             simpMessagingTemplate.convertAndSendToUser(username, "/bot", gameData);
         }
+    }
+
+    @MessageMapping("/quick_play")
+    public void quickPlay(@Payload String username) {
+        matchmakingService.addPlayerToQueue(username);
     }
 
     private void sendToUsers(Game game, String dest, Object msg) {

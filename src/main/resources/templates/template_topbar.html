@@ -12,7 +12,24 @@
                 </div>
             </div>
             <ul class="navbar-nav flex-nowrap ms-auto">
-                <!-- <li class="nav-item d-flex dropdown no-arrow mx-1" id="notifications">
+                <li class="nav-item dropdown no-arrow" id="profile">
+                    <div class="nav-item dropdown no-arrow">
+                        <a class="dropdown-toggle d-flex flex-row justify-content-center align-items-center nav-link" aria-expanded="false" data-bs-toggle="dropdown" href="#" style="height: 55px;">
+                            <span id="topbar_username" class="d-none d-lg-inline me-2 text-gray-600 small"></span>
+                            <!--BADGE-->
+                            <img class="fa-square" id="user_badge" src="" style="width: 50px;height: 50px;">
+                        </a>
+                        <div class="dropdown-menu shadow dropdown-menu-end animated--grow-in"><a class="dropdown-item" href="/profile"><i class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Profile</a><a class="dropdown-item" href="#"><i class="fas fa-cogs fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Settings</a><a class="dropdown-item" href="#"><i class="fas fa-list fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Activity log</a>
+                            <div class="dropdown-divider"></div><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Logout</a>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</template>
+
+<!-- <li class="nav-item d-flex dropdown no-arrow mx-1" id="notifications">
                     <div class="nav-item dropdown d-flex flex-row no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false" data-bs-toggle="dropdown" href="#" style="justify-content: center;align-items: center;display: flex;height: 55px;"><span class="badge bg-danger badge-counter">2</span><i class="fas fa-bell fa-fw"></i></a>
                         <div class="dropdown-menu dropdown-menu-end dropdown-list animated--grow-in">
                             <h6 class="dropdown-header">alerts center</h6><a class="dropdown-item d-flex align-items-center" href="#">
@@ -79,19 +96,3 @@
                         </div>
                     </div>
                 </li> -->
-                <li class="nav-item dropdown no-arrow" id="profile">
-                    <div class="nav-item dropdown no-arrow">
-                        <a class="dropdown-toggle d-flex flex-row justify-content-center align-items-center nav-link" aria-expanded="false" data-bs-toggle="dropdown" href="#" style="height: 55px;">
-                            <span id="topbar_username" class="d-none d-lg-inline me-2 text-gray-600 small"></span>
-                            <!--BADGE-->
-                            <img class="fa-square" id="user_badge" src="" style="width: 50px;height: 50px;">
-                        </a>
-                        <div class="dropdown-menu shadow dropdown-menu-end animated--grow-in"><a class="dropdown-item" href="/profile"><i class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Profile</a><a class="dropdown-item" href="#"><i class="fas fa-cogs fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Settings</a><a class="dropdown-item" href="#"><i class="fas fa-list fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Activity log</a>
-                            <div class="dropdown-divider"></div><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Logout</a>
-                        </div>
-                    </div>
-                </li>
-            </ul>
-        </div>
-    </nav>
-</template>
