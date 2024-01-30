@@ -72,7 +72,6 @@ public class MessageController {
             }
             player = userDao.findByUsername(playerUsername);
             player.setActiveGameId(gameId);
-            gameDao.save(gameToJoin);
 
             if(gameToJoin.isPlayer1Joined() && gameToJoin.isPlayer2Joined()) {
                 gameToJoin.setStatus(GameStatus.IN_PROGRESS);
