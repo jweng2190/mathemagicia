@@ -5,7 +5,13 @@ import { getTopBar } from "./topbar.js";
 
 const username = await getUsername();
 
+let requestStatus = -1;
+// -1 means not active
+// 0 means cancel/cancelling
+// 1 means joining/joined
+
 const buttonJoin = document.getElementById("join_game");
+const testSpan = document.getElementById("test_span");
 const base_uri = getBaseUri();
 connectQueue();
 getSideBar("regular");
@@ -17,16 +23,44 @@ function connectQueue() {
     stompClient.connect({}, function (frame) {
         console.log("Connected: " + frame);
         stompClient.subscribe('/user/' + username + "/quick_play", function (message) {
-            let gameId = message.body;
-            console.log("Game ID: " + gameId);
+            let msgObject = JSON.parse(message.body);
+            let type = msgObject.type;
+            if(type === "status") {
+                let status = msgObject.content;
+                handleStatus(status);
+            } else if(type === "creation") {
+                let gameId = msgObject.content;
+                console.log("Game ID: " + gameId);
+                var baseUrl = window.location.protocol + "//" + window.location.host;
+                window.location.href = baseUrl + "/game/" + gameId;
+            }
         });
 
         buttonJoin.addEventListener("click", function() {
-            queueGame(stompClient);
+            if(requestStatus == -1 || requestStatus == 0) {
+                requestStatus = 1;
+                testSpan.style.color = "green";
+                buttonJoin.textContent = "Cancel";
+            } else {
+                requestStatus = 0;
+                testSpan.style.color = "gray";
+                buttonJoin.textContent = "Join";
+            }
+            requestGame(stompClient, requestStatus);
         });
     });
 }
 
-function queueGame(client) {
-    client.send(`/ws/quick_play`, {}, username);
+function requestGame(client, type) {
+    let timestamp = Date.now();
+    let msg = {
+        type: (type === 1) ? "join": "cancel",
+        username: username,
+        timestamp: timestamp
+    }
+    client.send(`/ws/quick_play`, {}, JSON.stringify(msg));
+}
+
+function handleStatus(status) {
+    console.log("Status: " + status);
 }

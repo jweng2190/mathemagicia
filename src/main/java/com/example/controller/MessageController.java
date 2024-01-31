@@ -19,6 +19,8 @@ import com.example.dto.message.AnswerMessage;
 import com.example.dto.message.GameAnswer;
 import com.example.dto.message.GameMessage;
 import com.example.dto.message.JoinMessage;
+import com.example.dto.message.MatchRequest;
+import com.example.dto.message.QuickPlayMessage;
 import com.example.dto.message.RematchMessage;
 import com.example.model.Game;
 import com.example.model.GameStatus;
@@ -322,8 +324,11 @@ public class MessageController {
     }
 
     @MessageMapping("/quick_play")
-    public void quickPlay(@Payload String username) {
-        matchmakingService.addPlayerToQueue(username);
+    public void quickPlay(@Payload MatchRequest matchRequest) {
+        String response = matchmakingService.processRequest(matchRequest);
+        QuickPlayMessage clientMessage = new QuickPlayMessage("status", response);
+        simpMessagingTemplate.convertAndSendToUser(matchRequest.getUsername(), 
+            "/quick_play", clientMessage);
     }
 
     private void sendToUsers(Game game, String dest, Object msg) {
