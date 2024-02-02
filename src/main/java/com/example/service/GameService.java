@@ -56,13 +56,13 @@ public class GameService {
         game.setTimeLimit(time);
         game.setGameDate(LocalDate.now());
 
-        String status1 = initializeProbStatus();
-        String status2 = initializeProbStatus();
+        setProblems(game);
+
+        String status1 = initializeProbStatus(game.getProblemSetSize());
+        String status2 = initializeProbStatus(game.getProblemSetSize());
 
         game.setStatusProb1(status1);
         game.setStatusProb2(status2);
-
-        setProblems(game);
 
         User user = userDao.findByUsername(playerUsername);
         String gameId = game.getGameId();
@@ -85,14 +85,15 @@ public class GameService {
         game.setStatus(NEW);
         game.setTimeLimit("10:00");
         game.setGameDate(LocalDate.now());
+        
+        setProblems(game);
 
-        String status1 = initializeProbStatus();
-        String status2 = initializeProbStatus();
+        String status1 = initializeProbStatus(game.getProblemSetSize());
+        String status2 = initializeProbStatus(game.getProblemSetSize());
 
         game.setStatusProb1(status1);
         game.setStatusProb2(status2);
 
-        setProblems(game);
         return game;
     }
 
@@ -222,11 +223,10 @@ public class GameService {
         }
     }
 
-    public String initializeProbStatus() {
+    public String initializeProbStatus(int pSetSize) {
         String status = "";
-        int n = ProblemService.PROBLEM_SET_SIZE;
-        for(int i = 0; i < n; i++) {
-            if(i != n - 1) {
+        for(int i = 0; i < pSetSize; i++) {
+            if(i != pSetSize - 1) {
                 status += "-1,";
             } else {
                 status += "-1";

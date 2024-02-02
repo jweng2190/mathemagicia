@@ -252,9 +252,9 @@ public class MessageController {
 
         gameDao.save(game);
 
-        if(game.getPlayer1Score() == ProblemService.PROBLEM_SET_SIZE) {
+        if(game.getPlayer1Score() == game.getProblemSetSize()) {
             gameAnswer.setWinner(player1Username);
-        } else if(game.getPlayer2Score() == ProblemService.PROBLEM_SET_SIZE) {
+        } else if(game.getPlayer2Score() == game.getProblemSetSize()) {
             gameAnswer.setWinner(player2Username);
         }
 
@@ -266,15 +266,15 @@ public class MessageController {
     public void indivAnswer(@Payload AnswerMessage answerMsg) {
         String type = answerMsg.getType();
         String gameId = answerMsg.getGameId();
-        Game activeGame = gameDao.getGameByGameId(gameId);
+        Game game = gameDao.getGameByGameId(gameId);
         if(type.equals("bot")) {
-            activeGame.setPlayer2Score(activeGame.getPlayer2Score() + 1);
-            if(activeGame.getPlayer2Score() == ProblemService.PROBLEM_SET_SIZE) {
-                activeGame.setWinner("computer won");
+            game.setPlayer2Score(game.getPlayer2Score() + 1);
+            if(game.getPlayer2Score() == game.getProblemSetSize()) {
+                game.setWinner("computer won");
             }
-            gameDao.save(activeGame);
-            List<Object> gameData = Arrays.asList(activeGame.getPlayer2Score(), -1, activeGame.getWinner(), 2);
-            simpMessagingTemplate.convertAndSendToUser(activeGame.getPlayer1Username(), "/bot", gameData);
+            gameDao.save(game);
+            List<Object> gameData = Arrays.asList(game.getPlayer2Score(), -1, game.getWinner(), 2);
+            simpMessagingTemplate.convertAndSendToUser(game.getPlayer1Username(), "/bot", gameData);
         } else {
             int currentProblemId = answerMsg.getCurrentProblemId();
             int currentProblemIndex = answerMsg.getCurrentProblemIndex();
@@ -283,8 +283,8 @@ public class MessageController {
             String userAnswer = answerMsg.getAnswer();
             String correctAnswer = problemDao.findAnswerByProblem(currentProblemId);
             String userAnswerTrimmed = userAnswer.trim();
-            int currentPlayerScore = activeGame.getPlayer1Score();
-            String status1 = activeGame.getStatusProb1();
+            int currentPlayerScore = game.getPlayer1Score();
+            String status1 = game.getStatusProb1();
             int status;
 
             if(getStatusByIndex(status1, currentProblemIndex) != 1) {
@@ -292,28 +292,28 @@ public class MessageController {
                 if(userAnswerTrimmed.equals(correctAnswer)) {
                     newStatus = setStatusByIndex(status1, currentProblemIndex, 1);
                     int problemDifficulty = problemDao.findDifficultyByProblemId(currentProblemId);
-                    activeGame.setPlayer1Score(currentPlayerScore + 1);
+                    game.setPlayer1Score(currentPlayerScore + 1);
                     currentPlayerScore++;
                     status = 1;
-                    int currentPlayerXp = activeGame.getPlayer1Xp();
+                    int currentPlayerXp = game.getPlayer1Xp();
                     int xpToAdd = difficultyLevelService.getXpForDifficultyLevel(problemDifficulty) / 2;
-                    activeGame.setPlayer1Xp(currentPlayerXp + xpToAdd);
-                    gameDao.save(activeGame);
+                    game.setPlayer1Xp(currentPlayerXp + xpToAdd);
+                    gameDao.save(game);
                 } else {
                     newStatus = setStatusByIndex(status1, currentProblemIndex, 0);
                     status = 0;
                 }
-                activeGame.setStatusProb1(newStatus);
+                game.setStatusProb1(newStatus);
             } else {
                 status = (userAnswerTrimmed.equals(correctAnswer)) ? 1 : 0;
             }
             
-            if(activeGame.getPlayer1Score() == ProblemService.PROBLEM_SET_SIZE) {
-                activeGame.setWinner(activeGame.getPlayer1Username());
+            if(game.getPlayer1Score() == game.getProblemSetSize()) {
+                game.setWinner(game.getPlayer1Username());
             }
-            gameDao.save(activeGame);
+            gameDao.save(game);
 
-            List<Object> gameData = Arrays.asList(currentPlayerScore, status, activeGame.getWinner(), 1);
+            List<Object> gameData = Arrays.asList(currentPlayerScore, status, game.getWinner(), 1);
     /*         Map<Object, Object> m = Stream.of(new Object[][] {
                 {currentPlayerScore, status, activeGame.getWinner()}
             }).collect(Collectors.toMap(data -> (Integer)data[0], data -> (Integer)data[1])); */

@@ -162,6 +162,10 @@ public class Game {
         return this.problemSet;
     }
 
+    public int getProblemSetSize() {
+        return problemSet.size();
+    }
+
     public void setProblemSet(List<Problem> problemSet) {
         this.problemSet = problemSet;
     }
