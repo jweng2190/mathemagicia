@@ -355,6 +355,10 @@ function connect() {
     console.log('Connecting to game');
 
     let stompClient = Stomp.over(socketConnect);
+    /* let stompClient = Stomp.over(function() {
+        return new WebSocket(base_uri + "/connect", 'v10.stomp');
+    }); */
+    stompClient.reconnect_delay = 5000;
     stompClient.connect({}, function (frame) {
         console.log(frame);
         stompClient.subscribe('/user/' + username + "/connect", function (message) {

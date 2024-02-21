@@ -1,4 +1,6 @@
+const badgeUrl = "https://mm-level-badges.s3.us-east-2.amazonaws.com";
 var gameList = [];
+var playerBadgeList = [];
 var table = document.getElementById("past_games");
 const templNoGames = document.getElementById("no_games");
 const mainDiv = document.querySelector('div');
@@ -33,6 +35,13 @@ document.getElementById("prevPage").addEventListener("click", () => {
 
 async function displayPast() {
     try {
+        playerBadgeList = await getUserImages();
+        console.log(playerBadgeList);
+    } catch(e) {
+        console.log("Error occurred while getting player badges!")
+    }
+
+    try {
         gameList = await getGames();
         totalPages = Math.ceil(gameList.length / itemsPerPage);
         pageDisp.textContent = "Page 1\/" + totalPages;
@@ -47,6 +56,12 @@ async function getGames() {
     const response = await fetch("/all_games");
     const listGames = await response.json();
     return listGames;
+}
+
+async function getUserImages() {
+    const response = await fetch("/player_badges");
+    const listPlayerBadges = await response.json();
+    return listPlayerBadges;
 }
 
 function populateTable(page) {
@@ -74,7 +89,7 @@ function populateTable(page) {
 
             let gameId = game.gameId;
 
-            stylePlayersCell(game, cellPlayers);
+            stylePlayersCell(game, cellPlayers, i);
             styleResultCell(game, cellResult);
             styleReviewCell(gameId, cellReview);
             styleDateCell(game, cellDate);
@@ -83,7 +98,7 @@ function populateTable(page) {
     pageDisp.textContent = `Page ${currentPage}/` + totalPages;
 }
 
-function stylePlayersCell(game, cell) {
+function stylePlayersCell(game, cell, idx) {
     var div1 = document.createElement("div");
     var div2 = document.createElement("div");
 
@@ -94,11 +109,13 @@ function stylePlayersCell(game, cell) {
     img1.style.width = "25px";
     img1.style.height = "25px";
     img1.style.marginRight = "18px";
+    img1.src = getPlayerBadgeUrl(idx).b1;
 
     var img2 = document.createElement("img");
     img2.style.width = "25px";
     img2.style.height = "25px";
     img2.style.marginRight = "18px";
+    img2.src = getPlayerBadgeUrl(idx).b2;
 
     var p1 = document.createElement("p");
     p1.style.width = "75%";
@@ -115,7 +132,12 @@ function stylePlayersCell(game, cell) {
     var span2 = document.createElement("span");
     span2.style.color = "rgb(0, 0, 0)";
     span2.style.backgroundColor = "transparent";
-    span2.textContent = game.player2Username;
+
+    if(game.player2Username === null) {
+        span2.textContent = "Computer";
+    } else {
+        span2.textContent = game.player2Username;
+    }
     p2.appendChild(span2);
 
     div1.appendChild(img1);
@@ -197,4 +219,21 @@ function styleDateCell(game, cell) {
     var dateString = month + "/" + day + "/" + year;
 
     cell.innerHTML = dateString;
+}
+
+function getPlayerBadgeUrl(idx) {
+    let levelP1 = playerBadgeList[idx].first;
+    let levelP2 = playerBadgeList[idx].second;
+    
+    let b1 = "/img/bot.png";
+    let b2 = "/img/bot.png";
+    if(levelP1 != -1) {
+        b1 = badgeUrl + "/b" + levelP1 + ".png";
+    }
+
+    if(levelP2 != -1) {
+        b2 = badgeUrl + "/b" + levelP2 + ".png";
+    }
+
+    return {b1, b2};
 }

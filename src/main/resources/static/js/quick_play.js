@@ -11,7 +11,8 @@ let requestStatus = -1;
 // 1 means joining/joined
 
 const buttonJoin = document.getElementById("join_game");
-const testSpan = document.getElementById("test_span");
+//const testSpan = document.getElementById("test_span");
+const divStatus = document.getElementById("status_div");
 const base_uri = getBaseUri();
 connectQueue();
 getSideBar("regular");
@@ -39,11 +40,15 @@ function connectQueue() {
         buttonJoin.addEventListener("click", function() {
             if(requestStatus == -1 || requestStatus == 0) {
                 requestStatus = 1;
-                testSpan.style.color = "green";
+                //testSpan.style.color = "green";
+                divStatus.style.display = "";
                 buttonJoin.textContent = "Cancel";
+                buttonJoin.style.background = "#6c757d";
             } else {
                 requestStatus = 0;
-                testSpan.style.color = "gray";
+                //testSpan.style.color = "gray";
+                divStatus.style.display = "none";
+                buttonJoin.removeAttribute("style");
                 buttonJoin.textContent = "Join";
             }
             requestGame(stompClient, requestStatus);

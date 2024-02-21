@@ -8,6 +8,7 @@ import com.example.service.UserService;
 import com.example.service.XpLevelService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.Pair;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -97,6 +98,39 @@ public class UserController {
         } else {
             return ResponseEntity.ok().body(allGames.subList(0, MAX_GAMES));
         }
+    }
+
+    @GetMapping("/player_badges")
+    public ResponseEntity<List<Pair<Integer, Integer>>> getPlayerBadgeUrls(HttpServletRequest request) {
+        Principal principal = request.getUserPrincipal();
+        String username = principal.getName();
+        User user = userDao.findByUsername(username);
+        List<Game> allGames = user.getGames();
+        int numGames = allGames.size();
+
+        if(numGames > MAX_GAMES) {
+            allGames = allGames.subList(0, MAX_GAMES);
+        }
+
+        List<Pair<Integer, Integer>> playerImages = new ArrayList<>();
+        for(Game g: allGames) {
+            String player1Username = g.getPlayer1Username();
+            String player2Username = g.getPlayer2Username();
+
+            int p1Level = -1; int p2Level = -1;
+            if(player1Username != null) {
+                p1Level = userService.getLevel(player1Username);
+            }
+
+            if(player2Username != null) {
+                p2Level = userService.getLevel(player2Username);
+            }
+
+            Pair<Integer, Integer> p = Pair.of(p1Level, p2Level);
+            playerImages.add(p);
+        }
+
+        return ResponseEntity.ok().body(playerImages);
     }
 
 
