@@ -11,6 +11,7 @@ public class Problem {
     private int problemId;
 
     private String contest;
+    private String description;
 
     //link to image on aws
     @Column(name="image")
@@ -39,6 +40,14 @@ public class Problem {
 
     public void setContest(String contest) {
         this.contest = contest;
+    }
+
+    public String getDescription() {
+        return this.description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getImage() {

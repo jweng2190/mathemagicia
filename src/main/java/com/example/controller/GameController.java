@@ -168,8 +168,8 @@ public class GameController {
         }
         List<Problem> problems = game.getProblemSet();
         List<ProblemShort> problemShorts = problems.stream()
-        .map(problem -> new ProblemShort(problem.getProblemId(), problem.getImage()))
-        .collect(Collectors.toList());
+                .map(problem -> new ProblemShort(problem.getProblemId(), problem.getImage(), problem.getDescription()))
+                .collect(Collectors.toList());
 
         return ResponseEntity.ok().body(problemShorts);
     }

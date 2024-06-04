@@ -41,9 +41,9 @@ async function setUpGame() {
     statusList = new Array(numProblems).fill(-1);
 
     //debugging
-    /* console.log(problemList);
+    console.log(problemList);
     console.log("Current ProblemId: " + currentProblemId);
-    console.log("Current ProblemIndex: " + currentProblemIndex); */
+    console.log("Current ProblemIndex: " + currentProblemIndex);
     
     connect();
 }
@@ -109,15 +109,15 @@ const player1ScoreElement = document.getElementById('player1-score');
 const player2ScoreElement = document.getElementById('player2-score'); 
 
 const gameContent = document.getElementsByClassName('game-page')[0];
-let modalLink = document.getElementById("modal_link");
+//let modalLink = document.getElementById("modal_link");
 
 const rematchButton = document.getElementById('rematch');
 const retHome = document.getElementById("return_home");
 
-const modalAnswer = document.getElementById('modal-answer');
+//const modalAnswer = document.getElementById('modal-answer');
 const modalEnd = document.getElementById('modal-end');
 
-var modalA = new bootstrap.Modal(modalAnswer, {backdrop: 'static', keyboard: false});
+//var modalA = new bootstrap.Modal(modalAnswer, {backdrop: 'static', keyboard: false});
 var modalE = new bootstrap.Modal(modalEnd, {backdrop: 'static', keyboard: false});
 
 const player1Badge = document.getElementById("player1_badge");
@@ -126,38 +126,7 @@ const player2Badge = document.getElementById("player2_badge");
 let navFirst, navPrev, pCurrProb, navNext, navLast;
 let statusImg = document.getElementById("status_img");
 let statusSpan = document.getElementById("status_span");
-
-let player1;
-let player2;
-
-playerInput.addEventListener('input', () => {
-    setTimeout(() => {
-        convertToLatex();
-    }, 1000);
-});
-
-modalLink.addEventListener("click", () => {
-    modalA.show();
-});
-
-/* amClose.addEventListener("click", () => {
-    modalA.hide();
-});
- */
-/* endClose.addEventListener("click", () => {
-    modalE.hide();
-}); */
-
-retHome.addEventListener("click", () => {
-    window.location.href = "/home";
-});
-
-
-var rematchState = false;
-rematchButton.addEventListener("click", function(event) {
-    event.preventDefault();
-    processRematch();
-});
+let problemCredits = document.getElementById("prob_creds");
 
 const rematchSpan = document.getElementById("rematch_status");
 const rematchInc = document.getElementById("rematch_inc");
@@ -166,14 +135,41 @@ const outgoingReq = document.getElementById("outgoing_req");
 const accRem = document.getElementById("accept_rematch");
 const rejRem = document.getElementById("reject_rematch");
 
-accRem.addEventListener("click", function(event) {
-    event.preventDefault();
-    acceptRematch();
-});
+let player1;
+let player2;
 
-rejRem.addEventListener("click", function(event) {
-    event.preventDefault()
-    rejectRematch();
+var rematchState = false;
+
+document.addEventListener("DOMContentLoaded", () => {
+    //bunch of buttons and inputs
+    playerInput.addEventListener('input', () => {
+        setTimeout(() => {
+            convertToLatex();
+        }, 1000);
+    });
+
+    /* modalLink.addEventListener("click", () => {
+        modalA.show();
+    }); */
+
+    retHome.addEventListener("click", () => {
+        window.location.href = "/home";
+    });
+
+    rematchButton.addEventListener("click", function(event) {
+        event.preventDefault();
+        processRematch();
+    });
+
+    accRem.addEventListener("click", function(event) {
+        event.preventDefault();
+        acceptRematch();
+    });
+    
+    rejRem.addEventListener("click", function(event) {
+        event.preventDefault()
+        rejectRematch();
+    });
 });
 
 function convertToLatex() {
@@ -432,6 +428,9 @@ function displayProb() {
     problemNumberBox.innerHTML = "Problem " + (currentProblemIndex + 1);
     problemImage.src = currentProblem.image;
     pCurrProb.innerHTML = (currentProblemIndex + 1) + "/" + numProblems;
+    //2013 AMC 12B, Problem #21 - Used with permission of the MAA
+    let contestDescription = problemList[currentProblemIndex].description;
+    problemCredits.innerHTML = (contestDescription + " - Used with permission of the MAA");
 }
 
 function showProbStatus(probStatus) {
@@ -577,6 +576,7 @@ function checkAnswer() {
         answerForm.style.visibility = "visible";
         problemNumberBox.innerHTML = "Problem " + (currentProblemIndex + 1);
         problemImage.src = currentProblem.image;
+        problemCredits.innerHTML = (problemList[currentProblemIndex].description + " - Used with permission of the MAA");
         answerForm.addEventListener("submit", function(event) {
             event.preventDefault();
             let client = stompClient;
