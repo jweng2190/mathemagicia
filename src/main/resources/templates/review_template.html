@@ -28,7 +28,7 @@
     </section>
     <div id="problems_solutions" style="width: 90%;">
         <template id="table-component">
-            <div class="table-responsive">
+            <div class="table-responsive" style="overflow: visible">
                 <table class="table table-hover">
                     <thead>
                         <tr>
@@ -37,18 +37,27 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td style="vertical-align: middle;text-align: center;"><img style="color: red" id="image_url" alt="No solution provided for given problem!"></td>
+                            <td style="vertical-align: middle;text-align: center;">
+                                <img style="max-width:85%; color: red" id="image_url" alt="No solution provided for given problem!">
+                            </td>
                         </tr>
                     </tbody>
+                    
                 </table>
             </div>
         </template>
         <template id="break">
             <br><hr style="height:3px;border-width:0;color:black;background-color:black"><br>
         </template>
+        <template id="solution_templ">
+            <div style="display: flex; align-items: center; justify-content: center;">
+                <a><span style="color: rgb(43, 174, 255); font-size: 20px; font-weight: 600;">Solution</span></a>
+            </div>
+        </template>
     </div>
+    <br><br>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js" integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V" crossorigin="anonymous"></script>
-    <script type="module" src="/js/review_game.js"></script>
+    <script src="/js/review_game.js"></script>
 </body>
 
 </html>

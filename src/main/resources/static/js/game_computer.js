@@ -18,7 +18,10 @@ var computerLevel;
 let botTimes;
 let botFinalScore;
 
-setUpGame();
+setUpGame().then(() => {
+    getBotData();
+    startGame();
+});
 
 async function setUpGame() {
     username = await getUsername();
@@ -38,9 +41,6 @@ async function setUpGame() {
     /* console.log(problemList);
     console.log("Current ProblemId: " + currentProblemId);
     console.log("Current ProblemIndex: " + currentProblemIndex); */
-
-    getBotData();
-    startGame();
 }
 
 /* async function sendDisconnect() {
@@ -86,6 +86,7 @@ let player2ScoreField = document.getElementById("player2score_field");
 
 let problemNumberBox = document.getElementById("problem_number");
 let problemImage = document.getElementById("problem_image");
+let problemCredits = document.getElementById("prob_creds");
 
 let player1Score = 0;
 let player2Score = 0;
@@ -119,14 +120,14 @@ async function getBotData() {
 }
 
 const gameContent = document.getElementsByClassName('game-page')[0];
-let modalLink = document.getElementById("modal_link");
+//let modalLink = document.getElementById("modal_link");
 
 const retHome = document.getElementById("return_home");
 
-const modalAnswer = document.getElementById('modal-answer');
+//const modalAnswer = document.getElementById('modal-answer');
 const modalEnd = document.getElementById('modal-end');
 
-var modalA = new bootstrap.Modal(modalAnswer, {backdrop: 'static', keyboard: false});
+//var modalA = new bootstrap.Modal(modalAnswer, {backdrop: 'static', keyboard: false});
 var modalE = new bootstrap.Modal(modalEnd, {backdrop: 'static', keyboard: false});
 
 const player1Badge = document.getElementById("player1_badge");
@@ -138,18 +139,20 @@ let statusSpan = document.getElementById("status_span");
 
 let player1;
 
-playerInput.addEventListener('input', () => {
-    setTimeout(() => {
-        convertToLatex();
-    }, 1000);
-});
-
-modalLink.addEventListener("click", () => {
-    modalA.show();
-});
-
-retHome.addEventListener("click", () => {
-    window.location.href = "/home";
+document.addEventListener("DOMContentLoaded", () => {
+    playerInput.addEventListener('input', () => {
+        setTimeout(() => {
+            convertToLatex();
+        }, 1000);
+    });
+    
+    /* modalLink.addEventListener("click", () => {
+        modalA.show();
+    }); */
+    
+    retHome.addEventListener("click", () => {
+        window.location.href = "/home";
+    });
 });
 
 function convertToLatex() {
@@ -399,6 +402,9 @@ function displayProb() {
     problemNumberBox.innerHTML = "Problem " + (currentProblemIndex + 1);
     problemImage.src = currentProblem.image;
     pCurrProb.innerHTML = (currentProblemIndex + 1) + "/" + numProblems;
+
+    let contestDescription = problemList[currentProblemIndex].description;
+    problemCredits.innerHTML = (contestDescription + " - Used with permission of the MAA");
 }
 
 function showProbStatus(probStatus) {
@@ -421,35 +427,22 @@ function showProbStatus(probStatus) {
     }
 }
 
-async function getPlayerType(gameId) {
-    const response = await fetch("/game/type/" + gameId);
-    if (!response.ok) {
-        const message = `An error has occured: ${response.status}`;
-        throw new Error(message);
-    }
-    const playerType = await response.json();
-    return playerType;
-}
-
-
 async function startGame() {
     loadingContainer.children[0].src = '';
     loadingContainer.style.zIndex = '-3';
     
     try {
-        player1 = username;
-
         let p1Username = document.getElementById("player1_username");
         let p2Username = document.getElementById("player2_username");
 
-        p1Username.innerHTML = player1;
+        p1Username.innerHTML = username;
         p2Username.innerHTML = "Bot Lvl " + computerLevel;
     } catch(err) {
         throw new Error(err);
     }
 
-    try{
-        let b1Response = await fetch("/level?username=" + player1);
+    try {
+        let b1Response = await fetch("/level?username=" + username);
 
         let b1Lvl = await b1Response.json();
 
@@ -524,6 +517,7 @@ function checkAnswer() {
         answerForm.style.visibility = "visible";
         problemNumberBox.innerHTML = "Problem " + (currentProblemIndex + 1);
         problemImage.src = currentProblem.image;
+        problemCredits.innerHTML = (problemList[currentProblemIndex].description + " - Used with permission of the MAA");
         answerForm.addEventListener("submit", function(event) {
             event.preventDefault();
             let client = stompClient;
@@ -597,35 +591,6 @@ async function endGame() {
         showFinalScores();
     } catch(error) {
         throw new Error(error);
-    }
-}
-
-function messageToGame(message) {
-    /*message.setGameId(game.getGameId());
-        message.setPlayer1(game.getPlayer1());
-        message.setPlayer2(game.getPlayer2());
-        message.setGameStatus(game.getStatus());
-        message.setWinner(game.getWinner()); */
-    return {
-        gameId: message.gameId,
-        player1: message.player1,
-        player2: message.player2,
-        player1Score: message.score1,
-        player2Score: message.score2,
-        gameStatus: message.gameStatus,
-        problemSet: message.problemSet,
-        winner: message.winner
-    }
-}
-
-function objectToProblem(problemObject) {
-    return {
-        problemId: problemObject.problemId,
-        contest: problemObject.contest,
-        problemDescription: problemObject.problemDescription,
-        difficulty: problemObject.difficulty,
-        answer: problemObject.answer,
-        solution: problemObject.solution
     }
 }
 
