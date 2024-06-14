@@ -16,9 +16,6 @@ public interface ProblemRepository extends JpaRepository<Problem, Integer> {
     @Query(value = "SELECT difficulty FROM problem WHERE problem_id=?1", nativeQuery = true)
     Integer findDifficultyByProblemId(Integer problemId);
 
-    @Query(value = "SELECT * FROM problem WHERE contest=\'mathcounts\'", nativeQuery = true)
-    List<Problem> findAllMCProblems();
-
     @Query(value = "SELECT * FROM problem WHERE difficulty BETWEEN 1 AND 3 ORDER BY RAND() LIMIT ?1", nativeQuery = true)
     List<Problem> findAllEasyProblems(Integer maxProbs);
 

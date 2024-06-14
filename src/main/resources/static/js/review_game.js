@@ -41,6 +41,7 @@ function showProblems(problems) {
         cloneProblem.querySelector('img').src = problemUrl;
         cloneProblem.querySelector('th').textContent = "Problem " + (i + 1);
         cloneSolution.querySelector('a').href = solutionUrl;
+        cloneSolution.getElementById('creds').innerHTML = (problem.description + " - Used with permission of the MAA");
     
         contentDiv.appendChild(cloneProblem);
         contentDiv.appendChild(cloneSolution);
