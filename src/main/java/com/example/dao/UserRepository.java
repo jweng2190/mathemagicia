@@ -31,7 +31,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query(value="SELECT first_name FROM user WHERE email = ?1", nativeQuery = true)
     String getFirstNameByEmail(String email);
 
-    @Query("SELECT u FROM User u WHERE u.verificationCode = ?1")
+    @Query(value="SELECT * FROM user WHERE verification_code=?1", nativeQuery = true)
     public User findByVerificationCode(String code);
 
     @Query(value="SELECT xp FROM user WHERE username = ?1", nativeQuery = true)

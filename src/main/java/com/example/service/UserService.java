@@ -7,6 +7,9 @@ import com.example.model.User;
 import com.exception.CustomerNotFoundException;
 
 import net.bytebuddy.utility.RandomString;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
@@ -42,6 +45,8 @@ public class UserService {
     @Autowired
     private JavaMailSender mailSender;
 
+    private static Logger log = LogManager.getLogger(UserService.class);
+
     public enum USER_FIELD_FLAG {
         SUCCESS, USERNAME_EXISTING, EMAIL_EXISTING
     }
@@ -56,7 +61,7 @@ public class UserService {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         String encodedPassword = passwordEncoder.encode(newPassword);
         user.setPassword(encodedPassword);
-         
+
         user.setResetPasswordToken(null);
         repo.save(user);
     }
@@ -102,7 +107,7 @@ public class UserService {
 
     public USER_FIELD_FLAG register(MultiValueMap<String, String> formData, String siteURL)
             throws UnsupportedEncodingException, MessagingException {
-        
+
         String username = formData.get("username").get(0);
         String email = formData.get("email").get(0);
         String firstName = formData.get("f_name").get(0);
@@ -168,6 +173,14 @@ public class UserService {
 
     public boolean verify(String verificationCode) {
         User user = repo.findByVerificationCode(verificationCode);
+        log.info(verificationCode);
+
+        if(user != null) {
+            log.info(user.getFullName());
+            log.info("Is enabled? " + user.isEnabled());
+        } else {
+            log.info("User is null!");
+        }
 
         if (user == null || user.isEnabled()) {
             return false;
