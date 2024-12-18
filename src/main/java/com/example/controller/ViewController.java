@@ -42,11 +42,11 @@ public class ViewController {
         if(game == null) {
             return "game_error";
         }
-        
+
         if(game.getStatus() != GameStatus.NEW) {
             return "game_error";
         }
-        
+
         return "game_template";
     }
 
@@ -149,5 +149,4 @@ public class ViewController {
     public String registerFail() {
         return "register_fail";
     }
-    
 }

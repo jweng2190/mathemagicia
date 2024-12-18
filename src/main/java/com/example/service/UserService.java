@@ -30,6 +30,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -127,7 +128,7 @@ public class UserService {
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
 
-        String randomCode = RandomString.make(64);
+        String randomCode = UUID.randomUUID().toString();
         user.setVerificationCode(randomCode);
         user.setEnabled(false);
         Set<Role> userRoles = new HashSet<>();
