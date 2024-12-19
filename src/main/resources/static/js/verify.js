@@ -1,11 +1,10 @@
 const verificationForm = document.getElementById('verification_form');
-const resendCodeButton = document.getElementById('resend_code');
+//const resendCodeButton = document.getElementById('resend_code');
 const resendMessage = document.getElementById('resend_msg');
 
 const statusMsg = document.getElementById('status_msg');
 const loginButton = document.getElementById('register_login');
 
-// Handle form submission for verification
 verificationForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
@@ -28,11 +27,11 @@ verificationForm.addEventListener('submit', async (e) => {
     statusMsg.style.display = "";
 });
 
-resendCodeButton.addEventListener('click', async() => {
+/* resendCodeButton.addEventListener('click', async() => {
     statusMsg.textContent = "Verification code resent to your email.";
     statusMsg.style.color = "rgb(255, 235, 16)";
     statusMsg.style.display = "";
-});
+}); */
 
 const disableForm = () => {
     const verificationInput = document.getElementById('verification_code');
@@ -42,5 +41,5 @@ const disableForm = () => {
     verifyButton.disabled = true;
     verifyButton.style.display = "none";
 
-    resendCodeButton.style.display = "none";
+    //resendCodeButton.style.display = "none";
 }
