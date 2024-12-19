@@ -148,10 +148,10 @@ public class UserService {
         String fromAddress = "teammathemagicia@gmail.com";
         String senderName = "Mathemagicia";
         String subject = "Please verify your registration";
-        String content = "Dear [[name]],<br>"
+        String content = "Dear [[name]],<br><br>"
                 +"Thank you for registering an account at Mathemagicia.<br>"
-                + "Please click the link below to verify your registration:<br>"
-                + "<h3><a href=\"[[URL]]\" target=\"_self\">VERIFY</a></h3>"
+                + "Your verification code is:<br>"
+                + "[[CODE]]<br><br>"
                 + "Thank you,<br>"
                 + "The Mathemagicia Team";
 
@@ -163,9 +163,9 @@ public class UserService {
         helper.setSubject(subject);
 
         content = content.replace("[[name]]", user.getFullName());
-        String verifyURL = siteURL + "/verify?code=" + user.getVerificationCode();
+        //String verifyURL = siteURL + "/verify?code=" + user.getVerificationCode();
 
-        content = content.replace("[[URL]]", verifyURL);
+        content = content.replace("[[CODE]]", user.getVerificationCode());
 
         helper.setText(content, true);
 

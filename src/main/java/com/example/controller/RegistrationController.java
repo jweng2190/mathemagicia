@@ -6,6 +6,7 @@ import com.example.model.User;
 import com.example.service.UserService;
 import com.example.service.UserService.USER_FIELD_FLAG;
 
+import org.apache.catalina.connector.Response;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,12 +77,14 @@ public class RegistrationController {
     }
 
     @GetMapping("/verify")
-    public String verifyUser(@RequestParam("code") String code) {
+    public ResponseEntity<String> verifyUser(@RequestParam("code") String code) {
         log.info("Verification Code: " + code);
-        if (service.verify(code)) {
-            return "verify_success";
-        } else {
-            return "verify_fail";
+        boolean valid = service.verify(code);
+
+        if(!valid) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+
+        return ResponseEntity.ok().body("Your account has been successfully verified.");
     }
 }

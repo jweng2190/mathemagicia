@@ -5,7 +5,15 @@ const statusRegister = document.getElementById("status_register");
 
 formRegister.addEventListener("submit", function(event) {
     event.preventDefault();
-    sendFormData();
+
+    const password = document.getElementById('password');
+    const confirmPassword = document.getElementById('password-confirm');
+
+    if(password.value !== confirmPassword.value) {
+        invalidMsg("passwords different");
+    } else {
+        sendFormData();
+    }
 });
 
 async function sendFormData() {
@@ -27,7 +35,7 @@ async function sendFormData() {
     console.log(response);
 
     const message = await response.text();
-    
+
     loadingDiv.style.display = "none";
     registerSpan.textContent = "Register";
     if(response.ok) {
@@ -42,6 +50,8 @@ function invalidMsg(msg) {
         statusRegister.textContent = "Username already in use. Please provide another username.";
     } else if(msg === "email existing") {
         statusRegister.textContent = "Email already in use. Please provide another email.";
+    } else if(msg === "passwords different") {
+        statusRegister.textContent = "Passwords do not match.";
     }
     statusRegister.style.color = "#cc0000";
     statusRegister.style.display = "";
