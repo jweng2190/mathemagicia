@@ -13,52 +13,51 @@ var linkLogin = document.getElementById('link_login');
 
 form.addEventListener("submit", function(event) {
     event.preventDefault();
-    spanReset.textContent = "Processing your request...";
-    spanReset.style.color = "rgb(255, 147, 20)";
-    const formData = new FormData(form);
+    if(!checkPasswordMatch()) {
+        spanReset.style.color = 'red';
+        spanReset.textContent = "Passwords do not match.";
+    } else {
+        spanReset.textContent = "Processing your request...";
+        spanReset.style.color = "rgb(255, 147, 20)";
+        const formData = new FormData(form);
 
-    fetch(form.action, {
-        method: form.method,
-        body: formData,
-    })
-        .then((response) => {
-            if(!response.ok) {
-                return response.text().then(
-                    text => {
-                        throw new Error(text); 
-                    }
-                );
-            } else {
-                message = response.text().then(message => {
-                    console.log(message);
-                    spanReset.textContent = message;
-                    spanReset.style.color = 'rgb(255, 147, 20)';
-                    linkLogin.style.display = 'inline-block';
-                });
-
-                form.reset();
-                var allElements = form.elements;
-                for (var i = 0, l = allElements.length; i < l; ++i) {
-                    allElements[i].disabled=true;
-                }
-            }
+        fetch(form.action, {
+            method: form.method,
+            body: formData,
         })
-        .catch((error) => {
-            console.log(error);
-            spanReset.textContent = error;
-            spanReset.style.color = 'red';
-            linkLogin.style.display = 'none';
-            form.reset();
-        });
+            .then((response) => {
+                if(!response.ok) {
+                    return response.text().then(
+                        text => {
+                            throw new Error(text);
+                        }
+                    );
+                } else {
+                    message = response.text().then(message => {
+                        console.log(message);
+                        spanReset.textContent = message;
+                        spanReset.style.color = 'rgb(255, 147, 20)';
+                        linkLogin.style.display = 'inline-block';
+                    });
 
-    // Clear the form after submitting
-    // form.reset();
+                    form.reset();
+                    var allElements = form.elements;
+                    for (var i = 0, l = allElements.length; i < l; ++i) {
+                        allElements[i].disabled=true;
+                    }
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+                spanReset.textContent = error;
+                spanReset.style.color = 'red';
+                linkLogin.style.display = 'none';
+                form.reset();
+            });
+    }
 });
 
-function checkPasswordMatch(fieldConfirmPassword) {
-    if (fieldConfirmPassword.value !== password.value) {
-        fieldConfirmPassword.setCustomValidity("Passwords do not match!");
-    } else {
-        fieldConfirmPassword.setCustomValidity("");
-    }
+function checkPasswordMatch() {
+    const fieldConfirmPassword = document.getElementById("confirm");
+    return (fieldConfirmPassword.value === password.value);
 }
