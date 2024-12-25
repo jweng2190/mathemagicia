@@ -149,4 +149,23 @@ public class ViewController {
     public String registerFail() {
         return "register_fail";
     }
+
+    @GetMapping("/learn")
+    public String learn() {
+        return "learn";
+    }
+
+    @GetMapping("/learn/{learnType}")
+    public String showLearnPage(@PathVariable("learnType") int type) {
+        switch(type) {
+            case 1:
+                return "fundamentals";
+            case 2:
+                return "strategies";
+            case 3:
+                return "advanced";
+        }
+
+        return "error/404.html";
+    }
 }
