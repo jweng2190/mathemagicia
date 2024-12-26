@@ -1,10 +1,10 @@
-.learn_types {
+.clickable_box {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow */
     transition: all 0.3s ease; /* Smooth transition */
     height: 300px
 }
 
-.learn_types:hover {
+.clickable_box:hover {
     transform: scale(1.03); /* Slightly expand the size */
     filter: brightness(1.2); /* Increase brightness */
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Enhance the shadow */

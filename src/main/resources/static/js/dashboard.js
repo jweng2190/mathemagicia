@@ -14,8 +14,6 @@ var modalShare = new bootstrap.Modal(shareM, {backdrop: 'static', keyboard: fals
 var inputLink = document.getElementById("game_link");
 var copyButton = document.getElementById("copy_link");
 
-const cgButton = document.getElementById("cg_button");
-const quickPlayButton = document.getElementById("quick_play");
 /* const jgButton = document.getElementById("jg_button"); */
 
 const statusCell = document.getElementById("status_game");
@@ -27,8 +25,6 @@ const deleteButton = document.getElementById("delete");
 const contentRow = document.getElementById("game_data");
 const cells = contentRow.getElementsByTagName('td');
 
-cgButton.addEventListener("click", createGame);
-quickPlayButton.addEventListener("click", quickPlay);
 //jgButton.addEventListener("click", joinGame);
 copyButton.addEventListener("click", copyToClipboard);
 
