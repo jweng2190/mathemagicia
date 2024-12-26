@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learn the Fundamentals</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link rel="icon" type="image/x-icon" href="/img/logos/logo_4.png">
+    <link rel="stylesheet" href="/css/box.css">
+    <style>
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+        }
+    </style>
+</head>
+    <body style="overflow-x: hidden;">
+        <div style="display: flex; justify-content: center;">
+            <div class="grid-container" style="margin-top: 54px; width: 75%;">
+                <div class="clickable_box" id="algebra" style="border-radius: 12px;/*border-color: var(--bs-emphasis-color);*/border: 2px solid #808080;
+                background: linear-gradient(#ff6156, #ffaeae);" onclick="window.location.href='/fundamentals/1'">
+                    <img class="d-block" style="margin: auto;width: 100px;margin-top: 48px;display: block;/*padding-bottom: 26px;*/" src="/img/alg.png">
+                    <p class="text-center" style="margin-bottom: 43px;margin-top: 55px;"><strong>Algebra</strong></p>
+                </div>
+                <div class="clickable_box" id="geometry" style="border: 2px solid #808080;border-radius: 12px;background: linear-gradient(#ffe356, #fff3be);
+                justify-content: center;align-items: center;" onclick="window.location.href='/fundamentals/2'">
+                    <img class="d-block" style="margin: auto;display: block;margin-top: 50px;width: 90px;" src="/img/geo.png" />
+                    <p class="text-center" style="margin-bottom: 43px;margin-top: 64px;"><strong>Geometry</strong></p>
+                </div>
+                <div class="clickable_box" id="num_theory" style="border-radius: 12px;border: 2px solid #808080;background: linear-gradient(#44fd97, #b0ffd2);"
+                onclick="window.location.href='/fundamentals/3'">
+                    <img style="margin: auto;display: block;width: 100px;margin-top: 48px;/*padding-bottom: 55px;*/" src="/img/nt.png">
+                    <p class="text-center" style="margin-top: 55px;margin-bottom: 43px;"><strong>Number Theory</strong></p>
+                </div>
+                <div class="clickable_box" id="counting" style="border-radius: 12px;border: 2px solid #808080;background: linear-gradient(#3c80ff, #9ebeed);"
+                onclick="window.location.href='/fundamentals/4'">
+                    <img style="margin: auto;display: block;width: 100px;margin-top: 48px;/*padding-bottom: 55px;*/" src="/img/prob.png">
+                    <p class="text-center" style="margin-top: 55px;margin-bottom: 43px;"><strong>Counting & Probability</strong></p>
+                </div>
+            </div>
+        </div>
+        <br><br>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="/js/setup.js" type="module"></script>
+    </body>
+</html>
