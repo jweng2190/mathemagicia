@@ -1,7 +1,5 @@
 import { getBaseUri } from "./get_base_uri.js";
 import { getUsername } from "./user_data.js";
-import { getSideBar } from "./sidebar.js";
-import { getTopBar } from "./topbar.js";
 
 const username = await getUsername();
 
@@ -15,8 +13,6 @@ const buttonJoin = document.getElementById("join_game");
 const divStatus = document.getElementById("status_div");
 const base_uri = getBaseUri();
 connectQueue();
-getSideBar("regular");
-getTopBar();
 
 function connectQueue() {
     const wsQuickPlay = new WebSocket(base_uri + "/qp");

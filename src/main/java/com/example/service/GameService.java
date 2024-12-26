@@ -71,7 +71,7 @@ public class GameService {
         }
         game.setType(type);
 
-        gameDao.save(game);  
+        gameDao.save(game);
         userDao.save(user);
 
         return game;
@@ -85,7 +85,7 @@ public class GameService {
         game.setStatus(NEW);
         game.setTimeLimit("10:00");
         game.setGameDate(LocalDate.now());
-        
+
         setProblems(game);
 
         String status1 = initializeProbStatus(game.getProblemSetSize());
@@ -173,10 +173,10 @@ public class GameService {
                 } else {
                     game.setPlayer2Username(null);
                     game.setPlayer2Joined(false);
-                    simpMessagingTemplate.convertAndSendToUser(game.getPlayer1Username(), 
+                    simpMessagingTemplate.convertAndSendToUser(game.getPlayer1Username(),
                     "/created_status", "disconnect");
                 }
-                
+
                 user.setActiveGameId(null);
                 gameDao.save(game);
                 userDao.save(user);

@@ -1,6 +1,3 @@
-import { getTopBar } from "./topbar.js";
-import { getSideBar } from "./sidebar.js";
-
 var loc = window.location, base_uri;
 if (loc.protocol === "https:") {
     base_uri = "wss:";
@@ -13,7 +10,7 @@ const username = await getUsername();
 let gameId;
 var loc = window.location.protocol + "//" + window.location.host;
 let shareM = document.getElementById("modal-share");
-var modalShare = new bootstrap.Modal(shareM, {backdrop: 'static', keyboard: false}); 
+var modalShare = new bootstrap.Modal(shareM, {backdrop: 'static', keyboard: false});
 var inputLink = document.getElementById("game_link");
 var copyButton = document.getElementById("copy_link");
 
@@ -36,8 +33,6 @@ quickPlayButton.addEventListener("click", quickPlay);
 copyButton.addEventListener("click", copyToClipboard);
 
 connectStatus();
-getTopBar();
-getSideBar("regular");
 getActiveGame();
 
 function createGame() {
@@ -115,7 +110,7 @@ async function getUsername() {
 
 function shareGame() {
     //TODO, popup modal
-    inputLink.value = loc + "/game/" + gameId; 
+    inputLink.value = loc + "/game/" + gameId;
     modalShare.show();
 }
 

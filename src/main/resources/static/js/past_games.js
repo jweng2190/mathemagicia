@@ -6,16 +6,10 @@ const templNoGames = document.getElementById("no_games");
 const mainDiv = document.querySelector('div');
 const pageDisp = document.getElementById("currentPage")
 
-import { getSideBar } from "./sidebar.js";
-import { getTopBar } from "./topbar.js";
-
 // Constants for pagination
 const itemsPerPage = 10;
 var totalPages;
 let currentPage = 1;
-
-getSideBar("regular");
-getTopBar();
 
 displayPast();
 
@@ -224,7 +218,7 @@ function styleDateCell(game, cell) {
 function getPlayerBadgeUrl(idx) {
     let levelP1 = playerBadgeList[idx].first;
     let levelP2 = playerBadgeList[idx].second;
-    
+
     let b1 = "/img/bot.png";
     let b2 = "/img/bot.png";
     if(levelP1 != -1) {

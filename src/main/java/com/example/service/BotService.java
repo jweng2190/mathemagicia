@@ -52,7 +52,7 @@ public class BotService {
         int botScore = 0;
         Random random = new Random();
 
-        for(int i = 0; i < ProblemService.PROBLEM_SET_SIZE; i++) {
+        for(int i = 0, k = problemSet.size(); i < k; i++) {
             int difficulty = problemSet.get(i).getDifficulty();
             int originalTime = bot.findTimeByDiff(difficulty);
             double randomNumber = -1 + (random.nextDouble() * 2);

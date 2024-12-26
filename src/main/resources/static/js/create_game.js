@@ -1,5 +1,3 @@
-import { getSideBar } from "./sidebar.js";
-
 let easyDif = document.getElementById("easy");
 let mediumDif = document.getElementById("medium");
 let hardDif = document.getElementById("hard");
@@ -15,8 +13,6 @@ const createUrl = '/game/create';
 const pSuccess = document.getElementById("success_create");
 const successText = "Game successfully created! <br />Please return to dashboard<br />to access created game."
 const errorText = "You already have a created game.<br />Please check your game dashboard."
-
-getSideBar("regular");
 
 easyDif.addEventListener('click', function() {
     handleDifficulty("easy");

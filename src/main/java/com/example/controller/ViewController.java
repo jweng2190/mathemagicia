@@ -159,11 +159,11 @@ public class ViewController {
     public String showLearnPage(@PathVariable("learnType") int type) {
         switch(type) {
             case 1:
-                return "fundamentals";
+                return "learn/fundamentals";
             case 2:
-                return "strategies";
+                return "learn/strategies";
             case 3:
-                return "advanced";
+                return "learn/advanced";
         }
 
         return "error/404.html";
