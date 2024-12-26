@@ -168,4 +168,9 @@ public class ViewController {
 
         return "error/404.html";
     }
+
+    @GetMapping("/terms_of_use")
+    public String showTermsOfUse() {
+        return "terms";
+    }
 }

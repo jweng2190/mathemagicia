@@ -22,7 +22,11 @@ import org.springframework.security.web.authentication.rememberme.TokenBasedReme
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(jsr250Enabled = true, prePostEnabled = true, securedEnabled = true)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
-    
+    private static final String[] AUTH_WHITELIST = {
+        "/", "/register", "/register_success", "/register_fail", "/verify", "/login", "/forgot_password", "/reset_password",
+        "/terms_of_use"
+    };
+
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -55,7 +59,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeRequests()
-                .antMatchers( "/", "/register", "/register_success", "/register_fail", "/verify", "/login", "/forgot_password", "/reset_password").permitAll()
+                .antMatchers(AUTH_WHITELIST).permitAll()
                 .anyRequest().authenticated()
                 .and().formLogin().loginPage("/login").defaultSuccessUrl("/home")
                 .and().logout().logoutSuccessUrl("/").deleteCookies("JSESSIONID")
