@@ -42,7 +42,7 @@ public class AppConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler( "/js/**", "/css/**", "/img/**", "/gif/**", "/templates/**")
-                .addResourceLocations("classpath:/static/js/", "classpath:/static/css/", 
+                .addResourceLocations("classpath:/static/js/", "classpath:/static/css/",
                 "classpath:/static/img/", "classpath:/static/gif/", "classpath:/templates/");
             /* registry.addResourceHandler("/**")
             .addResourceLocations(CLASSPATH_RESOURCE_LOCATIONS); */

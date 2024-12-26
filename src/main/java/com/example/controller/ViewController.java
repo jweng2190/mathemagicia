@@ -169,6 +169,22 @@ public class ViewController {
         return "error/404.html";
     }
 
+    @GetMapping("/fundamentals/{topic}")
+    public String showFundamentalTopic(@PathVariable("topic") int type) {
+        switch(type) {
+            case 1:
+                return "fundamentals/algebra";
+            case 2:
+                return "fundamentals/geometry";
+            case 3:
+                return "fundamentals/num_theory";
+            case 4:
+                return "fundamentals/probability";
+        }
+
+        return "error/404.html";
+    }
+
     @GetMapping("/terms_of_use")
     public String showTermsOfUse() {
         return "terms";

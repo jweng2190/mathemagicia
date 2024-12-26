@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="/img/logos/logo_4.png">
+    <title>Competition Strategies</title>
+</head>
+<body>
+    <div class="container py-5">
+        <h1 class="text-center mb-5">Math Competition Strategies</h1>
+
+        <div class="row g-4" id="strategy-container" style="justify-content: center;">
+        </div>
+    </div>
+
+    <script>
+        const strategies = [
+            {
+                icon: 'fa-clock',
+                title: 'Time Management',
+                description: 'Start with problems you\'re most confident in. Allocate specific time blocks for each question. If stuck on a problem for too long, mark it and move on - you can return to it later if time permits.'
+            },
+            {
+                icon: 'fa-magnifying-glass',
+                title: 'Problem Analysis',
+                description: 'Read each problem twice - first for overview, then for details. Underline key information and requirements. Identify the mathematical concepts involved before starting calculations.'
+            },
+            {
+                icon: 'fa-table-cells-large',
+                title: 'Break It Down',
+                description: 'Divide complex problems into smaller, manageable parts. Solve each part separately, then combine the results. This makes seemingly difficult problems more approachable.'
+            },
+            {
+                icon: 'fa-arrow-right-arrow-left',
+                title: 'Work Backwards',
+                description: 'If stuck, try working backwards from the answer choices (in multiple choice) or final condition. This can reveal patterns or relationships that aren\'t obvious when working forward.'
+            },
+            {
+                icon: 'fa-pencil',
+                title: 'Show Your Work',
+                description: 'Write out your steps clearly, even for mental calculations. This helps catch errors and makes it easier to check your work. In competition, partial credit often depends on showing your process.'
+            },
+            {
+                icon: 'fa-brain',
+                title: 'Pattern Recognition',
+                description: 'Look for patterns in numbers or geometric figures. Many competition problems test your ability to recognize and extend mathematical patterns.'
+            },
+            {
+                icon: 'fa-check',
+                title: 'Estimation',
+                description: 'Before detailed calculations, estimate the approximate answer. This helps catch major errors and can save time in multiple choice questions by eliminating obviously wrong answers.'
+            },
+            {
+                icon: 'fa-circle-exclamation',
+                title: 'Edge Cases',
+                description: 'Consider extreme or special cases that might affect your solution. Test your answer with zero, negative numbers, or very large numbers when applicable.'
+            },
+            {
+                icon: 'fa-tree',
+                title: 'Decision Trees',
+                description: 'For problems with multiple possible scenarios, create a decision tree to organize your thinking. This is especially useful in probability and combinatorics problems.'
+            },
+            {
+                icon: 'fa-calculator',
+                title: 'Calculator Strategy',
+                description: 'Know when to use your calculator and when to solve by hand. Mental math is often faster for simple calculations. Save your calculator for complex computations that are time-consuming or error-prone.'
+            }
+        ];
+
+        function createStrategyCard(strategy) {
+            return `
+                <div class="col-md-6">
+                    <div class="card h-100 shadow-sm hover-shadow">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="fas ${strategy.icon} fa-2x text-primary me-3"></i>
+                                <h5 class="card-title mb-0">${strategy.title}</h5>
+                            </div>
+                            <p class="card-text text-muted">${strategy.description}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.getElementById('strategy-container');
+            const strategyCards = strategies.map(createStrategyCard).join('');
+            container.innerHTML = strategyCards;
+
+            // Add hover effect
+            document.querySelectorAll('.card').forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.classList.add('shadow');
+                    card.style.transform = 'translateY(-5px)';
+                    card.style.transition = 'all 0.3s ease';
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.classList.remove('shadow');
+                    card.style.transform = 'translateY(0)';
+                });
+            });
+        });
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/setup.js" type="module"></script>
+</body>
+</html>
