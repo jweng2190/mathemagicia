@@ -27,3 +27,5 @@ logs/
 
 .*
 !/.gitignore
+
+src/main/resources/application.properties
